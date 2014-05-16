@@ -1,0 +1,5 @@
+pluginname=EvasysPlugin
+pluginclassname=EvasysPlugin
+origin=data-quest
+version=1.43
+studipMinVersion=2.0
