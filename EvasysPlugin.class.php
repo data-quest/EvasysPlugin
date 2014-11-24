@@ -8,7 +8,12 @@
  *  the License, or (at your option) any later version.
  */
 
-require_once 'lib/classes/Semester.class.php';
+if (file_exists('lib/classes/Semester.class.php')) {
+    include_once 'lib/classes/Semester.class.php';
+}
+if (file_exists('lib/models/Semester.class.php')) {
+    include_once 'lib/models/Semester.class.php';
+}
 require_once dirname(__file__)."/classes/EvaSysSeminar.class.php";
 require_once 'lib/classes/QuickSearch.class.php';
 
