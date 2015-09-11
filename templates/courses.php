@@ -30,7 +30,7 @@ foreach ($msg as $message) {
 
 ?>
 <form action="?" method="<?= Request::submitted("semester") ? "POST" : "GET" ?>">
-    <div style="padding: 10px; border: thin solid #aaaaaa; width: 40%; margin-left: auto; margin-right: auto;">
+    <div style="padding: 10px; border: thin solid #aaaaaa; width: 40%; margin-left: auto; margin-right: auto; margin-bottom: 50px;">
         <table style="width: 100%">
             <tbody>
                 <tr>
@@ -98,7 +98,7 @@ foreach ($msg as $message) {
                 <tr>
                     <td></td>
                     <td>
-                        <?= makebutton("auswaehlen", "input") ?>
+                        <?= \Studip\Button::create(_("Auswählen"), "auswaehlen") ?>
                     </td>
                 </tr>
             </tbody>
@@ -119,35 +119,18 @@ foreach ($msg as $message) {
         <div style="clear:both;"></div>
     </div>
 
-    <style>
-        table.active_table {
-            border-collapse: collapse;
-            margin: 10px;
-        }
-        table.active_table > thead > tr > th {
-            padding: 5px;
-            border: 1px solid lightgrey;
-            border-bottom: 1px solid grey;
-            background-image: none;
-        }
-        table.active_table > tbody > tr > td {
-            padding: 5px;
-            border: 1px solid lightgrey;
-        }
-        table.active_table > tbody > tr:hover > td {
-            background-color: #eeeeee;
-        }
-    </style>
-
     <? if ($searched) : ?>
-    <table style="width: 100%;" class="active_table">
+    <table class="default" id="select_table">
         <thead>
             <tr>
             <th><?= _("Nummer") ?></th>
             <th><?= _("Veranstaltung") ?></th>
                 <th><?= _("Dozenten") ?></th>
                 <th><?= _("Zeitraum") ?></th>
-                <th><?= _("Plugin aktiviert") ?></th>
+                <th>
+                    <input type="checkbox" data-proxyfor="#select_table > tbody :checkbox">
+                    <?= _("Plugin aktiviert") ?>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -213,7 +196,9 @@ foreach ($msg as $message) {
         <div style="clear:both;"></div>
     </div>
 
-    <a href="" onClick="jQuery('input[type=checkbox]:not(:checked)').click(); return false;"><?= makebutton("alleauswaehlen", "img") ?></a>
-    <?= makebutton("absenden", "input") ?>
+    <div style="text-align: center;">
+        <?= \Studip\Button::create(_("Absenden"), "absenden") ?>
+    </div>
+
     <? endif ?>
 </form>
