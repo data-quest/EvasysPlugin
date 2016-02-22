@@ -1,5 +1,5 @@
 <?php
-class InitSettings extends DBMigration
+class InitSettings extends Migration
 {
 	function up(){
 		DBManager::get()->exec("

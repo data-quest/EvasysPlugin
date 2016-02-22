@@ -1,5 +1,5 @@
 <?php
-class MultipleEvaluationsPerCourse extends DBMigration
+class MultipleEvaluationsPerCourse extends Migration
 {
     function up(){
         DBManager::get()->exec("

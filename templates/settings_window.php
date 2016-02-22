@@ -48,7 +48,7 @@
                 </tr>
                 <tr>
                     <td></td>
-                    <td><?= makebutton("absenden", "input") ?></td>
+                    <td><?= \Studip\Button::create(_("Absenden"), "absenden") ?></td>
                 </tr>
             </tbody>
         </table>

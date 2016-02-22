@@ -107,41 +107,21 @@
 <? endif ?>
 
 <?
+Sidebar::Get()->setImage("sidebar/evaluation-sidebar.png");
 $publish = $evasys_seminar->publishingAllowed();
-$infobox = array(
-    'picture' => Assets::image_path("infobox/evaluation.jpg"),
-    'content' => array(
-        array(
-            'kategorie' => _("Information"),
-            'eintrag' => array(
-                array(
-                    'icon' => "icons/16/black/info.png",
-                    'text' => $publish ? _("Die Ergebnisse der Evaluation werden hier veröffentlicht.") : _("Die Ergebnisse sind nicht für Studenten zur Veröffentlichung freigegeben.")
-                )
-            )
-        )
-    )
-);
-/*
-if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar']) && get_config("EVASYS_PUBLISH_RESULTS") && !$publish) {
-    $infobox['content'][0]['eintrag'][] = array(
-        'icon' => "icons/16/black/info.png",
-        'text' => sprintf(_("Es haben %s Dozenten der Veröffentlichung der Ergebnisse zugestimmt."), $evasys_seminar->getVotesForPublishing())
-    );
-}
-*/
 if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar']) && get_config("EVASYS_PUBLISH_RESULTS")) {
-    $infobox['content'][] = array(
-        'kategorie' => _("Aktionen"),
-        'eintrag' => array(
-            array(
-                'icon' => "icons/16/black/vote.png",
-                'text' => !$publish
-                    ? '<a href="'.URLHelper::getLink("?", array('dozent_vote' => "y")).'">'._("Veröffentlichung der Ergebnisse an Studenten erlauben.").'</a>'
-                    : '<a href="'.URLHelper::getLink("?", array('dozent_vote' => "n")).'">'._("Veröffentlichung der Ergebnisse an Studenten verbieten.").'</a>'
-            )
-        )
-    );
-
+    $actions = new ActionsWidget();
+    if ($publish) {
+        $actions->addLink(
+            _("Veröffentlichung der Ergebnisse an Studenten verbieten."),
+            URLHelper::getURL("?", array('dozent_vote' => "n"))
+        );
+    } else {
+        $actions->addLink(
+            _("Veröffentlichung der Ergebnisse an Studenten erlauben."),
+            URLHelper::getURL("?", array('dozent_vote' => "y"))
+        );
+    }
+    Sidebar::Get()->addWidget($actions);
 }
 
