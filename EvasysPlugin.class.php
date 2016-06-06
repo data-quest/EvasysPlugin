@@ -305,9 +305,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getAdminActionURL()
     {
-        return LaveRechte::isLehrbeauftragte()
-            ? PluginEngine::getURL($this, array(), "upload_courses")
-            : false;
+        return $GLOBALS['perm']->have_perm("admin") ? PluginEngine::getURL($this, array(), "upload_courses") : null;
     }
 
     public function useMultimode() {
