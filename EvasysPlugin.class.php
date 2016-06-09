@@ -251,7 +251,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             }
         }
         if (count($evasys_seminars)
-                && count($active)
                 && !$GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) {
             $open_surveys = $evasys_seminars[0]->getSurveys($GLOBALS['user']->id);
             if (is_array($open_surveys)) {

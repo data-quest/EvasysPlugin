@@ -10,6 +10,7 @@
  */
 
 require_once dirname(__file__)."/EvaSysSoap.class.php";
+require_once dirname(__file__)."/EvaSysSoapClient.class.php";
 
 class EvaSysSeminar extends SimpleORMap {
 
@@ -190,6 +191,7 @@ class EvaSysSeminar extends SimpleORMap {
 
         if (is_a($surveys, "SoapFault")) {
             if ($surveys->faultstring === "ERR_206") {
+                PageLayout::postMessage(MessageBox::info($surveys->detail));
                 $surveys = array();
             } elseif ($surveys->faultstring === "ERR_207") {
                 $surveys = array("schon teilgenommen");
@@ -218,6 +220,7 @@ class EvaSysSeminar extends SimpleORMap {
             //'IncludeParticipants' => 1,
             'IncludeSurveys' => 1
         ));
+        //var_dump($course);
         if (is_a($course, "SoapFault")) {
             return null;
         } else {

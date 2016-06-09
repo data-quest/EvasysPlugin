@@ -24,7 +24,7 @@ class EvaSysSoap {
             if (!$evasys_wsdl || !$evasys_user || !$evasys_password) {
                 throw new Exception("EVASYS_* Konfiguration unvollständig!");
             }
-            self::$instance = new SoapClient($evasys_wsdl, array(
+            self::$instance = new EvaSysSoapClient($evasys_wsdl, array(
                 'trace' => 1,
                 'exceptions' => 0,
                 'cache_wsdl' => $GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE'])
