@@ -75,7 +75,7 @@ class EvaSysSeminar extends SimpleORMap {
         $soap = EvaSysSoap::get();
         $arr = $this->getSessionPart();
         $evasys_sem_object = $soap->__soapCall("UploadSessions", array(
-            $arr
+            studip_utf8encode($arr)
         ));
         if (is_a($evasys_sem_object, "SoapFault")) {
             throw new Exception("SOAP-error: ".$evasys_sem_object->detail);
@@ -92,13 +92,17 @@ class EvaSysSeminar extends SimpleORMap {
         $seminar = new Seminar($this['Seminar_id']);
         //$dozent = $this->getDozent();
         $participants = array();
-        $students = $db->query(
-            "SELECT auth_user_md5.user_id " .
-            "FROM auth_user_md5 " .
-                "INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id) " .
-            "WHERE seminar_user.Seminar_id = ".$db->quote($this['Seminar_id'])." " .
-                "AND seminar_user.status IN ('autor', 'tutor') " .
-        "")->fetchAll(PDO::FETCH_COLUMN, 0);
+        $statement = DBManager::get()->prepare("
+            SELECT auth_user_md5.user_id
+            FROM auth_user_md5 
+                INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
+            WHERE seminar_user.Seminar_id = :seminar_id
+                AND seminar_user.status IN ('autor', 'tutor')
+        ");
+        $statement->execute(array(
+            'seminar_id' => $this['Seminar_id']
+        ));
+        $students = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
         foreach ($students as $student_id) {
             $student = self::getStudipUser($student_id);
             $participants[] = array(
@@ -106,9 +110,9 @@ class EvaSysSeminar extends SimpleORMap {
                 'm_sTitle' => "",//$student['title_front'],
                 'm_sIdentifier' => $student['Email'],
                 'm_sEmail' => $student['Email'],
-                'm_sFirstname' => "",//studip_utf8encode($student['Vorname']),
-                'm_sLastname' => "",//studip_utf8encode($student['Nachname']),
-                'm_nGender' => "",//$student['geschlecht'] == 1 ? "m" : "w",
+                'm_sFirstname' => "", //$student['Vorname'],
+                'm_sLastname' => "", //$student['Nachname'],
+                'm_nGender' => "", //$student['geschlecht'] == 1 ? "m" : "w",
                 'm_sAddress' => "",
                 'm_sCustom1' => "",
                 'm_sCustom2' => "",
@@ -128,8 +132,8 @@ class EvaSysSeminar extends SimpleORMap {
             $dozent = self::getStudipUser($dozent_id);
             $instructorlist[] = array(
                 'InstructorUid' => $dozent['user_id'],
-                'FirstName' => studip_utf8encode($dozent['Vorname']),
-                'LastName' => studip_utf8encode($dozent['Nachname']),
+                'FirstName' => $dozent['Vorname'],
+                'LastName' => $dozent['Nachname'],
                 'Gender' => $dozent['geschlecht'] == 1 ? "m" : "w",
                 'Email' => $dozent['Email']
             );
@@ -151,26 +155,25 @@ class EvaSysSeminar extends SimpleORMap {
         foreach ($datenfelder as $id => $datafield) {
             $custom_fields[] = $datafield;
         }
-        $semester = Semester::findByTimestamp($seminar->getSemesterStartTime());
         return array(
             'CourseCode' => $this['Seminar_id'],
             'CourseUid' => $this['Seminar_id'],
             'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
             'CoursePeriodIdType' => "PERIODDATE",
-            'CourseName' => studip_utf8encode($seminar->getName()),
-            'CourseType' => studip_utf8encode($GLOBALS['SEM_TYPE'][$seminar->status]['name']),
+            'CourseName' => $seminar->getName(),
+            'CourseType' => $GLOBALS['SEM_TYPE'][$seminar->status]['name'],
             'm_nUserId' => count($participants),
-            'SubunitName' => studip_utf8encode($heimateinrichtung),
+            'SubunitName' => $heimateinrichtung,
             'ParticipantList' => $participants,
             'AnonymousParticipants' => true,
             'InstructorList' => $instructorlist,
-            'CourseProgramOfStudy' => studip_utf8encode(implode('|', $studienbereiche)),
-            'RoomName' => studip_utf8encode($seminar->location),
-            'CourseCustomField1' => studip_utf8encode($seminar->getNumber()),
-            'CourseCustomField2' => $custom_fields[0] ? studip_utf8encode($custom_fields[0]->getValue()) : "",
-            'CourseCustomField3' => $custom_fields[1] ? studip_utf8encode($custom_fields[1]->getValue()) : "",
-            'CourseCustomField4' => $custom_fields[2] ? studip_utf8encode($custom_fields[2]->getValue()) : "",
-            'CourseCustomField5' => $custom_fields[3] ? studip_utf8encode($custom_fields[3]->getValue()) : ""
+            'CourseProgramOfStudy' => implode('|', $studienbereiche),
+            'RoomName' => ($seminar->location),
+            'CourseCustomField1' => $seminar->getNumber(),
+            'CourseCustomField2' => $custom_fields[0] ? $custom_fields[0]->getValue() : "",
+            'CourseCustomField3' => $custom_fields[1] ? $custom_fields[1]->getValue() : "",
+            'CourseCustomField4' => $custom_fields[2] ? $custom_fields[2]->getValue() : "",
+            'CourseCustomField5' => $custom_fields[3] ? $custom_fields[3]->getValue() : ""
         );
     }
 

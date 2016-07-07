@@ -10,11 +10,13 @@
  */
 
 
-class EvaSysSoap {
+class EvaSysSoap
+{
 
     static protected $instance = null;
 
-    static public function get() {
+    static public function get()
+    {
         if (!self::$instance) {
 
             $evasys_wsdl = get_config("EVASYS_WSDL");
@@ -30,7 +32,7 @@ class EvaSysSoap {
                 'cache_wsdl' => $GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE'])
                     ? WSDL_CACHE_BOTH
                     : WSDL_CACHE_NONE,
-                'features' =>  SOAP_SINGLE_ELEMENT_ARRAYS
+                'features' => SOAP_SINGLE_ELEMENT_ARRAYS
             ));
             $file = strtolower(substr($evasys_wsdl, strrpos($evasys_wsdl, "/") + 1));
             $soapHeaders = new SoapHeader($file, 'Header', array(
@@ -39,7 +41,7 @@ class EvaSysSoap {
             ));
             self::$instance->__setSoapHeaders($soapHeaders);
             if (is_soap_fault(self::$instance)) {
-                throw new Exception("SOAP-Error: ".self::$instance);
+                throw new Exception("SOAP-Error: " . self::$instance);
             }
         }
         return self::$instance;
