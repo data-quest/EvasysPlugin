@@ -4,6 +4,8 @@
         <iframe
             id="survey_<?= htmlReady($survey->TransactionNumber) ?>"
             style="width: 100%; height: 600px; border: 0px;"
+            frameborder="0"
+            allowfullscreen
             src="<?= htmlReady(get_config("EVASYS_URI")."/indexstud.php?typ=html&user_tan=".urlencode($survey->TransactionNumber)) ?>">
         </iframe>
         <? else : ?>

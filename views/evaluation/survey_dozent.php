@@ -30,6 +30,23 @@
     table.active_table > tbody > tr:hover > td {
         background-color: #eeeeee;
     }
+
+    #qr_code {
+        display: none;
+    }
+    #qr_code:-moz-full-screen {
+         display: flex;
+     }
+    #qr_code:-webkit-full-screen {
+         display: flex;
+     }
+    #qr_code:-ms-fullscreen {
+         display: flex;
+     }
+    #qr_code:fullscreen {
+         display: flex;
+    }
+
 </style>
 <div style="padding: 15px; font-size: 1.2em; text-align: center;">
     <? if (count($surveys) < 2) : ?>
@@ -106,22 +123,63 @@
 </div>
 <? endif ?>
 
+<? if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) : ?>
+    <div style="background-color: white; width: 100%; height: 100%; justify-content: center; align-items: center;"
+         id="qr_code">
+        <img style="width: 90vh; height: 90vh;">
+    </div>
+    <script>
+        jQuery(function () {
+            <? URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']) ?>
+            var qrcode = new QRCode("<?= PluginEngine::getLink($plugin, array(), "show") ?>");
+            var svg = qrcode.svg();
+            console.log("data:image/svg+xml;base64," + btoa(svg));
+            jQuery("#qr_code img").attr("src", "data:image/svg+xml;base64," + btoa(svg));
+        });
+        STUDIP.EvaSys = {
+            showQR: function () {
+                var qr = jQuery("#qr_code")[0];
+                //jQuery("#qr_code").css("display", "flex");
+                if (qr.requestFullscreen) {
+                    qr.requestFullscreen();
+                } else if (qr.msRequestFullscreen) {
+                    qr.msRequestFullscreen();
+                } else if (qr.mozRequestFullScreen) {
+                    qr.mozRequestFullScreen();
+                } else if (qr.webkitRequestFullscreen) {
+                    qr.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+            }
+        };
+    </script>
+<? endif ?>
+
 <?
 Sidebar::Get()->setImage("sidebar/evaluation-sidebar.png");
 $publish = $evasys_seminar->publishingAllowed();
-if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar']) && get_config("EVASYS_PUBLISH_RESULTS")) {
+if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) {
     $actions = new ActionsWidget();
-    if ($publish) {
-        $actions->addLink(
-            _("Veröffentlichung der Ergebnisse an Studenten verbieten."),
-            URLHelper::getURL("?", array('dozent_vote' => "n"))
-        );
-    } else {
-        $actions->addLink(
-            _("Veröffentlichung der Ergebnisse an Studenten erlauben."),
-            URLHelper::getURL("?", array('dozent_vote' => "y"))
-        );
+    if (get_config("EVASYS_PUBLISH_RESULTS")) {
+        if ($publish) {
+            $actions->addLink(
+                _("Veröffentlichung der Ergebnisse an Studenten verbieten."),
+                URLHelper::getURL("?", array('dozent_vote' => "n")),
+                Assets::image_path("icons/16/blue/lock-locked")
+            );
+        } else {
+            $actions->addLink(
+                _("Veröffentlichung der Ergebnisse an Studenten erlauben."),
+                URLHelper::getURL("?", array('dozent_vote' => "y")),
+                Assets::image_path("icons/16/blue/lock-unlocked")
+            );
+        }
     }
+    $actions->addLink(
+        _("QR-Code für Studierende anzeigen"),
+        "#",
+        Assets::image_path("icons/16/blue/code-qr"),
+        array('onClick' => "STUDIP.EvaSys.showQR(); return false;")
+    );
     Sidebar::Get()->addWidget($actions);
 }
 

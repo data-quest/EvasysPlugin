@@ -41,7 +41,8 @@ class EvaSysSeminar extends SimpleORMap {
      * Uploads all given seminars in one soap-call to EvaSys.
      * @param array $seminars : array of EvaSysSeminar
      */
-    static public function UploadSessions(array $seminars) {
+    static public function UploadSessions(array $seminars)
+    {
         $soap = EvaSysSoap::get();
         $sessionlist = array();
         foreach($seminars as $seminar) {
@@ -56,6 +57,7 @@ class EvaSysSeminar extends SimpleORMap {
             if ($evasys_sem_object->getMessage() == "Not Found") {
                 return "SoapPort der WSDL-Datei antwortet nicht.";
             } else {
+                var_dump($evasys_sem_object);
                 var_dump($soap->__getLastResponse());die();
                 return "SOAP-error: " . $evasys_sem_object->getMessage().($evasys_sem_object->detail ? " (".$evasys_sem_object->detail.")" : "");
             }
@@ -65,12 +67,49 @@ class EvaSysSeminar extends SimpleORMap {
     }
 
     /**
+     * Fetches all new evaluations (red icon) for the user.
+     * @param string|null $user_id of the given user or null for current user
+     * @return array : array of Seminar_ids with
+     * @throws Exception
+     */
+    public function getEvaluationStatus($user_id = null)
+    {
+        if (isset($_SESSION['EVASYS_SEMINARS_STATUS'])
+            && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * get_config('EVASYS_CACHE')) {
+            return (int) $_SESSION['EVASYS_SEMINARS_STATUS'][$this['Seminar_id']];
+        }
+        $soap = EvaSysSoap::get();
+        $user = $user_id ? User::find($user_id) : User::findCurrent();
+        $evasys_sem_object = $soap->__soapCall("GetEvaluationSummaryByParticipant", array(
+            studip_utf8encode($user['email'])
+        ));
+        if (is_a($evasys_sem_object, "SoapFault")) {
+            if ($evasys_sem_object->getMessage() === "ERR_212") {
+                $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
+            } else {
+                var_dump($evasys_sem_object);
+                die();
+                throw new Exception("SOAP-error: " . $evasys_sem_object->detail);
+            }
+        } else {
+            foreach ((array) $evasys_sem_object->SurveySummary as $survey) {
+                if (!$survey->Participated && $survey->SurveyOpenState) {
+                    $_SESSION['EVASYS_SEMINARS_STATUS'][$survey->SurveyCourseCode] += 1;
+                }
+            }
+        }
+        $_SESSION['EVASYS_STATUS_EXPIRE'] = time();
+        return (int) $_SESSION['EVASYS_SEMINARS_STATUS'][$this['Seminar_id']];
+    }
+
+    /**
      * Not used right now. But this could upload a seminar to EvaSys. We don't use
      * this method because we upload many seminars in one request with 
      * EvaSysSeminar::UploadSessions .
      * @throws Exception
      */
-    public function connectWithEvaSys() {
+    public function connectWithEvaSys()
+    {
         //wird nicht verwendet, da wir alle Seminare gebündelt übertragen
         $soap = EvaSysSoap::get();
         $arr = $this->getSessionPart();
@@ -87,7 +126,8 @@ class EvaSysSeminar extends SimpleORMap {
      * Returns all information for a seminar to be uploaded to EvaySys.
      * @return array
      */
-    public function getSessionPart() {
+    public function getSessionPart()
+    {
         $db = DBManager::get();
         $seminar = new Seminar($this['Seminar_id']);
         //$dozent = $this->getDozent();
@@ -133,7 +173,7 @@ class EvaSysSeminar extends SimpleORMap {
             $instructorlist[] = array(
                 'InstructorUid' => $dozent['user_id'],
                 'FirstName' => $dozent['Vorname'],
-                'LastName' => $dozent['Nachname'],
+                'LastName' => (get_config("EVASYS_EXPORT_TITLES") ? $dozent['title_front']." ": "").$dozent['Nachname'],
                 'Gender' => $dozent['geschlecht'] == 1 ? "m" : "w",
                 'Email' => $dozent['Email']
             );
@@ -177,7 +217,8 @@ class EvaSysSeminar extends SimpleORMap {
         );
     }
 
-    public function getSurveys($user_id = null) {
+    public function getSurveys($user_id = null)
+    {
         if (isset($_SESSION['EVASYS_SEMINAR_SURVEYS'][$this['Seminar_id']])
                 && (time() - $_SESSION['EVASYS_SEMINAR_SURVEYS_EXPIRE'][$this['Seminar_id']]) < 60 * get_config('EVASYS_CACHE')) {
             return $_SESSION['EVASYS_SEMINAR_SURVEYS'][$this['Seminar_id']];
@@ -210,7 +251,8 @@ class EvaSysSeminar extends SimpleORMap {
         return $a->m_oPeriod->m_sEndDate < $b->m_oPeriod->m_sEndDate;
     }
 
-    public function getSurveyInformation() {
+    public function getSurveyInformation()
+    {
         $id = $this['Seminar_id']."-".$this['evasys_id'];
         if (isset($_SESSION['EVASYS_SURVEY_INFO'][$id])
                 && (time() - $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$id] < 60 * get_config('EVASYS_CACHE'))) {
@@ -238,7 +280,8 @@ class EvaSysSeminar extends SimpleORMap {
         return $_SESSION['EVASYS_SURVEY_INFO'][$id];
     }
 
-    public function getPDFLink($survey_id) {
+    public function getPDFLink($survey_id)
+    {
         if (!is_array($_SESSION['EVASYS_SURVEY_PDF_LINK'])) {
             $_SESSION['EVASYS_SURVEY_PDF_LINK'] = array();
         }
@@ -259,7 +302,8 @@ class EvaSysSeminar extends SimpleORMap {
         }
     }
 
-    public function getVotesForPublishing() {
+    public function getVotesForPublishing()
+    {
         $db = DBManager::get();
         return $db->query(
             "SELECT COUNT(*) " .
@@ -269,7 +313,8 @@ class EvaSysSeminar extends SimpleORMap {
         "")->fetch(PDO::FETCH_COLUMN, 0);
     }
 
-    public function publishingAllowed() {
+    public function publishingAllowed()
+    {
         if (get_config("EVASYS_PUBLISH_RESULTS")) {
             /*$sem = new Seminar($this->getId());
             return count($sem->getMembers("dozent")) == $this->getVotesForPublishing();
@@ -280,7 +325,8 @@ class EvaSysSeminar extends SimpleORMap {
         }
     }
 
-    public function getMyVote() {
+    public function getMyVote()
+    {
         $db = DBManager::get();
         if (!$GLOBALS['perm']->have_studip_perm("dozent", $this['Seminar_id'])) {
             return false;
@@ -293,8 +339,8 @@ class EvaSysSeminar extends SimpleORMap {
         "")->fetch(PDO::FETCH_COLUMN, 0);
     }
 
-    public function vote($vote) {
-        $db = DBManager::get();
+    public function vote($vote)
+    {
         if (!$GLOBALS['perm']->have_studip_perm("dozent", $this['Seminar_id'])) {
             return false;
         }
@@ -303,7 +349,8 @@ class EvaSysSeminar extends SimpleORMap {
     }
 
 
-    public function getDozent() {
+    public function getDozent()
+    {
         $db = DBManager::get();
         return $db->query(
             "SELECT user_id " .

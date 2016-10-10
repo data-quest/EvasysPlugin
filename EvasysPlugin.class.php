@@ -22,13 +22,14 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function __construct() {
         parent::__construct();
         if ($GLOBALS['perm']->have_perm("root")) {
-            $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "admin"));
+            $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "admin/index"));
             Navigation::addItem("/start/evasys", $nav);
             Navigation::addItem("/evasys", clone $nav);
-            $nav = new AutoNavigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "admin"));
+            $nav = new AutoNavigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "admin/index"));
             Navigation::addItem("/evasys/courses", $nav);
         }
-        if ($_SESSION['SessionSeminar'] && Navigation::hasItem("/course")) {
+
+        /*if ($_SESSION['SessionSeminar'] && Navigation::hasItem("/course")) {
             $evasys_seminars = EvaSysSeminar::findBySeminar($_SESSION['SessionSeminar']);
             $activated = false;
             foreach ($evasys_seminars as $evasys_seminar) {
@@ -41,7 +42,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $tab->setImage(Assets::image_path("icons/16/white/vote.png"));
                 Navigation::addItem("/course/evasys", $tab);
             }
-        }
+        }*/
 
         //Infofenster für Server-Angaben:
         if ($GLOBALS['perm']->have_perm("root") && (strpos($_SERVER['REQUEST_URI'], "dispatch.php/plugin_admin") || strpos($_SERVER['REQUEST_URI'], "dispatch.php/admin/plugin")) ) {
@@ -65,225 +66,39 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
     }
 
-    public function admin_action() {
-        $db = DBManager::get();
-        $pageCount = 20;
-        $msg = array();
-
-        if (Request::submitted("absenden")) {
-            $activate = Request::getArray("activate");
-            $evasys_seminar = array();
-            foreach (Request::getArray("course") as $course_id) {
-                $evasys_evaluations = EvaSysSeminar::findBySeminar($course_id);
-                if (count($evasys_evaluations)) {
-                    foreach ($evasys_evaluations as $evaluation) {
-                        $evaluation['activated'] = $activate[$course_id] ? 1 : 0;
-                        if (!$evaluation['activated']) {
-                            $evaluation->store();
-                            unset($evasys_seminar[$course_id]);
-                        } else {
-                            $evasys_seminar[$course_id] = $evaluation;
-                        }
-                    }
-                } else {
-                    $evasys_seminar[$course_id] = new EvaSysSeminar(array($course_id, ""));
-                    $evasys_seminar[$course_id]['activated'] = $activate[$course_id] ? 1 : 0;
-                }
-            }
-            if (count($evasys_seminar) > 0) {
-                $success = EvaSysSeminar::UploadSessions($evasys_seminar);
-                if ($success === true) {
-                    foreach (Request::getArray("course") as $course_id) {
-                        if (isset($evasys_seminar[$course_id])) {
-                            $evasys_seminar[$course_id]->store();
-                        }
-                    }
-                    $msg[] = array("success", sprintf("%s Veranstaltungen mit EvaSys synchronisiert.", count($activate)));
-                } else {
-                    $msg[] = array("error", "Fehler beim Synchronisieren mit EvaSys. ".$success);
-                }
-            } else {
-                $msg[] = array("info", "Veranstaltungen abgewählt. Keine Synchronisation erfolgt.");
-            }
-        }
-
-        if (Request::get("inst") || Request::get("sem_type") || Request::get("sem_name") || Request::get("semester") || Request::get("sem_dozent")) {
-            if (Request::get("semester")) {
-                $semester = Semester::find(Request::option("semester"));
-                $sem_condition = "AND seminare.start_time <=".$semester["beginn"]."
-                                AND (".$semester["beginn"]." <= (seminare.start_time + seminare.duration_time)
-                                OR seminare.duration_time = -1)";
-            }
-            if (Request::get("inst")) {
-                $inst_condition = "AND seminar_inst.institut_id = ".$db->quote(Request::get("inst"))." ";
-            }
-
-            if (Request::get("sem_type")) {
-                $sem_type_condition = "AND seminare.status = ".$db->quote(Request::get("sem_type"))." ";
-            }
-            if (Request::get("sem_dozent")) {
-                $dozent_condition = "AND seminar_user.user_id = ".$db->quote(Request::get("sem_dozent"))." AND seminar_user.status = 'dozent' ";
-            }
-            if (Request::get("sem_name")) {
-                $name_condition = "AND CONCAT_WS(' ', seminare.VeranstaltungsNummer, seminare.Name) LIKE ".$db->quote('%'.Request::get("sem_name").'%')." ";
-            }
-
-            $courses = $db->query(
-                "SELECT seminare.Name, seminare.Seminar_id, seminare.VeranstaltungsNummer, IFNULL(evasys_seminar.activated, 0) AS activated, seminare.start_time, seminare.duration_time, evasys_seminar.evasys_id, GROUP_CONCAT(seminar_user.user_id ORDER BY seminar_user.position ASC SEPARATOR '_') AS dozenten " .
-                "FROM seminare " .
-                    "LEFT JOIN evasys_seminar ON (evasys_seminar.Seminar_id = seminare.Seminar_id) " .
-                    ($inst_condition ? "INNER JOIN seminar_inst ON (seminar_inst.seminar_id = seminare.Seminar_id) " : "") .
-                    "INNER JOIN seminar_user ON (seminar_user.Seminar_id = seminare.Seminar_id AND seminar_user.status = 'dozent') " .
-                "WHERE TRUE  " .
-                    ($sem_condition ? $sem_condition: "") .
-                    ($inst_condition ? $inst_condition : "") .
-                    ($sem_type_condition ? $sem_type_condition : "") .
-                    ($name_condition ? $name_condition : "") .
-                    ($dozent_condition ? $dozent_condition : "") .
-                "GROUP BY seminare.Seminar_id " .
-                "ORDER BY Name ASC " .
-                //"LIMIT ".(Request::get('page') ? Request::int('page') * $pageCount : 0).", ".addslashes($pageCount + 1)." " .
-            "")->fetchAll(PDO::FETCH_ASSOC);
-            /*if (count($courses) > $pageCount) {
-                array_pop($courses);
-                $nextPage = true;
-            }*/
-            $searched = true;
-        } else {
-            $searched = false;
-        }
-
-
-        $institute = $db->query(
-            "SELECT i2.* " .
-            "FROM Institute AS i1 " .
-                "INNER JOIN Institute AS i2 ON (i2.fakultaets_id = i1.Institut_id) " .
-            "ORDER BY i1.Name ASC, i2.Name " .
-        "")->fetchAll(PDO::FETCH_ASSOC);
-
-        /*$bad_courses = $db->query(
-            "SELECT SUM( c )
-            FROM (
-                SELECT count( * ) AS c
-                FROM `seminare`
-                WHERE VeranstaltungsNummer <> ''
-                GROUP BY VeranstaltungsNummer
-                HAVING count( * ) > 1
-            ) AS a" .
-        "")->fetch(PDO::FETCH_COLUMN, 0);*/
-
-        $template = $this->getTemplate("courses.php");
-        $template->set_attribute("nextPage", (bool) $nextPage);
-        $template->set_attribute("courses", $courses);
-        $template->set_attribute('institute', $institute);
-        $template->set_attribute('bad_courses', (int) $bad_courses);
-        $template->set_attribute('searched', $searched);
-        $template->set_attribute('msg', $msg);
-        echo $template->render();
-    }
-
-    public function upload_courses_action()
-    {
-        if (Request::isPost()) {
-            $activate = Request::getArray("activate");
-            $evasys_seminar = array();
-            foreach (Request::getArray("course") as $course_id) {
-                $evasys_evaluations = EvaSysSeminar::findBySeminar($course_id);
-                if (count($evasys_evaluations)) {
-                    foreach ($evasys_evaluations as $evaluation) {
-                        $evaluation['activated'] = $activate[$course_id] ? 1 : 0;
-                        if (!$evaluation['activated']) {
-                            $evaluation->store();
-                            unset($evasys_seminar[$course_id]);
-                        } else {
-                            $evasys_seminar[$course_id] = $evaluation;
-                        }
-                    }
-                } else {
-                    $evasys_seminar[$course_id] = new EvaSysSeminar(array($course_id, ""));
-                    $evasys_seminar[$course_id]['activated'] = $activate[$course_id] ? 1 : 0;
-                }
-            }
-            if (count($evasys_seminar) > 0) {
-                $success = EvaSysSeminar::UploadSessions($evasys_seminar);
-                if ($success === true) {
-                    foreach (Request::getArray("course") as $course_id) {
-                        if (isset($evasys_seminar[$course_id])) {
-                            $evasys_seminar[$course_id]->store();
-                        }
-                    }
-                    PageLayout::postMessage(MessageBox::success(sprintf(_("%s Veranstaltungen mit EvaSys synchronisiert."), count($activate))));
-                } else {
-                    PageLayout::postMessage(MessageBox::error(_("Fehler beim Synchronisieren mit EvaSys. ").$success));
-                }
-            } else {
-                PageLayout::postMessage(MessageBox::info(_("Veranstaltungen abgewählt. Keine Synchronisation erfolgt.")));
-            }
-        }
-        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses/index"));
-    }
-
-    public function show_action() {
-        $tab = Navigation::getItem("/course/evasys");
-        $tab->setImage(Assets::image_path("icons/16/black/vote.png"));
-
-        $evasys_seminars = EvaSysSeminar::findBySeminar($_SESSION['SessionSeminar']);
-        $surveys = array();
-        $open_surveys = array();
-        $active = array();
-        $user_can_participate = array();
-        $publish = false;
-        if (Request::get("dozent_vote")) {
-            foreach ($evasys_seminars as $evasys_seminar) {
-                $evasys_seminar->vote(Request::get("dozent_vote") === "y");
-            }
-        }
-        foreach ($evasys_seminars as $evasys_seminar) {
-            $survey_information = $evasys_seminar->getSurveyInformation();
-            $publish = $publish || $evasys_seminar->publishingAllowed();
-            if (is_array($survey_information)) {
-                foreach ($survey_information as $info) {
-                    $surveys[] = $info;
-                    if ($info->m_nState > 0) {
-                        $active[] = count($surveys) - 1;
-                    }
-                }
-            }
-        }
-        if (count($evasys_seminars)
-                && !$GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) {
-            $open_surveys = $evasys_seminars[0]->getSurveys($GLOBALS['user']->id);
-            if (is_array($open_surveys)) {
-                foreach ($open_surveys as $one) {
-                    if (is_object($one)) {
-                        $user_can_participate[] = count($open_surveys) - 1;
-                        break;
-                    }
-                }
-            }
-        }
-        if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])
-                || (count($active) > 0 && $publish && !count($open_surveys))) {
-            $template = $this->getTemplate("survey_dozent.php", "base_with_infobox");
-            $template->set_attribute('surveys', $surveys);
-            $template->set_attribute('evasys_seminar', $evasys_seminar);
-            $template->set_attribute('plugin', $this);
-        } else {
-            $template = $this->getTemplate("surveys_student.php");
-            $template->set_attribute('open_surveys', $open_surveys);
-            if ($user_can_participate) {
-                unset($_SESSION['EVASYS_SEMINAR_SURVEYS'][$_SESSION['SessionSeminar']]);
-            }
-        }
-        echo $template->render();
-    }
 
     public function getIconNavigation($course_id, $last_visit, $user_id = null) {
-        return null;
+        $evasys_seminars = EvaSysSeminar::findBySeminar($course_id);
+        $activated = false;
+        foreach ($evasys_seminars as $evasys_seminar) {
+            if ($evasys_seminar['activated']) {
+                $activated = true;
+            }
+        }
+        if ($activated) {
+            $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            $tab->setImage(Assets::image_path("icons/16/grey/evaluation"), array('title' => _("Evaluation")));
+            $number = $evasys_seminar->getEvaluationStatus();
+            if ($number > 0) {
+                $tab->setImage(Assets::image_path("icons/16/red/evaluation"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
+            }
+            return $tab;
+        }
     }
 
     public function getTabNavigation($course_id) {
-        return null;
+        $evasys_seminars = EvaSysSeminar::findBySeminar($course_id);
+        $activated = false;
+        foreach ($evasys_seminars as $evasys_seminar) {
+            if ($evasys_seminar['activated']) {
+                $activated = true;
+            }
+        }
+        if ($activated) {
+            $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            $tab->setImage(Assets::image_path("icons/16/white/evaluation"));
+            return array('evasys' => $tab);
+        }
     }
 
     public function getNotificationObjects($course_id, $since, $user_id) {
@@ -304,7 +119,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getAdminActionURL()
     {
-        return $GLOBALS['perm']->have_perm("admin") ? PluginEngine::getURL($this, array(), "upload_courses") : null;
+        return $GLOBALS['perm']->have_perm("admin") ? PluginEngine::getURL($this, array(), "admin/upload_courses") : null;
     }
 
     public function useMultimode() {
@@ -330,7 +145,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             } else {
                 PageLayout::setTitle(get_class($this));
             }
-            $template->set_layout($GLOBALS['template_factory']->open($layout === "without_infobox" ? 'layouts/base_without_infobox' : 'layouts/base'));
+            $template->set_layout($GLOBALS['template_factory']->open($layout ? 'layouts/base' : null));
         }
         return $template;
     }

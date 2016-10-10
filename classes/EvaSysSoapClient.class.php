@@ -13,7 +13,7 @@
 class EvaSysSoapClient extends SoapClient {
 
     public function __soapCall ($function_name, array $arguments, array $options = null, $input_headers = null, array &$output_headers = null) {
-        $result = parent::__soapCall($function_name, $arguments, $options, $input_headers, $output_headers);
+        $result = parent::__soapCall($function_name, studip_utf8encode($arguments), $options, $input_headers, $output_headers);
         if (class_exists("Log")) {
             Log::set("evasys", $GLOBALS['TMP_PATH'] . '/studipevasys.log');
             $log = Log::set("evasys");
