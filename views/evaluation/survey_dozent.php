@@ -9,45 +9,45 @@
  *  the License, or (at your option) any later version.
  */
 ?>
+    <style>
+        table.active_table {
+            border-collapse: collapse;
+            margin: 10px;
+        }
+        table.active_table > thead > tr > th {
+            padding: 5px;
+            border: 1px solid lightgrey;
+            border-bottom: 1px solid grey;
+            background-image: none;
+        }
+        table.active_table > tbody > tr > td {
+            padding: 5px;
+            border: 1px solid lightgrey;
+        }
+        table.active_table > tbody > tr:hover > td {
+            background-color: #eeeeee;
+        }
+
+        #qr_code_evasys {
+            display: none;
+        }
+        #qr_code_evasys:-moz-full-screen {
+            display: flex;
+        }
+        #qr_code_evasys:-webkit-full-screen {
+            display: flex;
+        }
+        #qr_code_evasys:-ms-fullscreen {
+            display: flex;
+        }
+        #qr_code_evasys:fullscreen {
+            display: flex;
+        }
+
+    </style>
 <? if (!$surveys && !count($surveys)) : ?>
 <h3><?= _("Es gibt keine aktuellen Evaluationen zu dieser Veranstaltung.") ?></h3>
 <? else : ?>
-<style>
-    table.active_table {
-        border-collapse: collapse;
-        margin: 10px;
-    }
-    table.active_table > thead > tr > th {
-        padding: 5px;
-        border: 1px solid lightgrey;
-        border-bottom: 1px solid grey;
-        background-image: none;
-    }
-    table.active_table > tbody > tr > td {
-        padding: 5px;
-        border: 1px solid lightgrey;
-    }
-    table.active_table > tbody > tr:hover > td {
-        background-color: #eeeeee;
-    }
-
-    #qr_code {
-        display: none;
-    }
-    #qr_code:-moz-full-screen {
-         display: flex;
-     }
-    #qr_code:-webkit-full-screen {
-         display: flex;
-     }
-    #qr_code:-ms-fullscreen {
-         display: flex;
-     }
-    #qr_code:fullscreen {
-         display: flex;
-    }
-
-</style>
 <div style="padding: 15px; font-size: 1.2em; text-align: center;">
     <? if (count($surveys) < 2) : ?>
     <h3><?= _("Es gibt eine laufende Evaluation zu dieser Veranstaltung") ?></h3>
@@ -125,7 +125,7 @@
 
 <? if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) : ?>
     <div style="background-color: white; width: 100%; height: 100%; justify-content: center; align-items: center;"
-         id="qr_code">
+         id="qr_code_evasys">
         <img style="width: 90vh; height: 90vh;">
     </div>
     <script>
@@ -133,13 +133,11 @@
             <? URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']) ?>
             var qrcode = new QRCode("<?= PluginEngine::getLink($plugin, array(), "show") ?>");
             var svg = qrcode.svg();
-            console.log("data:image/svg+xml;base64," + btoa(svg));
-            jQuery("#qr_code img").attr("src", "data:image/svg+xml;base64," + btoa(svg));
+            jQuery("#qr_code_evasys img").attr("src", "data:image/svg+xml;base64," + btoa(svg));
         });
         STUDIP.EvaSys = {
             showQR: function () {
-                var qr = jQuery("#qr_code")[0];
-                //jQuery("#qr_code").css("display", "flex");
+                var qr = jQuery("#qr_code_evasys")[0];
                 if (qr.requestFullscreen) {
                     qr.requestFullscreen();
                 } else if (qr.msRequestFullscreen) {
