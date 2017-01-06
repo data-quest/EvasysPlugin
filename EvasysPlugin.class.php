@@ -77,10 +77,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
         if ($activated) {
             $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
-            $tab->setImage(Assets::image_path("icons/16/grey/evaluation"), array('title' => _("Evaluation")));
+            $tab->setImage(class_exists("Icon") ? Icon::create("evaluation", "inactive") : Assets::image_path("icons/16/grey/evaluation"), array('title' => _("Evaluation")));
             $number = $evasys_seminar->getEvaluationStatus();
             if ($number > 0) {
-                $tab->setImage(Assets::image_path("icons/16/red/evaluation"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
+                $tab->setImage(class_exists("Icon") ? Icon::create("evaluation", "new") : Assets::image_path("icons/16/red/evaluation"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
             }
             return $tab;
         }
@@ -96,7 +96,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
         if ($activated) {
             $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
-            $tab->setImage(Assets::image_path("icons/16/white/evaluation"));
+            $tab->setImage(class_exists("Icon") ? Icon::create("evaluation", "info_alt") : Assets::image_path("icons/16/white/evaluation"));
             return array('evasys' => $tab);
         }
     }

@@ -1,6 +1,6 @@
 <? if (count($open_surveys)) : ?>
     <? foreach ($open_surveys as $survey) : ?>
-        <? if ($survey->TransactionNumber) : ?>
+        <? if ($survey->TransactionNumber && ($survey->TransactionNumber !== "null")) : ?>
         <iframe
             id="survey_<?= htmlReady($survey->TransactionNumber) ?>"
             style="width: 100%; height: 600px; border: 0px;"

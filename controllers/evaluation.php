@@ -1,5 +1,7 @@
 <?php
 
+require_once 'app/controllers/plugin_controller.php';
+
 class EvaluationController extends PluginController {
 
     public function show_action() {

@@ -1,5 +1,7 @@
 <?php
 
+require_once 'app/controllers/plugin_controller.php';
+
 class AdminController extends PluginController {
 
     public function index_action()
