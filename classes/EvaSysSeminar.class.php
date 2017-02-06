@@ -169,11 +169,20 @@ class EvaSysSeminar extends SimpleORMap {
             "ORDER BY seminar_user.position ASC " .
         "")->fetchAll(PDO::FETCH_COLUMN, 0);
         foreach ($dozenten as $dozent_id) {
-            $dozent = self::getStudipUser($dozent_id);
+            $dozent = User::find($dozent_id);
+            if (in_array(Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD, array_keys($dozent->toArray()))) {
+                $id = $dozent[Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD];
+            } else {
+                $id = DatafieldEntryModel::findOneBySQL("datafield_id = ? AND range_id = ? AND range_type = 'user'", array(
+                    Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD,
+                    $dozent_id
+                ));
+                $id = $id ? $id->content : $dozent_id;
+            }
             $instructorlist[] = array(
-                'InstructorUid' => $dozent['user_id'],
+                'InstructorUid' => $id,
                 'FirstName' => $dozent['Vorname'],
-                'LastName' => (get_config("EVASYS_EXPORT_TITLES") ? $dozent['title_front']." ": "").$dozent['Nachname'],
+                'LastName' => (Config::get()->EVASYS_EXPORT_TITLES ? $dozent['title_front']." ": "").$dozent['Nachname'],
                 'Gender' => $dozent['geschlecht'] == 1 ? "m" : "w",
                 'Email' => $dozent['Email']
             );
