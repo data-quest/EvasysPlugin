@@ -129,8 +129,8 @@ if (Request::get("inst")) {
                 <td>
                     <? foreach (explode("_", $course['dozenten']) as $key => $dozent_id) {
                         if ($key !== 0) echo ", ";
-                        echo '<a href="'.URLHelper::getLink("about.php", array('username' => get_username($dozent_id))).'">';
-                        echo get_fullname($dozent_id);
+                        echo '<a href="'.URLHelper::getLink("dispatch.php/profile", array('username' => get_username($dozent_id))).'">';
+                        echo htmlready(get_fullname($dozent_id));
                         echo '</a>';
                     } ?>
                 </td>
@@ -163,7 +163,7 @@ if (Request::get("inst")) {
         <? endif ?>
         </tbody>
     </table>
-    
+
 
     <div class="page_nav">
         <? if ($nextPage) : ?>

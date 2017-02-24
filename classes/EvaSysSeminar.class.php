@@ -16,7 +16,7 @@ class EvaSysSeminar extends SimpleORMap {
 
     protected $db_table = 'evasys_seminar';
 
-    static public function findBySQL($where)
+    static public function findBySQL($where, $params = array())
     {
         if (version_compare($GLOBALS['SOFTWARE_VERSION'], "2.4", ">=")) {
             return parent::findBySQL($where);
@@ -104,7 +104,7 @@ class EvaSysSeminar extends SimpleORMap {
 
     /**
      * Not used right now. But this could upload a seminar to EvaSys. We don't use
-     * this method because we upload many seminars in one request with 
+     * this method because we upload many seminars in one request with
      * EvaSysSeminar::UploadSessions .
      * @throws Exception
      */
@@ -285,7 +285,7 @@ class EvaSysSeminar extends SimpleORMap {
         //usort($surveys, "EvaSysSeminar::compareSurveysDESC");
         $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$id] = time();
         $_SESSION['EVASYS_SURVEY_INFO'][$id] = $surveys;
-        
+
         return $_SESSION['EVASYS_SURVEY_INFO'][$id];
     }
 

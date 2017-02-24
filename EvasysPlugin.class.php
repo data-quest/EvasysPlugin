@@ -46,20 +46,21 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         //Infofenster für Server-Angaben:
         if ($GLOBALS['perm']->have_perm("root") && (strpos($_SERVER['REQUEST_URI'], "dispatch.php/plugin_admin") || strpos($_SERVER['REQUEST_URI'], "dispatch.php/admin/plugin")) ) {
+            $config = Config::get();
             if (count($_POST) && Request::get("EVASYS_WSDL") && Request::get("EVASYS_USER") && Request::get("EVASYS_PASSWORD")) {
-                write_config("EVASYS_WSDL", Request::get("EVASYS_WSDL"));
-                write_config("EVASYS_URI", Request::get("EVASYS_URI"));
-                write_config("EVASYS_USER", Request::get("EVASYS_USER"));
-                write_config("EVASYS_PASSWORD", Request::get("EVASYS_PASSWORD"));
-                write_config("EVASYS_CACHE", Request::int("EVASYS_CACHE"));
-                write_config("EVASYS_PUBLISH_RESULTS", Request::int("EVASYS_PUBLISH_RESULTS"));
+                $config->store("EVASYS_WSDL", Request::get("EVASYS_WSDL"));
+                $config->store("EVASYS_URI", Request::get("EVASYS_URI"));
+                $config->store("EVASYS_USER", Request::get("EVASYS_USER"));
+                $config->store("EVASYS_PASSWORD", Request::get("EVASYS_PASSWORD"));
+                $config->store("EVASYS_CACHE", Request::int("EVASYS_CACHE"));
+                $config->store("EVASYS_PUBLISH_RESULTS", Request::int("EVASYS_PUBLISH_RESULTS"));
             }
 
-            $EVASYS_WSDL = get_config("EVASYS_WSDL");
-            $EVASYS_USER = get_config("EVASYS_USER");
-            $EVASYS_PASSWORD = get_config("EVASYS_PASSWORD");
-            $EVASYS_URI = get_config("EVASYS_URI");
-            $EVASYS_CACHE = get_config("EVASYS_CACHE");
+            $EVASYS_WSDL = $config->getValue("EVASYS_WSDL");
+            $EVASYS_USER = $config->getValue("EVASYS_USER");
+            $EVASYS_PASSWORD = $config->getValue("EVASYS_PASSWORD");
+            $EVASYS_URI = $config->getValue("EVASYS_URI");
+            $EVASYS_CACHE = $config->getValue("EVASYS_CACHE");
             if (!$EVASYS_WSDL || !$EVASYS_USER || !$EVASYS_PASSWORD || !$EVASYS_URI || $EVASYS_CACHE === "" || $EVASYS_CACHE === null) {
                 PageLayout::addBodyElements($this->getTemplate("settings_window.php", null)->render());
             }
