@@ -40,7 +40,7 @@ foreach ($msg as $message) {
                     <td>
                         <select name="semester" id="semester" style="width: 100%;">
                             <option value=""><?= _("alle") ?></option>
-                            <? foreach (Semester::findBySql('TRUE ORDER BY beginn DESC') as $semester) : ?>
+                            <? foreach (Semester::getAll() as $semester) : ?>
                             <option value="<?= $semester['semester_id'] ?>"<?= Request::get("semester") === $semester['semester_id'] ? " selected" : "" ?>><?= htmlReady($semester['name']) ?></option>
                             <? endforeach ?>
                         </select>
