@@ -2,9 +2,11 @@
 
 require_once 'app/controllers/plugin_controller.php';
 
-class EvaluationController extends PluginController {
+class EvaluationController extends PluginController
+{
 
-    public function show_action() {
+    public function show_action()
+    {
         $tab = Navigation::getItem("/course/evasys");
         $tab->setImage(Assets::image_path("icons/16/black/evaluation"));
 

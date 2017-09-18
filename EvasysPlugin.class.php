@@ -28,8 +28,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         parent::__construct();
         
-        $use_lower_permission_levels = $this->useLowerPermissionLevels();
-        
         //The user must either be root or have the EvasysPluginAdmin role.
         if ($GLOBALS['perm']->have_perm('root') or
             RolePersistence::isAssignedRole(User::findCurrent()->id, 'EvasysPluginAdmin')) {

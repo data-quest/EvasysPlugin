@@ -23,7 +23,7 @@ if (Request::get("inst")) {
                     <td>
                         <select name="semester" id="semester" style="width: 100%;">
                             <option value=""><?= _("alle") ?></option>
-                            <? foreach (Semester::getAll() as $semester) : ?>
+                            <? foreach (Semester::findBySql('TRUE ORDER BY beginn DESC') as $semester) : ?>
                             <option value="<?= $semester['semester_id'] ?>"<?= Request::get("semester") === $semester['semester_id'] ? " selected" : "" ?>><?= htmlReady($semester['name']) ?></option>
                             <? endforeach ?>
                         </select>
