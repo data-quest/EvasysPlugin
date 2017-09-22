@@ -132,15 +132,23 @@ class EvaSysSeminar extends SimpleORMap {
         $seminar = new Seminar($this['Seminar_id']);
         //$dozent = $this->getDozent();
         $participants = array();
+
+        $user_permissions = ['autor', 'tutor'];
+
+        if (EvasysPlugin::useLowerPermissionLevels()) {
+            $user_permissions[] = 'user';
+        }
+
         $statement = DBManager::get()->prepare("
             SELECT auth_user_md5.user_id
             FROM auth_user_md5 
                 INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
             WHERE seminar_user.Seminar_id = :seminar_id
-                AND seminar_user.status IN ('autor', 'tutor')
+                AND seminar_user.status IN ( :user_permissions )
         ");
         $statement->execute(array(
-            'seminar_id' => $this['Seminar_id']
+            'seminar_id' => $this['Seminar_id'],
+            'user_permissions' => $user_permissions
         ));
         $students = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
         foreach ($students as $student_id) {
