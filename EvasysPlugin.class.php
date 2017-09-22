@@ -19,10 +19,12 @@ require_once 'lib/classes/QuickSearch.class.php';
 
 class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction {
 
+    /*
     public function useLowerPermissionLevels()
     {
         return (bool)Config::get()->EVASYS_PLUGIN_USE_LOWER_PERMISSION_LEVELS;
     }
+    */
     
     public function __construct()
     {
