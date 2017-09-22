@@ -1,15 +1,10 @@
 <?php
 
-class AddEvasysPluginAdminRoleAndLowPrivilegeConfig extends Migration
+class AddEvasysPluginLowPrivilegeConfig extends Migration
 {
     public function up()
     {
         $db = DBManager::get();
-        
-        $db->exec(
-            "INSERT IGNORE INTO roles (rolename, system)
-            VALUES ('EvasysPluginAdmin', 'n');"
-        );
         
         $db->exec("
             INSERT IGNORE INTO `config` (
@@ -54,9 +49,6 @@ class AddEvasysPluginAdminRoleAndLowPrivilegeConfig extends Migration
     {
         $db = DBManager::get();
         
-        $db->exec(
-            "DELETE FROM roles WHERE rolename = 'EvasysPluginAdmin';"
-        );
         $db->exec(
             "DELETE FROM config WHERE field = 'EVASYS_PLUGIN_USE_LOWER_PERMISSION_LEVELS';"
         );

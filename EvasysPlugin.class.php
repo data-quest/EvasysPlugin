@@ -28,9 +28,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         parent::__construct();
         
-        //The user must either be root or have the EvasysPluginAdmin role.
-        if ($GLOBALS['perm']->have_perm('root') or
-            RolePersistence::isAssignedRole(User::findCurrent()->id, 'EvasysPluginAdmin')) {
+        //The user must be root
+        if ($GLOBALS['perm']->have_perm('root')) {
             
             $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "admin/index"));
             Navigation::addItem("/start/evasys", $nav);
@@ -55,8 +54,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }*/
 
         //Infofenster für Server-Angaben:
-        if (($GLOBALS['perm']->have_perm('root') ||
-            RolePersistence::isAssignedRole(User::findCurrent()->id, 'EvasysPluginAdmin'))
+        if ($GLOBALS['perm']->have_perm('root')
             && (strpos($_SERVER['REQUEST_URI'], "dispatch.php/plugin_admin") || strpos($_SERVER['REQUEST_URI'], "dispatch.php/admin/plugin")) ) {
             $config = Config::get();
             if (count($_POST) && Request::get("EVASYS_WSDL") && Request::get("EVASYS_USER") && Request::get("EVASYS_PASSWORD")) {
