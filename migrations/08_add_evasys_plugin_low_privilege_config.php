@@ -30,7 +30,7 @@ class AddEvasysPluginLowPrivilegeConfig extends Migration
                     'EVASYS_PLUGIN_USE_LOWER_PERMISSION_LEVELS',
                     '0',
                     0,
-                    'bool',
+                    'boolean',
                     'global',
                     'EVASYS_PLUGIN',
                     0,
