@@ -8,11 +8,11 @@ class EvaluationController extends PluginController
     public function show_action()
     {
         $tab = Navigation::getItem("/course/evasys");
-        $tab->setImage(Assets::image_path("icons/16/black/evaluation"));
+        $tab->setImage(Icon::create("evaluation", "info"));
 
         PageLayout::addScript($this->plugin->getPluginURL()."/assets/qrcode.js");
 
-        $evasys_seminars = EvaSysSeminar::findBySeminar($_SESSION['SessionSeminar']);
+        $evasys_seminars = EvaSysSeminar::findBySeminar(Context::get()->id);
         $this->surveys = array();
         $this->open_surveys = array();
         $active = array();
@@ -36,7 +36,7 @@ class EvaluationController extends PluginController
             }
         }
         if (count($evasys_seminars)
-            && !$GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) {
+            && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
             $this->open_surveys = $evasys_seminars[0]->getSurveys($GLOBALS['user']->id);
             if (is_array($this->open_surveys)) {
                 foreach ($this->open_surveys as $one) {
@@ -48,13 +48,13 @@ class EvaluationController extends PluginController
             }
         }
 
-        if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])
+        if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)
             || (count($active) > 0 && $publish && !count($this->open_surveys))) {
             $this->evasys_seminar = $evasys_seminar;
             $this->render_template("evaluation/survey_dozent", $GLOBALS['template_factory']->open("layouts/base"));
         } else {
             if ($user_can_participate) {
-                unset($_SESSION['EVASYS_SEMINAR_SURVEYS'][$_SESSION['SessionSeminar']]);
+                unset($_SESSION['EVASYS_SEMINAR_SURVEYS'][Context::get()->id]);
             }
             $this->render_template("evaluation/survey_student", $GLOBALS['template_factory']->open("layouts/base"));
         }

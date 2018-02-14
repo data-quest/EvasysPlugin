@@ -1,6 +1,6 @@
 <?php
 /*
- *  Copyright (c) 2011  Rasmus Fuhse <fuhse@data-quest.de>
+ *  Copyright (c) 2011-2018  Rasmus Fuhse <fuhse@data-quest.de>
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
@@ -8,21 +8,14 @@
  *  the License, or (at your option) any later version.
  */
 
-if (file_exists('lib/classes/Semester.class.php')) {
-    include_once 'lib/classes/Semester.class.php';
-}
-if (file_exists('lib/models/Semester.class.php')) {
-    include_once 'lib/models/Semester.class.php';
-}
 require_once dirname(__file__)."/classes/EvaSysSeminar.class.php";
-require_once 'lib/classes/QuickSearch.class.php';
 
 class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction
 {
 
     public function useLowerPermissionLevels()
     {
-        return (bool)Config::get()->EVASYS_PLUGIN_USE_LOWER_PERMISSION_LEVELS;
+        return (bool) Config::get()->EVASYS_PLUGIN_USE_LOWER_PERMISSION_LEVELS;
     }
 
     public function __construct()
@@ -30,31 +23,12 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         parent::__construct();
         
         //The user must be root
-        if ($GLOBALS['perm']->have_perm('root')) {
-            
+        /*if ($GLOBALS['perm']->have_perm('root')) {
             $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "admin/index"));
-            Navigation::addItem("/start/evasys", $nav);
-            Navigation::addItem("/evasys", clone $nav);
-            $nav = new AutoNavigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "admin/index"));
-            Navigation::addItem("/evasys/courses", $nav);
-        }
-
-        /*if ($_SESSION['SessionSeminar'] && Navigation::hasItem("/course")) {
-            $evasys_seminars = EvaSysSeminar::findBySeminar($_SESSION['SessionSeminar']);
-            $activated = false;
-            foreach ($evasys_seminars as $evasys_seminar) {
-                if ($evasys_seminar['activated']) {
-                    $activated = true;
-                }
-            }
-            if ($activated) {
-                $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "show"));
-                $tab->setImage(Assets::image_path("icons/16/white/vote.png"));
-                Navigation::addItem("/course/evasys", $tab);
-            }
+            Navigation::addItem("/admin/evasys", $nav);
         }*/
 
-        //Infofenster für Server-Angaben:
+        //Infofenster fÃ¼r Server-Angaben:
         if ($GLOBALS['perm']->have_perm('root')
             && (strpos($_SERVER['REQUEST_URI'], "dispatch.php/plugin_admin") || strpos($_SERVER['REQUEST_URI'], "dispatch.php/admin/plugin")) ) {
             $config = Config::get();
@@ -89,10 +63,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
         if ($activated) {
             $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
-            $tab->setImage(class_exists("Icon") ? Icon::create("evaluation", "inactive") : Assets::image_path("icons/16/grey/evaluation"), array('title' => _("Evaluation")));
+            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Evaluationen")));
             $number = $evasys_seminar->getEvaluationStatus();
             if ($number > 0) {
-                $tab->setImage(class_exists("Icon") ? Icon::create("evaluation", "new") : Assets::image_path("icons/16/red/evaluation"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
+                $tab->setImage(Icon::create("evaluation", "new"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
             }
             return $tab;
         }
@@ -108,7 +82,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
         if ($activated) {
             $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
-            $tab->setImage(class_exists("Icon") ? Icon::create("evaluation", "info_alt") : Assets::image_path("icons/16/white/evaluation"));
+            $tab->setImage(Icon::create("evaluation", "info_alt"));
             return array('evasys' => $tab);
         }
     }
@@ -121,11 +95,11 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         return null;
     }
 
-    protected function getDisplayName() {
+    public function getDisplayName() {
         if (Navigation::hasItem("/course") && Navigation::getItem("/course")->isActive()) {
             return $GLOBALS['SessSemName'][0].": "._("Evaluation");
         } else {
-            return _("EvaSys-Plugin aktivieren");
+            return _("EvaSys");
         }
     }
 

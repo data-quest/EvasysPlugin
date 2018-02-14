@@ -80,7 +80,9 @@ class EvaSysSeminar extends SimpleORMap {
         }
         $soap = EvaSysSoap::get();
         $user = $user_id ? User::find($user_id) : User::findCurrent();
-        $evasys_sem_object = $soap->__soapCall("GetEvaluationSummaryByParticipant", array($user['email']));
+        $evasys_sem_object = $soap->__soapCall("GetEvaluationSummaryByParticipant", array(
+            studip_utf8encode($user['email'])
+        ));
         if (is_a($evasys_sem_object, "SoapFault")) {
             if ($evasys_sem_object->getMessage() === "ERR_212") {
                 $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
@@ -111,7 +113,9 @@ class EvaSysSeminar extends SimpleORMap {
         //wird nicht verwendet, da wir alle Seminare gebündelt übertragen
         $soap = EvaSysSoap::get();
         $arr = $this->getSessionPart();
-        $evasys_sem_object = $soap->__soapCall("UploadSessions", array($arr));
+        $evasys_sem_object = $soap->__soapCall("UploadSessions", array(
+            studip_utf8encode($arr)
+        ));
         if (is_a($evasys_sem_object, "SoapFault")) {
             throw new Exception("SOAP-error: ".$evasys_sem_object->detail);
         }

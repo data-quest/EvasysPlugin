@@ -20,7 +20,7 @@ if (Request::get("inst")) {
 }
 
 if ($bad_courses) {
-    echo MessageBox::info(sprintf(_("%s Veranstaltung haben dieselbe Veranstaltungsnummer. Das kann zu schlimmen Effekten führen, wenn solche Veranstaltungen evaluiert werden, da EvaSys die Veranstaltungen über die Veranstaltungsnummer eindeutig indentifizieren muss."), $bad_courses));
+    echo MessageBox::info(sprintf(_("%s Veranstaltung haben dieselbe Veranstaltungsnummer. Das kann zu schlimmen Effekten fÃ¼hren, wenn solche Veranstaltungen evaluiert werden, da EvaSys die Veranstaltungen Ã¼ber die Veranstaltungsnummer eindeutig indentifizieren muss."), $bad_courses));
 }
 
 foreach ($msg as $message) {
@@ -98,7 +98,7 @@ foreach ($msg as $message) {
                 <tr>
                     <td></td>
                     <td>
-                        <?= \Studip\Button::create(_("Auswählen"), "auswaehlen") ?>
+                        <?= \Studip\Button::create(_("AuswÃ¤hlen"), "auswaehlen") ?>
                     </td>
                 </tr>
             </tbody>
@@ -108,7 +108,7 @@ foreach ($msg as $message) {
     <div class="page_nav">
         <? if ($nextPage) : ?>
         <div style="float: right;">
-            <a href="<?= URLHelper::getLink("?", array_merge($args, array('page' => Request::get("page") + 1))) ?>"><?= _("nächste Seite") ?></a>
+            <a href="<?= URLHelper::getLink("?", array_merge($args, array('page' => Request::get("page") + 1))) ?>"><?= _("nÃ¤chste Seite") ?></a>
         </div>
         <? endif ?>
         <? if (Request::int("page") > 0) : ?>
@@ -185,7 +185,7 @@ foreach ($msg as $message) {
     <div class="page_nav">
         <? if ($nextPage) : ?>
         <div style="float: right;">
-            <a href="<?= URLHelper::getLink("?", array_merge($args, array('page' => Request::get("page") + 1))) ?>"><?= _("nächste Seite") ?></a>
+            <a href="<?= URLHelper::getLink("?", array_merge($args, array('page' => Request::get("page") + 1))) ?>"><?= _("nÃ¤chste Seite") ?></a>
         </div>
         <? endif ?>
         <? if (Request::int("page") > 0) : ?>

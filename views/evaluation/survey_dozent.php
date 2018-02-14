@@ -52,7 +52,7 @@
     <? if (count($surveys) < 2) : ?>
     <h3><?= _("Es gibt eine laufende Evaluation zu dieser Veranstaltung") ?></h3>
     <? elseif(!count($surveys)) : ?>
-    <h3><?= _("Keine verfügbaren Evaluationen") ?></h3>
+    <h3><?= _("Keine verfÃ¼gbaren Evaluationen") ?></h3>
     <? else : ?>
     <h3><?= _("Evaluationen zu dieser Veranstaltung") ?></h3>
     <? endif ?>
@@ -70,14 +70,14 @@
                     <td><?= $survey->m_cType == "o" ? _("Onlineumfrage") : _("Papierumfrage") ?></td>
                 </tr>
                 <tr>
-                    <td><?= _("Aktueller Rücklauf") ?></td>
+                    <td><?= _("Aktueller RÃ¼cklauf") ?></td>
                     <td>
                         <? if ($survey->m_nFormCount == 0) : ?>
                             <?= _("Noch keine Antworten abgegeben") ?>
                         <? elseif ($survey->m_nFormCount == 1) : ?>
                             <?= _("Ein abgegebener Fragebogen") ?>
                         <? else : ?>
-                            <?= htmlReady(sprintf("%s abgegebene Fragebögen", $survey->m_nFormCount)) ?>
+                            <?= htmlReady(sprintf("%s abgegebene FragebÃ¶gen", $survey->m_nFormCount)) ?>
                         <? endif ?>
                     </td>
                 </tr>
@@ -91,7 +91,7 @@
                             echo _("Daten vorhanden / Bereit zur Auswertung");
                             break;
                         case 4:
-                            echo _("Daten unter Mindestrücklauf");
+                            echo _("Daten unter MindestrÃ¼cklauf");
                             break;
                         case 5:
                             echo _("Validierung / Datenerfassungskraft");
@@ -116,14 +116,14 @@
         </table>
     <? endforeach ?>
     
-    <? if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) : ?>
+    <? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
     <?= _("Zum Administrieren dieser Evaluation melden Sie sich bitte in EvaSys an oder wenden Sie sich an Ihren Administrator.") ?>
     <? endif ?>
 
 </div>
 <? endif ?>
 
-<? if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) : ?>
+<? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
     <div style="background-color: white; width: 100%; height: 100%; justify-content: center; align-items: center;"
          id="qr_code_evasys">
         <img style="width: 90vh; height: 90vh;">
@@ -155,27 +155,27 @@
 <?
 Sidebar::Get()->setImage("sidebar/evaluation-sidebar.png");
 $publish = $evasys_seminar->publishingAllowed();
-if ($GLOBALS['perm']->have_studip_perm("dozent", $_SESSION['SessionSeminar'])) {
+if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
     $actions = new ActionsWidget();
     if (get_config("EVASYS_PUBLISH_RESULTS")) {
         if ($publish) {
             $actions->addLink(
-                _("Veröffentlichung der Ergebnisse an Studenten verbieten."),
+                _("VerÃ¶ffentlichung der Ergebnisse an Studenten verbieten."),
                 URLHelper::getURL("?", array('dozent_vote' => "n")),
-                Assets::image_path("icons/16/blue/lock-locked")
+                Icon::create("lock-locked", "clickable")
             );
         } else {
             $actions->addLink(
-                _("Veröffentlichung der Ergebnisse an Studenten erlauben."),
+                _("VerÃ¶ffentlichung der Ergebnisse an Studenten erlauben."),
                 URLHelper::getURL("?", array('dozent_vote' => "y")),
-                Assets::image_path("icons/16/blue/lock-unlocked")
+                Icon::create("lock-unlocked", "clickable")
             );
         }
     }
     $actions->addLink(
-        _("QR-Code für Studierende anzeigen"),
+        _("QR-Code fÃ¼r Studierende anzeigen"),
         "#",
-        Assets::image_path("icons/16/blue/code-qr"),
+        Icon::create("code-qr", "clickable"),
         array('onClick' => "STUDIP.EvaSys.showQR(); return false;")
     );
     Sidebar::Get()->addWidget($actions);

@@ -18,12 +18,12 @@
 <div id="settings_window" style="display: none;">
     <form action="?" method="post">
         <p class="info">
-            <?= _("Das EvaSys-Plugin benötigt noch ein paar Informationen, um sauber zu funktionieren. Tragen Sie die jetzt bitte nach. Später können Sie die unter Globale Einstellungen -> Konfiguration jederzeit ändern (Sektion EVASYS_PLUGIN).") ?>
+            <?= _("Das EvaSys-Plugin benÃ¶tigt noch ein paar Informationen, um sauber zu funktionieren. Tragen Sie die jetzt bitte nach. SpÃ¤ter kÃ¶nnen Sie die unter Globale Einstellungen -> Konfiguration jederzeit Ã¤ndern (Sektion EVASYS_PLUGIN).") ?>
         </p>
         <table>
             <tbody>
                 <tr>
-                    <td width="50%"><label for="EVASYS_WSDL"><?= _("WSDL-Datei") ?></label><br><span style="font-size: 0.8em;"><?= _("Pfad zur WSDL-Datei. Diese Datei ist repräsentativ für die Schnittstelle zu EvaSys und wird vermutlich auf einem eigenen Server liegen.") ?></span></td>
+                    <td width="50%"><label for="EVASYS_WSDL"><?= _("WSDL-Datei") ?></label><br><span style="font-size: 0.8em;"><?= _("Pfad zur WSDL-Datei. Diese Datei ist reprÃ¤sentativ fÃ¼r die Schnittstelle zu EvaSys und wird vermutlich auf einem eigenen Server liegen.") ?></span></td>
                     <td width="50%"><input type="text" name="EVASYS_WSDL" id="EVASYS_WSDL" style="width: 100%" value="<?= htmlReady(get_config("EVASYS_WSDL")) ?>"></td>
                 </tr>
                 <tr>
@@ -35,7 +35,7 @@
                     <td><input type="text" name="EVASYS_USER" id="EVASYS_USER" style="width: 100%" value="<?= htmlReady(get_config("EVASYS_USER")) ?>"></td>
                 </tr>
                 <tr>
-                    <td><label for="EVASYS_PASSWORD"><?= _("Passwort, damit sich Stud.IP an EvaSys anmelden kann.") ?></label><br><span style="font-size: 0.8em;"><?= _("Für verschlüsselten Zugriff auf den Server \"ssl://\" bzw \"tsl://\" voran schreiben!") ?></span></td>
+                    <td><label for="EVASYS_PASSWORD"><?= _("Passwort, damit sich Stud.IP an EvaSys anmelden kann.") ?></label><br><span style="font-size: 0.8em;"><?= _("FÃ¼r verschlÃ¼sselten Zugriff auf den Server \"ssl://\" bzw \"tsl://\" voran schreiben!") ?></span></td>
                     <td><input type="text" name="EVASYS_PASSWORD" id="EVASYS_PASSWORD" style="width: 100%" value="<?= htmlReady(get_config("EVASYS_PASSWORD")) ?>"></td>
                 </tr>
                 <tr>
@@ -43,7 +43,7 @@
                     <td><input type="text" name="EVASYS_CACHE" id="EVASYS_CACHE" style="width: 100%" value="<?= htmlReady(get_config("EVASYS_CACHE")) ?>"></td>
                 </tr>
                 <tr>
-                    <td><label for="EVASYS_PUBLISH_RESULTS"><?= _("Ergebnisse für Studenten veröffentlichen?") ?></label><br><span style="font-size: 0.8em;"><?= _("Ergebnisse werden natürlich nur veröffentlicht, wenn die Evaluation abgeschlossen ist.") ?></span></td>
+                    <td><label for="EVASYS_PUBLISH_RESULTS"><?= _("Ergebnisse fÃ¼r Studenten verÃ¶ffentlichen?") ?></label><br><span style="font-size: 0.8em;"><?= _("Ergebnisse werden natÃ¼rlich nur verÃ¶ffentlicht, wenn die Evaluation abgeschlossen ist.") ?></span></td>
                     <td><input type="checkbox" name="EVASYS_PUBLISH_RESULTS" id="EVASYS_PUBLISH_RESULTS" value="1" <?= get_config("EVASYS_PUBLISH_RESULTS") ? " checked" : "" ?>></td>
                 </tr>
                 <tr>
