@@ -1,1 +1,0 @@
-<h1><?= _("EvaSys-Fragebögen") ?></h1>

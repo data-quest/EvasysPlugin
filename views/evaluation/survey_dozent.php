@@ -157,7 +157,7 @@ Sidebar::Get()->setImage("sidebar/evaluation-sidebar.png");
 $publish = $evasys_seminar->publishingAllowed();
 if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
     $actions = new ActionsWidget();
-    if (get_config("EVASYS_PUBLISH_RESULTS")) {
+    if (Config::get()->EVASYS_PUBLISH_RESULTS) {
         if ($publish) {
             $actions->addLink(
                 _("Veröffentlichung der Ergebnisse an Studenten verbieten."),

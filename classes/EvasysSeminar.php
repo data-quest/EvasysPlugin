@@ -1,29 +1,11 @@
 <?php
 
-/*
- *  Copyright (c) 2011  Rasmus Fuhse <fuhse@data-quest.de>
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation; either version 2 of
- *  the License, or (at your option) any later version.
- */
+require_once dirname(__file__)."/EvasysSoap.php";
+require_once dirname(__file__)."/EvasysSoapClient.php";
 
-require_once dirname(__file__)."/EvaSysSoap.class.php";
-require_once dirname(__file__)."/EvaSysSoapClient.class.php";
-
-class EvaSysSeminar extends SimpleORMap {
+class EvasysSeminar extends SimpleORMap {
 
     protected $db_table = 'evasys_seminar';
-
-    static public function findBySQL($where, $params = array())
-    {
-        if (version_compare($GLOBALS['SOFTWARE_VERSION'], "2.4", ">=")) {
-            return parent::findBySQL($where);
-        } else {
-            return parent::findBySQL("EvaSysSeminar", $where);
-        }
-    }
 
     static public function getStudipUser($user_id)
     {
@@ -39,11 +21,11 @@ class EvaSysSeminar extends SimpleORMap {
 
     /**
      * Uploads all given seminars in one soap-call to EvaSys.
-     * @param array $seminars : array of EvaSysSeminar
+     * @param array $seminars : array of EvasysSeminar
      */
     static public function UploadSessions(array $seminars)
     {
-        $soap = EvaSysSoap::get();
+        $soap = EvasysSoap::get();
         $sessionlist = array();
         foreach($seminars as $seminar) {
             $sessionlist[] = $seminar->getSessionPart();
@@ -75,10 +57,10 @@ class EvaSysSeminar extends SimpleORMap {
     public function getEvaluationStatus($user_id = null)
     {
         if (isset($_SESSION['EVASYS_SEMINARS_STATUS'])
-            && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * get_config('EVASYS_CACHE')) {
+            && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE) {
             return (int) $_SESSION['EVASYS_SEMINARS_STATUS'][$this['Seminar_id']];
         }
-        $soap = EvaSysSoap::get();
+        $soap = EvasysSoap::get();
         $user = $user_id ? User::find($user_id) : User::findCurrent();
         $evasys_sem_object = $soap->__soapCall("GetEvaluationSummaryByParticipant", array($user['email']));
         if (is_a($evasys_sem_object, "SoapFault")) {
@@ -103,13 +85,13 @@ class EvaSysSeminar extends SimpleORMap {
     /**
      * Not used right now. But this could upload a seminar to EvaSys. We don't use
      * this method because we upload many seminars in one request with
-     * EvaSysSeminar::UploadSessions .
+     * EvasysSeminar::UploadSessions .
      * @throws Exception
      */
     public function connectWithEvaSys()
     {
         //wird nicht verwendet, da wir alle Seminare gebündelt übertragen
-        $soap = EvaSysSoap::get();
+        $soap = EvasysSoap::get();
         $arr = $this->getSessionPart();
         $evasys_sem_object = $soap->__soapCall("UploadSessions", array($arr));
         if (is_a($evasys_sem_object, "SoapFault")) {
@@ -233,10 +215,10 @@ class EvaSysSeminar extends SimpleORMap {
     public function getSurveys($user_id = null)
     {
         if (isset($_SESSION['EVASYS_SEMINAR_SURVEYS'][$this['Seminar_id']])
-                && (time() - $_SESSION['EVASYS_SEMINAR_SURVEYS_EXPIRE'][$this['Seminar_id']]) < 60 * get_config('EVASYS_CACHE')) {
+                && (time() - $_SESSION['EVASYS_SEMINAR_SURVEYS_EXPIRE'][$this['Seminar_id']]) < 60 * Config::get()->EVASYS_CACHE) {
             return $_SESSION['EVASYS_SEMINAR_SURVEYS'][$this['Seminar_id']];
         }
-        $soap = EvaSysSoap::get();
+        $soap = EvasysSoap::get();
         $sem = new Seminar($this['Seminar_id']);
         $user_id || $user_id = $GLOBALS['user']->id;
         $email = DBManager::get()->query("SELECT Email FROM auth_user_md5 WHERE user_id = ".DBManager::get()->quote($user_id))->fetch(PDO::FETCH_COLUMN, 0);
@@ -268,10 +250,10 @@ class EvaSysSeminar extends SimpleORMap {
     {
         $id = $this['Seminar_id']."-".$this['evasys_id'];
         if (isset($_SESSION['EVASYS_SURVEY_INFO'][$id])
-                && (time() - $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$id] < 60 * get_config('EVASYS_CACHE'))) {
+                && (time() - $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$id] < 60 * Config::get()->EVASYS_CACHE)) {
             return $_SESSION['EVASYS_SURVEY_INFO'][$id];
         }
-        $soap = EvaSysSoap::get();
+        $soap = EvasysSoap::get();
         $course = $soap->__soapCall("GetCourse", array(
             'CourseId' => $this['Seminar_id'],
             'IdType' => "PUBLIC",
@@ -286,7 +268,7 @@ class EvaSysSeminar extends SimpleORMap {
             $this->store();
         }
         $surveys = (array) $course->m_oSurveyHolder->m_aSurveys->Surveys;
-        //usort($surveys, "EvaSysSeminar::compareSurveysDESC");
+        //usort($surveys, "EvasysSeminar::compareSurveysDESC");
         $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$id] = time();
         $_SESSION['EVASYS_SURVEY_INFO'][$id] = $surveys;
 
@@ -299,10 +281,10 @@ class EvaSysSeminar extends SimpleORMap {
             $_SESSION['EVASYS_SURVEY_PDF_LINK'] = array();
         }
         if (isset($_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id])
-                && (time() - $_SESSION['EVASYS_SURVEY_PDF_LINK_EXPIRE'][$survey_id] < 60 * get_config('EVASYS_CACHE'))) {
+                && (time() - $_SESSION['EVASYS_SURVEY_PDF_LINK_EXPIRE'][$survey_id] < 60 * Config::get()->EVASYS_CACHE)) {
             return $_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id];
         }
-        $soap = EvaSysSoap::get();
+        $soap = EvasysSoap::get();
         $link = $soap->__soapCall("GetPDFReport", array(
             'nSurveyId' => $survey_id
         ));
@@ -310,7 +292,7 @@ class EvaSysSeminar extends SimpleORMap {
         if (is_a($link, "SoapFault")) {
             return $_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id] = false;
         } else {
-            $link = str_replace("http://localhost/evasys", get_config("EVASYS_URI"), $link);
+            $link = str_replace("http://localhost/evasys", Config::get()->EVASYS_URI, $link);
             return $_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id] = $link;
         }
     }
@@ -328,7 +310,7 @@ class EvaSysSeminar extends SimpleORMap {
 
     public function publishingAllowed()
     {
-        if (get_config("EVASYS_PUBLISH_RESULTS")) {
+        if (Config::get()->EVASYS_PUBLISH_RESULTS) {
             /*$sem = new Seminar($this->getId());
             return count($sem->getMembers("dozent")) == $this->getVotesForPublishing();
             */

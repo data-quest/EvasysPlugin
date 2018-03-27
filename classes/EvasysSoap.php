@@ -1,16 +1,6 @@
 <?php
 
-/*
- *  Copyright (c) 2011  Rasmus Fuhse <fuhse@data-quest.de>
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation; either version 2 of
- *  the License, or (at your option) any later version.
- */
-
-
-class EvaSysSoap
+class EvasysSoap
 {
 
     static protected $instance = null;
@@ -19,14 +9,14 @@ class EvaSysSoap
     {
         if (!self::$instance) {
 
-            $evasys_wsdl = get_config("EVASYS_WSDL");
-            $evasys_user = get_config("EVASYS_USER");
-            $evasys_password = get_config("EVASYS_PASSWORD");
+            $evasys_wsdl = Config::get()->EVASYS_WSDL;
+            $evasys_user = Config::get()->EVASYS_USER;
+            $evasys_password = Config::get()->EVASYS_PASSWORD;
 
             if (!$evasys_wsdl || !$evasys_user || !$evasys_password) {
                 throw new Exception("EVASYS_* Konfiguration unvollständig!");
             }
-            self::$instance = new EvaSysSoapClient($evasys_wsdl, array(
+            self::$instance = new EvasysSoapClient($evasys_wsdl, array(
                 'trace' => 1,
                 'exceptions' => 0,
                 'cache_wsdl' => $GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE'])

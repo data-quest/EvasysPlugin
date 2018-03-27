@@ -1,7 +1,5 @@
 <?php
 
-require_once 'app/controllers/plugin_controller.php';
-
 class EvaluationController extends PluginController
 {
 
@@ -12,7 +10,7 @@ class EvaluationController extends PluginController
 
         PageLayout::addScript($this->plugin->getPluginURL()."/assets/qrcode.js");
 
-        $evasys_seminars = EvaSysSeminar::findBySeminar(Context::get()->id);
+        $evasys_seminars = EvasysSeminar::findBySeminar(Context::get()->id);
         $this->surveys = array();
         $this->open_surveys = array();
         $active = array();

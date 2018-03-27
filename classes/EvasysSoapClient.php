@@ -1,16 +1,6 @@
 <?php
 
-/*
- *  Copyright (c) 2011  Rasmus Fuhse <fuhse@data-quest.de>
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License as
- *  published by the Free Software Foundation; either version 2 of
- *  the License, or (at your option) any later version.
- */
-
-
-class EvaSysSoapClient extends SoapClient {
+class EvasysSoapClient extends SoapClient {
 
     public function __soapCall ($function_name,  $arguments,  $options = null, $input_headers = null,  &$output_headers = null) {
         $result = parent::__soapCall($function_name, $arguments, $options, $input_headers, $output_headers);

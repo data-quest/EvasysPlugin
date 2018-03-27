@@ -1,15 +1,6 @@
 <?php
 
-require_once 'app/controllers/plugin_controller.php';
-
 class AdminController extends PluginController {
-
-    public function index_action()
-    {
-        Navigation::activateItem("/admin/evasys");
-        PageLayout::setTitle($this->plugin->getDisplayName());
-
-    }
 
     public function upload_courses_action()
     {
@@ -17,7 +8,7 @@ class AdminController extends PluginController {
             $activate = Request::getArray("activate");
             $evasys_seminar = array();
             foreach (Request::getArray("course") as $course_id) {
-                $evasys_evaluations = EvaSysSeminar::findBySeminar($course_id);
+                $evasys_evaluations = EvasysSeminar::findBySeminar($course_id);
                 if (count($evasys_evaluations)) {
                     foreach ($evasys_evaluations as $evaluation) {
                         $evaluation['activated'] = $activate[$course_id] ? 1 : 0;
@@ -29,12 +20,12 @@ class AdminController extends PluginController {
                         }
                     }
                 } else {
-                    $evasys_seminar[$course_id] = new EvaSysSeminar(array($course_id, ""));
+                    $evasys_seminar[$course_id] = new EvasysSeminar(array($course_id, ""));
                     $evasys_seminar[$course_id]['activated'] = $activate[$course_id] ? 1 : 0;
                 }
             }
             if (count($evasys_seminar) > 0) {
-                $success = EvaSysSeminar::UploadSessions($evasys_seminar);
+                $success = EvasysSeminar::UploadSessions($evasys_seminar);
                 if ($success === true) {
                     foreach (Request::getArray("course") as $course_id) {
                         if (isset($evasys_seminar[$course_id])) {
