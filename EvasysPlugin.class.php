@@ -8,11 +8,12 @@
  *  the License, or (at your option) any later version.
  */
 
-require_once dirname(__file__)."/classes/EvasysSeminar.php";
-require_once dirname(__file__)."/classes/EvasysForm.php";
-require_once dirname(__file__)."/classes/EvasysCourseProfile.php";
-require_once dirname(__file__)."/classes/EvasysInstituteProfile.php";
-require_once dirname(__file__)."/classes/EvasysGlobalProfile.php";
+require_once __DIR__."/classes/EvasysSeminar.php";
+require_once __DIR__."/classes/EvasysForm.php";
+require_once __DIR__."/classes/EvasysCourseProfile.php";
+require_once __DIR__."/classes/EvasysInstituteProfile.php";
+require_once __DIR__."/classes/EvasysGlobalProfile.php";
+require_once __DIR__."/classes/EvasysProfileSemtypeForm.php";
 
 class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction
 {
@@ -27,13 +28,21 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         parent::__construct();
         
         //The user must be root
-        if ($GLOBALS['perm']->have_perm('root')) {
-            $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "forms/index"));
+        if ($this->isRoot()) {
+            $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), Config::get()->EVASYS_ENABLE_PROFILES ? "globalprofile" : "forms/index"));
             Navigation::addItem("/admin/evasys", $nav);
-            $nav = new Navigation(_("Globale Einstellung"), PluginEngine::getURL($this, array(), "globalprofile"));
-            Navigation::addItem("/admin/evasys/globalprofile", clone $nav);
-            $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
-            Navigation::addItem("/admin/evasys/forms", clone $nav);
+            if (Config::get()->EVASYS_ENABLE_PROFILES) {
+                $nav = new Navigation(_("Standardwerte"), PluginEngine::getURL($this, array(), "globalprofile"));
+                Navigation::addItem("/admin/evasys/globalprofile", clone $nav);
+                $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
+                Navigation::addItem("/admin/evasys/forms", clone $nav);
+            }
+            $nav = new Navigation(_("Matching Veranstaltungstypen"), PluginEngine::getURL($this, array(), "admin/matching_seminartypes"));
+            Navigation::addItem("/admin/evasys/matchingtypes", clone $nav);
+            $nav = new Navigation(_("Matching Einrichtungen"), PluginEngine::getURL($this, array(), "admin/matching_institutes"));
+            Navigation::addItem("/admin/evasys/matchinginstitutes", clone $nav);
+            $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "admin/wording"));
+            Navigation::addItem("/admin/evasys/wording", clone $nav);
         }
     }
 
@@ -103,5 +112,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         $template->set_attribute("course_id", $course_id);
         $template->set_attribute("plugin", $this);
         return $template;
+    }
+
+    public function isRoot()
+    {
+        return $GLOBALS['perm']->have_perm("root");
     }
 }

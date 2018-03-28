@@ -38,6 +38,21 @@ class EvasysGlobalProfile extends SimpleORMap {
             }
             $profile->setId($semester->getId());
             $profile->store();
+
+            //Taking over standard and available forms:
+            $statement = DBManager::get()->prepare("
+                INSERT INTO evasys_profiles_semtype_forms (profile_form_id, profile_id, profile_type, sem_type, form_id, standard, chdate, mkdate)
+                SELECT MD5(CONCAT(profile_form_id, :new_semester, standard)), :new_semester, profile_type, sem_type, form_id, standard, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
+                FROM evasys_profiles_semtype_forms
+                WHERE profile_type = 'global'
+                    AND profile_id = :old_semester
+            ");
+            $statement->execute(array(
+                'new_semester' => $semester->getId(),
+                'old_semester' => $last_semester->getId()
+            ));
+
+            //We should also take over the old institute_profiles:
         }
         return $profile;
     }

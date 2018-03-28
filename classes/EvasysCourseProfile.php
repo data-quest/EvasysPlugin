@@ -22,6 +22,12 @@ class EvasysCourseProfile extends SimpleORMap {
         $config['additional_fields']['final_end'] = array(
             'get' => 'getFinalEnd'
         );
+        $config['additional_fields']['final_mode'] = array(
+            'get' => 'getFinalmode'
+        );
+        $config['additional_fields']['final_address'] = array(
+            'get' => 'getFinalAddress'
+        );
         parent::configure($config);
     }
 
@@ -38,6 +44,16 @@ class EvasysCourseProfile extends SimpleORMap {
     public function getFinalEnd()
     {
         return $this->getFinishedAttribute("end");
+    }
+
+    public function getFinalMode()
+    {
+        return $this->getFinishedAttribute("mode");
+    }
+
+    public function getFinalAddress()
+    {
+        return $this->getFinishedAttribute("address");
     }
 
     /**
