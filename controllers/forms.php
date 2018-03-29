@@ -41,4 +41,42 @@ class FormsController extends PluginController
         }
         $this->redirect("forms/index");
     }
+
+    public function sort_action($profile_type, $sem_type, $profile_id)
+    {
+        $this->profile_type = $profile_type;
+        $this->sem_type = $sem_type;
+        $this->profile_id = $profile_id;
+        if ($this->profile_type === "global") {
+            if (!$this->plugin->isRoot()) {
+                throw new AccessDeniedException();
+            }
+        } else {
+            //
+        }
+        PageLayout::setTitle(sprintf(_("Fragebögen sortieren für Typ %s"), $GLOBALS['SEM_TYPE'][$this->sem_type]['name']));
+        $this->forms = EvasysProfileSemtypeForm::findBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '0' ORDER BY position ASC", array(
+            'profile_type' => $this->profile_type,
+            'sem_type' => $this->sem_type,
+            'profile_id' => $this->profile_id
+        ));
+        if (Request::isPost()) {
+            $positions = array_flip(Request::getArray("form"));
+            foreach ($this->forms as $form) {
+                $form['position'] = $positions[$form['form_id']];
+                $form->store();
+            }
+            PageLayout::postSuccess(_("Sortierung wurde gespeichert."));
+            $this->forms = EvasysProfileSemtypeForm::findBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '0' ORDER BY position ASC", array(
+                'profile_type' => $this->profile_type,
+                'sem_type' => $this->sem_type,
+                'profile_id' => $this->profile_id
+            ));
+        }
+        $this->standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
+            'profile_type' => $this->profile_type,
+            'sem_type' => $this->sem_type,
+            'profile_id' => $this->profile_id
+        ));
+    }
 }

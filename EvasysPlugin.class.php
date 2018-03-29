@@ -34,6 +34,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             if (Config::get()->EVASYS_ENABLE_PROFILES) {
                 $nav = new Navigation(_("Standardwerte"), PluginEngine::getURL($this, array(), "globalprofile"));
                 Navigation::addItem("/admin/evasys/globalprofile", clone $nav);
+                $nav = new Navigation(_("Standardwerte der Institute"), PluginEngine::getURL($this, array(), "instituteprofile"));
+                Navigation::addItem("/admin/evasys/instituteprofile", clone $nav);
                 $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
                 Navigation::addItem("/admin/evasys/forms", clone $nav);
             }

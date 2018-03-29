@@ -52,6 +52,7 @@ class EvasysForm extends SimpleORMap
 
     public function getNumberOfCourses()
     {
+        //doesn't look for table evasys_profiles_semtype_forms yet :
         $statement = DBManager::get()->prepare("
             SELECT COUNT(*) 
             FROM (
@@ -77,7 +78,7 @@ class EvasysForm extends SimpleORMap
                         )
                     )
                 GROUP BY evasys_course_profiles.course_profile_id
-            ) AS all_applied_smeinars
+            ) AS all_applied_seminars
         ");
         $statement->execute(array('form_id' => $this->getId()));
         return $statement->fetch(PDO::FETCH_COLUMN, 0);

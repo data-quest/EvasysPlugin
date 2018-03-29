@@ -31,9 +31,132 @@ class EvasysCourseProfile extends SimpleORMap {
         parent::configure($config);
     }
 
+    /**
+     * This method looks for the finalized form_id which is dependend on the settings of the institute-profiles
+     * and global profile
+     * @return null|string
+     */
     public function getFinalFormId()
     {
-        return $this->getFinishedAttribute("form_id");
+        $form_id = null;
+        if ($this[$attribute]) {
+            $form_id = $this[$attribute];
+        }
+        $institut_id = $this->course['institut_id'];
+        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
+        $sem_type = $this->course->status;
+        if ($inst_profile) {
+
+            $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
+                'profile_type' => "institute",
+                'sem_type' => $sem_type,
+                'profile_id' => $inst_profile->getId()
+            ));
+
+            $statement = DBManager::get()->prepare("
+                SELECT form_id 
+                FROM evasys_profiles_semtype_forms
+                WHERE profile_type = :profile_type 
+                    AND profile_id = :profile_id 
+                    AND sem_type = :sem_type 
+                    AND standard = '0'
+            ");
+            $statement->execute(array(
+                'profile_type' => "institute",
+                'sem_type' => $sem_type,
+                'profile_id' => $inst_profile->getId()
+            ));
+            $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+
+            if ($form_id && in_array($form_id, $available_form_ids)) {
+                return $form_id;
+            } else {
+                //now the form_id in database is technically illegal, so reset it to null:
+                $form_id = null;
+            }
+            if ($standardform && !$form_id) {
+                return $standardform['form_id'];
+            }
+            if (!$form_id) {
+                $form_id = $inst_profile['form_id'];
+            }
+        }
+        $fakultaet_id = $this->course->home_institut->fakultaets_id;
+        if ($fakultaet_id !== $institut_id) {
+            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id);
+            if ($inst_profile) { //Do the same thing with this profile:
+                $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
+                    'profile_type' => "institute",
+                    'sem_type' => $sem_type,
+                    'profile_id' => $inst_profile->getId()
+                ));
+
+                $statement = DBManager::get()->prepare("
+                    SELECT form_id 
+                    FROM evasys_profiles_semtype_forms
+                    WHERE profile_type = :profile_type 
+                        AND profile_id = :profile_id 
+                        AND sem_type = :sem_type 
+                        AND standard = '0'
+                ");
+                $statement->execute(array(
+                    'profile_type' => "institute",
+                    'sem_type' => $sem_type,
+                    'profile_id' => $inst_profile->getId()
+                ));
+                $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+
+                if ($form_id && in_array($form_id, $available_form_ids)) {
+                    return $form_id;
+                } else {
+                    //now the form_id in database is technically illegal, so reset it to null:
+                    $form_id = null;
+                }
+                if ($standardform && !$form_id) {
+                    return $standardform['form_id'];
+                }
+                if (!$form_id) {
+                    $form_id = $inst_profile['form_id'];
+                }
+            }
+        }
+        $global_profile = EvasysGlobalProfile::findCurrent();
+        if ($global_profile) {
+            $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
+                'profile_type' => "global",
+                'sem_type' => $sem_type,
+                'profile_id' => $global_profile->getId()
+            ));
+
+            $statement = DBManager::get()->prepare("
+                SELECT form_id 
+                FROM evasys_profiles_semtype_forms
+                WHERE profile_type = :profile_type 
+                    AND profile_id = :profile_id 
+                    AND sem_type = :sem_type 
+                    AND standard = '0'
+            ");
+            $statement->execute(array(
+                'profile_type' => "global",
+                'sem_type' => $sem_type,
+                'profile_id' => $global_profile->getId()
+            ));
+            $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+
+            if ($form_id && in_array($form_id, $available_form_ids)) {
+                return $form_id;
+            } else {
+                //now the form_id in database is technically illegal, so reset it to null:
+                $form_id = null;
+            }
+            if ($standardform && !$form_id) {
+                return $standardform['form_id'];
+            }
+            if (!$form_id) {
+                $form_id = $global_profile['form_id'];
+            }
+        }
+        return $form_id;
     }
 
     public function getFinalBegin()
