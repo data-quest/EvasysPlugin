@@ -85,6 +85,20 @@ class AddCourseProfiles extends Migration
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
 
+        DBManager::get()->exec("
+            CREATE TABLE `evasys_matchings` (
+                `matching_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+                `item_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                `item_type` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                `name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                `chdate` int(11) DEFAULT NULL,
+                `mkdate` int(11) DEFAULT NULL,
+                PRIMARY KEY (`matching_id`),
+                KEY `item_id` (`item_id`),
+                KEY `item_type` (`item_type`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ");
+
         Config::get()->create("EVASYS_ENABLE_PROFILES", array(
             'value' => 1,
             'type' => "boolean",

@@ -6,7 +6,11 @@
 
     <fieldset>
         <legend>
-            <?= _("Standarddaten der Evaluationen") ?>
+            <? if ($this->controller->profile_type !== "institute") : ?>
+                <?= _("Standarddaten der Evaluationen") ?>
+            <? else : ?>
+                <?= sprintf(_("Standarddaten der Evaluationen der Einrichtung %s"), htmlReady($profile->institute->name)) ?>
+            <? endif ?>
         </legend>
         <label>
             <?= _("Beginn") ?>
@@ -50,7 +54,7 @@
 
     </fieldset>
 
-    <fieldset>
+    <fieldset class="forms_for_types">
         <legend>
             <?= _("Standardfragebögen nach Veranstaltungstypen") ?>
         </legend>
@@ -129,8 +133,8 @@
     <script>
         jQuery(function () {
             jQuery("input.datepicker").datetimepicker();
-            jQuery(".select2").select2();
-            jQuery(".select2").select2();
+            jQuery(".forms_for_types .select2").select2();
+            jQuery(".forms_for_types .select2").select2();
         });
     </script>
     <style>
@@ -150,47 +154,32 @@
 <? endif ?>
 
 <?
-
-$list = new SelectWidget(
-    _('Einrichtung'),
-    PluginEngine::getURL($plugin, array(), ""),
-    'institute'
-);
-$insts = Institute::getMyInstitutes($GLOBALS['user']->id);
-$list->class = 'institute-list';
-if ($GLOBALS['perm']->have_perm('root') || (count($insts) > 1)) {
-    $list->addElement(new SelectElement(
-        'all',
-        $GLOBALS['perm']->have_perm('root') ? _('Alle') : _('Alle meine Einrichtungen'),
-        $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === 'all'),
-        'select-all'
+if ($this->controller->profile_type === "institute") {
+    $list = new SelectWidget(
+        _('Einrichtung'),
+        PluginEngine::getURL($plugin, array(), "instituteprofile/change_institute"),
+        'institute'
     );
-}
-
-foreach ($insts as $institut) {
-    $list->addElement(
-        new SelectElement(
-            $institut['Institut_id'],
-            (!$institut['is_fak'] ? ' ' : '') . $institut['Name'],
-            $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === $institut['Institut_id']
-        ),
-        'select-' . $institut['Institut_id']
-    );
-
-    //check if the institute is a faculty.
-    //If true, then add another option to display all courses
-    //from that faculty and all its institutes.
-
-    //$institut is an array, we can't use the method isFaculty() here!
-    if ($institut['fakultaets_id'] == $institut['Institut_id']) {
-        $list->addElement(
-            new SelectElement(
-                $institut['Institut_id'] . '_withinst', //_withinst = with institutes
-                ' ' . $institut['Name'] . ' +' . _('Institute'),
-                ($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === $institut['Institut_id'] && $GLOBALS['user']->cfg->MY_INSTITUTES_INCLUDE_CHILDREN)
-            ),
-            'select-' . $institut['Name'] . '-with_institutes'
+    $insts = Institute::getMyInstitutes($GLOBALS['user']->id);
+    $list->class = 'institute-list';
+    if ($GLOBALS['perm']->have_perm('root') || (count($insts) > 1)) {
+        $list->addElement(new SelectElement(
+            'all',
+            $GLOBALS['perm']->have_perm('root') ? _('Alle') : _('Alle meine Einrichtungen'),
+            $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === 'all'),
+            'select-all'
         );
     }
+
+    foreach ($insts as $institut) {
+        $list->addElement(
+            new SelectElement(
+                $institut['Institut_id'],
+                (!$institut['is_fak'] ? ' ' : '') . $institut['Name'],
+                $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === $institut['Institut_id']
+            ),
+            'select-' . $institut['Institut_id']
+        );
+    }
+    Sidebar::Get()->addWidget($list, 'filter_institute');
 }
-Sidebar::Get()->addWidget($list, 'filter_institute');

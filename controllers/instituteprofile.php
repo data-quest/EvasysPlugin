@@ -7,4 +7,13 @@ class InstituteprofileController extends GlobalprofileController
 
     public $profile_type = "institute";
 
+    public function change_institute_action()
+    {
+        if (Request::option('institute')) {
+            $GLOBALS['user']->cfg->store('MY_INSTITUTES_DEFAULT', Request::option('institute'));
+        }
+
+        $this->redirect('instituteprofile');
+    }
+
 }

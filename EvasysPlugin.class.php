@@ -8,12 +8,13 @@
  *  the License, or (at your option) any later version.
  */
 
-require_once __DIR__."/classes/EvasysSeminar.php";
-require_once __DIR__."/classes/EvasysForm.php";
-require_once __DIR__."/classes/EvasysCourseProfile.php";
-require_once __DIR__."/classes/EvasysInstituteProfile.php";
-require_once __DIR__."/classes/EvasysGlobalProfile.php";
-require_once __DIR__."/classes/EvasysProfileSemtypeForm.php";
+require_once __DIR__."/lib/EvasysSeminar.php";
+require_once __DIR__."/lib/EvasysForm.php";
+require_once __DIR__."/lib/EvasysCourseProfile.php";
+require_once __DIR__."/lib/EvasysInstituteProfile.php";
+require_once __DIR__."/lib/EvasysGlobalProfile.php";
+require_once __DIR__."/lib/EvasysProfileSemtypeForm.php";
+require_once __DIR__."/lib/EvasysMatching.php";
 
 class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction
 {
@@ -39,12 +40,14 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
                 Navigation::addItem("/admin/evasys/forms", clone $nav);
             }
-            $nav = new Navigation(_("Matching Veranstaltungstypen"), PluginEngine::getURL($this, array(), "admin/matching_seminartypes"));
+            $nav = new Navigation(_("Matching Veranstaltungstypen"), PluginEngine::getURL($this, array(), "matching/seminartypes"));
             Navigation::addItem("/admin/evasys/matchingtypes", clone $nav);
-            $nav = new Navigation(_("Matching Einrichtungen"), PluginEngine::getURL($this, array(), "admin/matching_institutes"));
+            $nav = new Navigation(_("Matching Einrichtungen"), PluginEngine::getURL($this, array(), "matching/institutes"));
             Navigation::addItem("/admin/evasys/matchinginstitutes", clone $nav);
-            $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "admin/wording"));
+            $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "wording"));
             Navigation::addItem("/admin/evasys/wording", clone $nav);
+        } elseif ($this->isAdmin()) {
+
         }
     }
 
@@ -93,7 +96,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getDisplayName() {
         if (Navigation::hasItem("/course") && Navigation::getItem("/course")->isActive()) {
-            return $GLOBALS['SessSemName'][0].": "._("Evaluation");
+            return Context::get()->getHeaderLine().": "._("Evaluation");
         } else {
             return _("Evasys");
         }
@@ -101,7 +104,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getAdminActionURL()
     {
-        return $GLOBALS['perm']->have_perm("admin") ? PluginEngine::getURL($this, array(), "admin/upload_courses") : null;
+        return $this->isRoot() || $this->isAdmin()
+            ? PluginEngine::getURL($this, array(), "admin/upload_courses")
+            : null;
     }
 
     public function useMultimode() {
@@ -119,5 +124,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function isRoot()
     {
         return $GLOBALS['perm']->have_perm("root");
+    }
+
+    public function isAdmin()
+    {
+        return $GLOBALS['perm']->have_perm("admin") && !$GLOBALS['perm']->have_perm("root");
     }
 }
