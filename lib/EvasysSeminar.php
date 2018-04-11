@@ -173,9 +173,6 @@ class EvasysSeminar extends SimpleORMap {
                 'Email' => $dozent['Email']
             );
         }
-        $heimateinrichtung = $db->query(
-            "SELECT Name FROM Institute WHERE Institut_id = ".$db->quote($seminar->institut_id)." " .
-        "")->fetch(PDO::FETCH_COLUMN, 0);
         $stmt = DBManager::get()->prepare(
             "SELECT DISTINCT IF(sem_tree.studip_object_id IS NOT NULL, (SELECT Institute.Name FROM Institute WHERE Institute.Institut_id = sem_tree.studip_object_id), sem_tree.name) ".
             "FROM seminar_sem_tree ".
@@ -196,9 +193,9 @@ class EvasysSeminar extends SimpleORMap {
             'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
             'CoursePeriodIdType' => "PERIODDATE",
             'CourseName' => $seminar->getName(),
-            'CourseType' => $GLOBALS['SEM_TYPE'][$seminar->status]['name'],
+            'CourseType' => EvasysMatching::semtypeName($seminar->status),
             'm_nUserId' => count($participants),
-            'SubunitName' => $heimateinrichtung,
+            'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
             'ParticipantList' => $participants,
             'AnonymousParticipants' => true,
             'InstructorList' => $instructorlist,

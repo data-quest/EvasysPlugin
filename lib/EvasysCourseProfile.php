@@ -161,22 +161,42 @@ class EvasysCourseProfile extends SimpleORMap {
 
     public function getFinalBegin()
     {
-        return $this->getFinishedAttribute("begin");
+        return $this->getFinalAttribute("begin");
+    }
+
+    public function getPresetBegin()
+    {
+        return $this->getPresetAttribute("begin");
     }
 
     public function getFinalEnd()
     {
-        return $this->getFinishedAttribute("end");
+        return $this->getFinalAttribute("end");
+    }
+
+    public function getPresetEnd()
+    {
+        return $this->getPresetAttribute("end");
     }
 
     public function getFinalMode()
     {
-        return $this->getFinishedAttribute("mode");
+        return $this->getFinalAttribute("mode");
+    }
+
+    public function getPresetMode()
+    {
+        return $this->getPresetAttribute("mode");
     }
 
     public function getFinalAddress()
     {
-        return $this->getFinishedAttribute("address");
+        return $this->getFinalAttribute("address");
+    }
+
+    public function getPresetAddress()
+    {
+        return $this->getPresetAttribute("address");
     }
 
     /**
@@ -190,7 +210,13 @@ class EvasysCourseProfile extends SimpleORMap {
     {
         if ($this[$attribute]) {
             return $this[$attribute];
+        } else {
+            return $this->getPresetAttribute($attribute);
         }
+    }
+
+    protected function getPresetAttribute($attribute)
+    {
         $institut_id = $this->course['institut_id'];
         $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
         if ($inst_profile[$attribute]) {
@@ -209,5 +235,10 @@ class EvasysCourseProfile extends SimpleORMap {
         }
         // else ...
         return null;
+    }
+
+    public function isEditable()
+    {
+        return EvasysPlugin::isAdmin() || EvasysPlugin::isRoot();
     }
 }

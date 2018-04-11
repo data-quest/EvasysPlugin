@@ -111,7 +111,7 @@
     </fieldset>
 
     <fieldset>
-        <legend><?= _("Freiwillige Evaluationen") ?></legend>
+        <legend><?= ucfirst(EvasysMatching::wording("freiwillige Evaluationen")) ?></legend>
 
         <label>
             <?= _("Beginn der Antragsfrist") ?>
@@ -150,7 +150,7 @@
 </form>
 
 <? else : ?>
-    <?= MessageBox::info(_("Wählen Sie erst eine Einrichtung aus.")) ?>
+    <?= MessageBox::info(sprintf(_("Wählen Sie erst eine %s aus."), EvasysMatching::wording("Einrichtung"))) ?>
 <? endif ?>
 
 <?

@@ -3,6 +3,15 @@
 class MatchingController extends PluginController
 {
 
+    function before_filter(&$action, &$args)
+    {
+        parent::before_filter($action, $args);
+
+        if (!EvasysPlugin::isRoot()) {
+            throw new AccessDeniedException();
+        }
+    }
+
     public function institutes_action()
     {
         Navigation::activateItem("/admin/evasys/matchinginstitutes");
@@ -75,6 +84,58 @@ class MatchingController extends PluginController
                 'long_name' => $GLOBALS['SEM_CLASS'][$type['class']]['name'] . ": ".$type['name'],
                 'name' => $type['name'],
                 'matching' => EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'semtype'", array($type['id']))
+            );
+        }
+
+        $this->render_template("matching/institutes", $this->layout);
+    }
+
+    public function wording_action()
+    {
+        Navigation::activateItem("/admin/evasys/wording");
+        $this->action = "wording";
+        $this->i18n = true;
+
+        $words_raw = array(
+            "Einrichtung", "Einrichtungen", "Fakultät", "Fakultäten",
+            "freiwillige Evaluation", "freiwillige Evaluationen"
+        );
+        $words = array();
+        foreach ($words_raw as $word) {
+            $words[md5($word)] = $word;
+        }
+        unset($words_raw);
+
+        if (Request::isPost()) {
+            foreach ($words as $id => $word) {
+                $name = Request::i18n("matching__".$id."__");
+                $matching = EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'wording'", array($id));
+                if ($name === $words[$id]) {
+                    if ($matching) {
+                        $matching->delete();
+                    }
+                } else {
+                    if (!$matching) {
+                        $matching = new EvasysMatching();
+                        $matching['item_id'] = $id;
+                        $matching['item_type'] = "wording";
+                    }
+                    $matching['name'] = $name;
+                    $matching->store();
+                }
+            }
+            PageLayout::postSuccess(_("Daten wurden gespeichert."));
+            $this->redirect("matching/".$this->action);
+            return;
+        }
+
+        $this->items = array();
+        foreach ($words as $id => $word) {
+            $this->items[$id] = array(
+                'id' => $id,
+                'long_name' => $word,
+                'name' => $word,
+                'matching' => EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'wording'", array($id))
             );
         }
 

@@ -35,7 +35,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             if (Config::get()->EVASYS_ENABLE_PROFILES) {
                 $nav = new Navigation(_("Standardwerte"), PluginEngine::getURL($this, array(), "globalprofile"));
                 Navigation::addItem("/admin/evasys/globalprofile", clone $nav);
-                $nav = new Navigation(_("Standardwerte der Institute"), PluginEngine::getURL($this, array(), "instituteprofile"));
+                $nav = new Navigation(sprintf(_("Standardwerte der %s"), EvasysMatching::wording("Einrichtungen")), PluginEngine::getURL($this, array(), "instituteprofile"));
                 Navigation::addItem("/admin/evasys/instituteprofile", clone $nav);
                 $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
                 Navigation::addItem("/admin/evasys/forms", clone $nav);
@@ -44,10 +44,17 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             Navigation::addItem("/admin/evasys/matchingtypes", clone $nav);
             $nav = new Navigation(_("Matching Einrichtungen"), PluginEngine::getURL($this, array(), "matching/institutes"));
             Navigation::addItem("/admin/evasys/matchinginstitutes", clone $nav);
-            $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "wording"));
+            $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "matching/wording"));
             Navigation::addItem("/admin/evasys/wording", clone $nav);
-        } elseif ($this->isAdmin()) {
+        } elseif ($this->isAdmin() && Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
+            $nav = new Navigation(_("Standard-Evaluationsprofil"), PluginEngine::getURL($this, array(), "instituteprofile"));
+            Navigation::addItem("/admin/institute/instituteprofile", $nav);
+        }
 
+        if (Config::get()->EVASYS_ENABLE_PROFILES
+                && (stripos($_SERVER['REQUEST_URI'], "dispatch.php/admin/courses") !== false)
+                && ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")) {
+            PageLayout::addScript($this->getPluginURL()."/assets/insert_button.js");
         }
     }
 
@@ -110,7 +117,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     }
 
     public function useMultimode() {
-        return _("Evasys aktivieren");
+        return _("Übertragen");
     }
 
     public function getAdminCourseActionTemplate($course_id, $values = null, $semester = null) {

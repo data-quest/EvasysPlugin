@@ -4,7 +4,7 @@
 
     <table class="default">
         <caption>
-            <?= $action === "seminartypes" ? _("Veranstaltungstypen") : _("Einrichtungen") ?>
+            <?= $action === "seminartypes" ? _("Veranstaltungstypen") : ($action === "institutes" ? _("Einrichtungen") : _("Begriffe")) ?>
         </caption>
         <thead>
             <tr>
@@ -19,9 +19,16 @@
                     <?= htmlReady($item['long_name']) ?>
                 </td>
                 <td>
-                    <input type="text"
-                           name="matching[<?= htmlReady($item['id']) ?>]"
-                           value="<?= htmlReady($item['matching'] ? ($item['matching']['name'] !== null ? $item['matching']['name'] : $item['name']) : $item['name']) ?>">
+                    <? $value = $item['matching']
+                        ? ($item['matching']['name'] !== null ? $item['matching']['name'] : new I18NString($item['name'], null, array('table' => "evasys_matchings", 'field' => "name")))
+                        : new I18NString($item['name'], null, array('table' => "evasys_matchings", 'field' => "name")) ?>
+                    <? if (!$i18n) : ?>
+                        <input type="text"
+                               name="matching[<?= htmlReady($item['id']) ?>]"
+                               value="<?= htmlReady($value) ?>">
+                    <? else : ?>
+                        <?= I18N::input("matching__".$item['id']."__", $value) ?>
+                    <? endif ?>
                 </td>
             </tr>
             <? endforeach ?>

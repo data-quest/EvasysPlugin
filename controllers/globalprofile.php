@@ -7,16 +7,30 @@ class GlobalprofileController extends PluginController
     function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
+        if (!Config::get()->EVASYS_ENABLE_PROFILES) {
+            throw new AccessDeniedException();
+        }
+
         if ($this->profile_type === "global") {
+            if (!EvasysPlugin::isRoot()) {
+                throw new AccessDeniedException();
+            }
             Navigation::activateItem("/admin/evasys/globalprofile");
         } else {
+            if (!EvasysPlugin::isRoot() && !EvasysPlugin::isAdmin()) {
+                throw new AccessDeniedException();
+            }
+            if (EvasysPlugin::isAdmin() && !Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
+                throw new AccessDeniedException();
+            }
             if (Navigation::hasItem("/admin/evasys/instituteprofile")) {
                 Navigation::activateItem("/admin/evasys/instituteprofile");
             } else {
-                Navigation::activateItem("/admin/institute/evalprofile");
+                Navigation::activateItem("/admin/institute/instituteprofile");
             }
         }
     }
+
 
     public function index_action()
     {

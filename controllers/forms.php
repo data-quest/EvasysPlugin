@@ -3,6 +3,15 @@
 class FormsController extends PluginController
 {
 
+    function before_filter(&$action, &$args)
+    {
+        parent::before_filter($action, $args);
+
+        if (!EvasysPlugin::isRoot() || !Config::get()->EVASYS_ENABLE_PROFILES) {
+            throw new AccessDeniedException();
+        }
+    }
+
     public function index_action() {
         Navigation::activateItem("/admin/evasys/forms");
         PageLayout::setTitle($this->plugin->getDisplayName());
