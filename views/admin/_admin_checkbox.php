@@ -6,7 +6,7 @@
     <input type="hidden" name="course[]" value="<?= htmlReady($course_id) ?>">
 <? else : ?>
     <a href="<?= PluginEngine::getLink($plugin, array(), "profile/edit/".$course_id) ?>" data-dialog>
-        <?= Icon::create("edit", "clickable")->asImg(20) ?>
+        <?= Icon::create(($profile && $profile['applied']) ? "check-circle" : "radiobutton-unchecked", "clickable")->asImg(20) ?>
     </a>
 
     <input type="checkbox"

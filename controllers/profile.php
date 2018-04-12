@@ -16,6 +16,8 @@ class ProfileController extends PluginController {
         }
         if (Request::isPost() && $this->profile->isEditable()) {
             $data = Request::getArray("data");
+            $this->profile['applied'] = $data['applied'] ?: 0;
+            $this->profile['form_id'] = $data['form_id'] !== $this->profile->getPresetFormId() ? $data['form_id'] : null;
             if ($data['begin']) {
                 $this->profile['begin'] = strtotime($data['begin']);
                 if ($this->profile['begin'] == $this->profile->getPresetBegin()) {
@@ -49,8 +51,14 @@ class ProfileController extends PluginController {
                 $this->profile['address'] = null;
             }
 
+            $this->profile['user_id'] = $GLOBALS['user']->id;
+
             $this->profile->store();
             PageLayout::postSuccess(_("Daten wurden gespeichert."));
+            $this->response->add_header("X-Dialog-Execute", json_encode(array(
+                'func' => "STUDIP.EVASYS.refreshCourseInOverview",
+                'payload' => $course_id
+            )));
         }
     }
 

@@ -42,6 +42,10 @@ class EvasysCourseProfile extends SimpleORMap {
         if ($this[$attribute]) {
             $form_id = $this[$attribute];
         }
+        return $this->getPresetFormId($form_id);
+    }
+
+    public function getPresetFormId($form_id = null) {
         $institut_id = $this->course['institut_id'];
         $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
         $sem_type = $this->course->status;
@@ -157,6 +161,79 @@ class EvasysCourseProfile extends SimpleORMap {
             }
         }
         return $form_id;
+    }
+
+    public function getAvailableFormIds()
+    {
+        $institut_id = $this->course['institut_id'];
+        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
+        $sem_type = $this->course->status;
+        if ($inst_profile) {
+            $statement = DBManager::get()->prepare("
+                SELECT form_id 
+                FROM evasys_profiles_semtype_forms
+                WHERE profile_type = :profile_type 
+                    AND profile_id = :profile_id 
+                    AND sem_type = :sem_type 
+                    AND standard = '0'
+                ORDER BY position ASC
+            ");
+            $statement->execute(array(
+                'profile_type' => "institute",
+                'sem_type' => $sem_type,
+                'profile_id' => $inst_profile->getId()
+            ));
+            return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+        }
+        $fakultaet_id = $this->course->home_institut->fakultaets_id;
+        if ($fakultaet_id !== $institut_id) {
+            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id);
+            if ($inst_profile) { //Do the same thing with this profile:
+                $statement = DBManager::get()->prepare("
+                    SELECT form_id 
+                    FROM evasys_profiles_semtype_forms
+                    WHERE profile_type = :profile_type 
+                        AND profile_id = :profile_id 
+                        AND sem_type = :sem_type 
+                        AND standard = '0'
+                    ORDER BY position ASC
+                ");
+                $statement->execute(array(
+                    'profile_type' => "institute",
+                    'sem_type' => $sem_type,
+                    'profile_id' => $inst_profile->getId()
+                ));
+                return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            }
+        }
+        $global_profile = EvasysGlobalProfile::findCurrent();
+        if ($global_profile) {
+
+            $statement = DBManager::get()->prepare("
+                SELECT form_id 
+                FROM evasys_profiles_semtype_forms
+                WHERE profile_type = :profile_type 
+                    AND profile_id = :profile_id 
+                    AND sem_type = :sem_type 
+                    AND standard = '0'
+                ORDER BY position ASC
+            ");
+            $statement->execute(array(
+                'profile_type' => "global",
+                'sem_type' => $sem_type,
+                'profile_id' => $global_profile->getId()
+            ));
+            return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+        }
+
+        $statement = DBManager::get()->prepare("
+            SELECT form_id 
+            FROM evasys_forms
+            WHERE active = '1' 
+            ORDER BY name ASC
+        ");
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
     }
 
     public function getFinalBegin()
