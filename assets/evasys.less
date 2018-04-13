@@ -1,0 +1,32 @@
+.evasys_teachers {
+    .avatar {
+        display: inline-block;
+        width: 35px;
+        height: 35px;
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-size: 100% auto;
+        border-radius: 25px;
+        vertical-align: middle;
+    }
+    input[type="checkbox"] {
+        display: none;
+    }
+    input[type="checkbox"] + img {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    input[type="checkbox"] + img + img {
+        display: none;
+    }
+    input[type="checkbox"]:checked + img {
+        display: none;
+    }
+    input[type="checkbox"]:checked + img + img {
+        display: inline-block;
+        vertical-align: middle;
+    }
+}
+#evasys_evaldata {
+    margin-top: 10px;
+}

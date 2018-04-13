@@ -17,6 +17,12 @@ class ProfileController extends PluginController {
         if (Request::isPost() && $this->profile->isEditable()) {
             $data = Request::getArray("data");
             $this->profile['applied'] = $data['applied'] ?: 0;
+            $seminar = new Seminar($this->profile['seminar_id']);
+            $teachers = $seminar->getMembers("dozent");
+            $this->profile['teachers'] = $data['teachers'] && count($data['teachers']) !== count($teachers)
+                ? $data['teachers']
+                : null;
+            $this->profile['split'] = $data['split'] ? 1 : 0;
             $this->profile['form_id'] = $data['form_id'] !== $this->profile->getPresetFormId() ? $data['form_id'] : null;
             if ($data['begin']) {
                 $this->profile['begin'] = strtotime($data['begin']);

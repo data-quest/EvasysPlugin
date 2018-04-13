@@ -54,6 +54,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (Config::get()->EVASYS_ENABLE_PROFILES
                 && (stripos($_SERVER['REQUEST_URI'], "dispatch.php/admin/courses") !== false)
                 && ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")) {
+            $this->addStylesheet("assets/evasys.less");
             PageLayout::addScript($this->getPluginURL()."/assets/insert_button.js");
         }
     }

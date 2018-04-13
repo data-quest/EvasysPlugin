@@ -28,6 +28,7 @@ class EvasysCourseProfile extends SimpleORMap {
         $config['additional_fields']['final_address'] = array(
             'get' => 'getFinalAddress'
         );
+        $config['serialized_fields']['teachers'] = "JSONArrayObject";
         parent::configure($config);
     }
 

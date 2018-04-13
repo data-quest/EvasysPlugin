@@ -31,9 +31,12 @@ class EvasysGlobalProfile extends SimpleORMap {
                 $last_profile = self::find($last_semester->getId());
                 if ($last_profile) {
                     $profile = new EvasysGlobalProfile();
-                    $profile->setData($last_profile->toRawArray());
-                    $profile['begin'] = null;
-                    $profile['end'] = null;
+                    $data = $last_profile->toRawArray();
+                    unset($profile['begin']);
+                    unset($profile['end']);
+                    unset($profile['mkdate']);
+                    unset($profile['chdate']);
+                    $profile->setData($data);
                 }
             }
             $profile->setId($semester->getId());
@@ -44,8 +47,7 @@ class EvasysGlobalProfile extends SimpleORMap {
                 INSERT INTO evasys_profiles_semtype_forms (profile_form_id, profile_id, profile_type, sem_type, form_id, standard, chdate, mkdate)
                 SELECT MD5(CONCAT(profile_form_id, :new_semester, standard)), :new_semester, profile_type, sem_type, form_id, standard, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
                 FROM evasys_profiles_semtype_forms
-                WHERE profile_type = 'global'
-                    AND profile_id = :old_semester
+                WHERE profile_id = :old_semester
             ");
             $statement->execute(array(
                 'new_semester' => $semester->getId(),
@@ -53,6 +55,16 @@ class EvasysGlobalProfile extends SimpleORMap {
             ));
 
             //We should also take over the old institute_profiles:
+            $statement = DBManager::get()->prepare("
+                INSERT INTO evasys_institute_profiles (institute_profile_id, institut_id, semester, form_id, `mode`, address, antrag_info, chdate, mkdate)
+                SELECT MD5(CONCAT(institute_profile_id, :new_semester), institut_id, :new_semester, form_id, `mode`, address, antrag_info, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
+                FROM evasys_institute_profiles
+                WHERE semester_id = :old_semester
+            ");
+            $statement->execute(array(
+                'new_semester' => $semester->getId(),
+                'old_semester' => $last_semester->getId()
+            ));
         }
         return $profile;
     }
