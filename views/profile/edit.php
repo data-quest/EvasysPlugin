@@ -40,8 +40,37 @@
             </ul>
 
             <label>
-                <input type="checkbox" name="data[split]" value="1" <?= $profile['split'] ? " checked" : "" ?>>
+                <input type="checkbox"
+                       name="data[split]"
+                       value="1"
+                       <?= $profile['split'] ? " checked" : "" ?>
+                       onChange="jQuery('.evasys_teachers_results').toggle(!this.checked);">
                 <?= _("Lehrende einzeln evaluieren") ?>
+            </label>
+
+            <div class="evasys_teachers_results" style="margin-top: 10px; <?= $profile['split'] ? "display: none; " : "" ?>">
+                <?= _("Wer bekommt die Evaluationsergebnisse?") ?>
+                <ul class="clean evasys_teachers">
+                    <? foreach ($teachers as $teacher) : ?>
+                        <li>
+                            <label>
+                                <span class="avatar" style="background-image: url('<?= Avatar::getAvatar($teacher['user_id'])->getURL(Avatar::MEDIUM) ?>');"></span>
+                                <?= htmlReady($teacher['fullname']) ?>
+                                <input type="checkbox"
+                                       name="data[teachers_results][]"
+                                       value="<?= htmlReady($teacher['user_id']) ?>"
+                                    <?= count($teachers) === 1 || !$profile['teachers_results'] || ($profile['teachers_results'] && in_array($teacher['user_id'], $profile['teachers_results']->getArrayCopy())) ? " checked" : "" ?>>
+                                <?= Icon::create("radiobutton-unchecked", "clickable")->asImg(20) ?>
+                                <?= Icon::create("check-circle", "clickable")->asImg(20) ?>
+                            </label>
+                        </li>
+                    <? endforeach ?>
+                </ul>
+            </div>
+
+            <label>
+                <?= _("Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>
+                <input type="text" name="data[results_email]" value="<?= htmlReady($profile['results_email']) ?>">
             </label>
 
             <label>
@@ -125,6 +154,22 @@
                 <label>
                     <?= _("Adresse für den Versand der Fragebögen") ?>
                     <textarea name="data[address]"><?= htmlReady($profile['address']) ?></textarea>
+                </label>
+
+                <label>
+                    <?= _("Sprache") ?>
+                    <select name="data[language]">
+                        <? foreach ($GLOBALS['INSTALLED_LANGUAGES'] as $key => $language) : ?>
+                        <option value="<?= htmlReady($key) ?>"<?= $profile['language'] === $key ? " selected" : "" ?>>
+                            <?= htmlReady($language['name']) ?>
+                        </option>
+                        <? endforeach ?>
+                    </select>
+                </label>
+
+                <label>
+                    <?= _("Anzahl gedruckter Fragebögen") ?>
+                    <input type="text" name="data[number_of_sheets]" value="<?= htmlReady($profile['number_of_sheets']) ?>">
                 </label>
             </div>
         </div>

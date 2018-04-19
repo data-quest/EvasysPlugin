@@ -2,6 +2,15 @@
 
 class EvasysCourseProfile extends SimpleORMap {
 
+    static public function findManyBySemester($course_ids, $semester_id = null)
+    {
+        $semester_id || $semester_id = Semester::findCurrent()->id;
+        return self::findBySQL("seminar_id IN (:course_ids) AND semester_id = :semester_id", array(
+            'course_ids' => $course_ids,
+            'semester_id' => $semester_id
+        ));
+    }
+
     protected static function configure($config = array())
     {
         $config['db_table'] = 'evasys_course_profiles';
@@ -29,6 +38,7 @@ class EvasysCourseProfile extends SimpleORMap {
             'get' => 'getFinalAddress'
         );
         $config['serialized_fields']['teachers'] = "JSONArrayObject";
+        $config['serialized_fields']['teachers_results'] = "JSONArrayObject";
         parent::configure($config);
     }
 

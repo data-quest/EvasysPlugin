@@ -23,7 +23,7 @@ class AdminController extends PluginController {
     public function upload_courses_action()
     {
         if (Request::isPost()) {
-            $activate = Request::getArray("activate");
+            $activate = Request::getArray("c");
             $evasys_seminar = array();
             foreach (Request::getArray("course") as $course_id) {
                 $evasys_evaluations = EvasysSeminar::findBySeminar($course_id);
