@@ -23,30 +23,75 @@ class EvasysForm extends SimpleORMap
             return true;
         }
         $soap = EvasysSoap::get();
-        $forms = $soap->__soapCall("GetAllForms", array());
-        if (is_a($forms, "SoapFault")) {
-            if ($forms->getMessage() == "Not Found") {
-                return "SoapPort der WSDL-Datei antwortet nicht.";
+        if ($old = false) {
+            $forms = $soap->__soapCall("GetAllForms", array());
+            if (is_a($forms, "SoapFault")) {
+                if ($forms->getMessage() == "Not Found") {
+                    return "SoapPort der WSDL-Datei antwortet nicht.";
+                } else {
+                    var_dump($forms);
+                    var_dump($soap->__getLastResponse());die();
+                    return "SOAP-error: " . $forms->getMessage() . ($forms->detail ? " (" . $forms->detail . ")" : "");
+                }
             } else {
-                var_dump($forms);
-                var_dump($forms->__getLastResponse());die();
-                return "SOAP-error: " . $evasys_sem_object->getMessage().($evasys_sem_object->detail ? " (".$evasys_sem_object->detail.")" : "");
+                $form_ids = array();
+                foreach ($forms->SimpleForms as $formdata) {
+                    //var_dump($formdata);die();
+                    $form = EvasysForm::findOneBySQL("form_id = ?", array($formdata->ID));
+                    if (!$form) {
+                        $form = new EvasysForm();
+                        $form->setId($formdata->ID);
+                    }
+                    $form['name'] = $formdata->Name;
+                    $form->store();
+                    $form_ids[] = $formdata->ID;
+                }
+                EvasysForm::deleteBySQL("form_id NOT IN (?)", array($form_ids));
+                $_SESSION['EVASYS_ALL_FORMS_EXPIRE'] = time();
+                return true;
             }
         } else {
-            $form_ids = array();
-            foreach ($forms->SimpleForms as $formdata) {
-                $form = EvasysForm::findOneBySQL("form_id = ?", array($formdata->ID));
-                if (!$form) {
-                    $form = new EvasysForm();
-                    $form->setId($formdata->ID);
+            $forms = $soap->__soapCall("GetFormsInfoByParams", array(
+                'Params' => array(
+                    'Users' => array("1"), //1 is for admin
+                    'IncludeDeactivatedForms' => false,
+                    'SelectFields' => array(
+                        "ShortName",
+                        "Description",
+                        //"MainLanguageId",
+                        //"OriginalId",
+                        //"HeadLogoId",
+                        //"URL"
+                    )
+                )
+            ));
+            if (is_a($forms, "SoapFault")) {
+                if ($forms->getMessage() == "Not Found") {
+                    return "SoapPort der WSDL-Datei antwortet nicht.";
+                } else {
+                    var_dump($forms);
+                    var_dump($soap->__getLastResponse());die();
+                    return "SOAP-error: " . $forms->getMessage() . ($forms->detail ? " (" . $forms->detail . ")" : "");
                 }
-                $form['name'] = $formdata->Name;
-                $form->store();
-                $form_ids[] = $formdata->ID;
+            } else {
+                $form_ids = array();
+                foreach ($forms->Strings as $formdata) {
+                    $formdata = json_decode($formdata, true);
+                    //var_dump($formdata); die();
+                    $form = EvasysForm::findOneBySQL("form_id = ?", array($formdata['FormId']));
+                    if (!$form) {
+                        $form = new EvasysForm();
+                        $form->setId($formdata['FormId']);
+                    }
+                    $form['name'] = $formdata['ShortName'];
+                    $form['description'] = $formdata['Description'];
+                    $form->store();
+                    $form_ids[] = $formdata['FormId'];
+                }
+                EvasysForm::deleteBySQL("form_id NOT IN (?)", array($form_ids));
+                $_SESSION['EVASYS_ALL_FORMS_EXPIRE'] = time();
+                return true;
             }
-            EvasysForm::deleteBySQL("form_id NOT IN (?)", array($form_ids));
-            $_SESSION['EVASYS_ALL_FORMS_EXPIRE'] = time();
-            return true;
         }
     }
 

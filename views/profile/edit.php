@@ -39,6 +39,7 @@
                 <? endforeach ?>
             </ul>
 
+            <? if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES) : ?>
             <label>
                 <input type="checkbox"
                        name="data[split]"
@@ -47,6 +48,7 @@
                        onChange="jQuery('.evasys_teachers_results').toggle(!this.checked);">
                 <?= _("Lehrende einzeln evaluieren") ?>
             </label>
+            <? endif ?>
 
             <div class="evasys_teachers_results" style="margin-top: 10px; <?= $profile['split'] ? "display: none; " : "" ?>">
                 <?= _("Wer bekommt die Evaluationsergebnisse?") ?>
@@ -101,7 +103,7 @@
                                 <td>
                                     <label>
                                         <input type="radio" name="data[form_id]" value="<?= htmlReady($form->getId()) ?>"<?= (!$profile['form_id'] || ($profile['form_id'] === $form->getId())) ? " checked" : "" ?>>
-                                        <?= htmlReady($form['name']) ?>
+                                        <?= htmlReady($form['name'].": ".$form['description']) ?>
                                     </label>
                                 </td>
                                 <td class="actions">
@@ -120,7 +122,7 @@
                                     <td>
                                         <label>
                                             <input type="radio" name="data[form_id]" value="<?= htmlReady($form->getId()) ?>"<?= $profile['form_id'] === $form->getId() ? " checked" : "" ?>>
-                                            <?= htmlReady($form['name']) ?>
+                                            <?= htmlReady($form['name'].": ".$form['description']) ?>
                                         </label>
                                     </td>
                                     <td class="actions">
@@ -141,11 +143,11 @@
                 <?= _("Art der Evaluation") ?>
                 <select name="data[mode]" onClick="jQuery('.evasys_paper').toggle(this.value === 'paper');">
                     <option value=""></option>
-                    <option value="paper"<?= $profile->getFinalMode() === "paper" ? " selected" : "" ?>>
-                        <?= _("Papierbasierte Evaluation") ?>
-                    </option>
                     <option value="online"<?= $profile->getFinalMode() === "online" ? " selected" : "" ?>>
                         <?= _("Online-Evaluation") ?>
+                    </option>
+                    <option value="paper"<?= $profile->getFinalMode() === "paper" ? " selected" : "" ?>>
+                        <?= _("Papierbasierte Evaluation") ?>
                     </option>
                 </select>
             </label>

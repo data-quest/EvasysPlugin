@@ -50,8 +50,8 @@ class EvasysCourseProfile extends SimpleORMap {
     public function getFinalFormId()
     {
         $form_id = null;
-        if ($this[$attribute]) {
-            $form_id = $this[$attribute];
+        if ($this['form_id']) {
+            $form_id = $this['form_id'];
         }
         return $this->getPresetFormId($form_id);
     }

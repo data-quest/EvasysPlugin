@@ -27,7 +27,7 @@
             <select name="data[form_id]" class="select2">
                 <option value=""></option>
                 <? foreach (EvasysForm::findBySQL("active = '1' ORDER BY name ASC") as $form) : ?>
-                    <option value="<?= htmlReady($form->getId()) ?>"<?= $form->getId() == $profile['form_id'] ? " selected" : "" ?>>
+                    <option value="<?= htmlReady($form->getId()) ?>"<?= $form->getId() == $profile['form_id'] ? " selected" : "" ?> title="<?= htmlReady($form['description']) ?>">
                         <?= htmlReady($form['name']) ?>
                     </option>
                 <? endforeach ?>
@@ -74,7 +74,7 @@
                             <select name="forms_by_type[<?= htmlReady($sem_type['id']) ?>]" class="select2">
                                 <option value=""></option>
                                 <? foreach (EvasysForm::findBySQL("active = '1' ORDER BY name ASC") as $form) : ?>
-                                    <option value="<?= htmlReady($form->getId()) ?>"<?= $forms_by_type[$sem_type['id']][0] == $form->getId() ? " selected" : "" ?>>
+                                    <option value="<?= htmlReady($form->getId()) ?>"<?= $forms_by_type[$sem_type['id']][0] == $form->getId() ? " selected" : "" ?>  title="<?= htmlReady($form['description']) ?>">
                                         <?= htmlReady($form['name']) ?>
                                     </option>
                                 <? endforeach ?>
@@ -88,7 +88,7 @@
                             <select name="available_forms_by_type[<?= htmlReady($sem_type['id']) ?>][]" multiple class="select2">
                                 <option value=""></option>
                                 <? foreach (EvasysForm::findBySQL("active = '1' ORDER BY name ASC") as $form) : ?>
-                                    <option value="<?= htmlReady($form->getId()) ?>"<?= in_array($form->getId(), (array) $available_forms_by_type[$sem_type['id']]) ? " selected" : "" ?>>
+                                    <option value="<?= htmlReady($form->getId()) ?>"<?= in_array($form->getId(), (array) $available_forms_by_type[$sem_type['id']]) ? " selected" : "" ?>  title="<?= htmlReady($form['description']) ?>">
                                         <?= htmlReady($form['name']) ?>
                                     </option>
                                 <? endforeach ?>

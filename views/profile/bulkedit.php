@@ -7,6 +7,7 @@
 
 
     <table class="default nohover">
+        <caption><?= sprintf(_("Bearbeiten von %s Veranstaltungen"), count($course_ids)) ?></caption>
         <thead>
             <tr>
                 <th width="50%"><?= _("Zu verändernde Eigenschaft auswählen") ?></th>
@@ -38,6 +39,32 @@
                 </select>
             </td>
         </tr>
+        <? if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES) : ?>
+        <tr>
+            <td>
+                <label>
+                    <input type="checkbox" name="change[]" value="split" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                    <?= _("Lehrende einzeln evaluieren?") ?>
+                </label>
+            </td>
+            <td>
+                <select name="split"
+                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                    <option value="">
+                        <? if ($values['split'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
+                            <?= _("Unterschiedliche Werte") ?>
+                        <? endif ?>
+                    </option>
+                    <option value="0"<?= !$values['split'] ? " selected" : "" ?>>
+                        <?= _("Nein") ?>
+                    </option>
+                    <option value="1"<?= $values['split'] == 1 ? " selected" : "" ?>>
+                        <?= _("Ja") ?>
+                    </option>
+                </select>
+            </td>
+        </tr>
+        <? endif ?>
         <tr>
             <td>
                 <label>
@@ -68,6 +95,62 @@
                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
             </td>
         </tr>
+        <tr>
+            <td>
+                <label>
+                    <input type="checkbox" name="change[]" value="form_id" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                    <?= _("Fragebogen") ?>
+                </label>
+            </td>
+            <td>
+                <? if (count($available_form_ids)) : ?>
+                <select name="form_id"
+                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                    <option value="">
+                        <? if ($values['form_id'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
+                            <?= _("Unterschiedliche Werte") ?>
+                        <? endif ?>
+                    </option>
+                    <? foreach ($available_form_ids as $available_form_id) : ?>
+                        <? $form = EvasysForm::find($available_form_id) ?>
+                        <? if ($form) : ?>
+                            <option value="<?= htmlReady($available_form_id) ?>"<?= $values['form_id'] == $available_form_id ? " selected" : "" ?>>
+                                <?= htmlReady($form['name'].": ".$form['description']) ?>
+                            </option>
+                        <? endif ?>
+                    <? endforeach ?>
+                </select>
+                <? else : ?>
+                    <?= _("Es gibt keinen Fragebogen, der bei allen ausgewählten Veranstaltungen erlaubt ist.") ?>
+                <? endif ?>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
+                    <input type="checkbox" name="change[]" value="mode" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                    <?= _("Art der Evaluation") ?>
+                </label>
+            </td>
+            <td>
+                <select name="mode"
+                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                    <option value="">
+                        <? if ($values['mode'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
+                            <?= _("Unterschiedliche Werte") ?>
+                        <? endif ?>
+                    </option>
+                    <option value="online"<?= $values['mode'] == "online" ? " selected" : "" ?>>
+                        <?= _("Online-Evaluation") ?>
+                    </option>
+                    <option value="paper"<?= $values['mode'] == "paper" ? " selected" : "" ?>>
+                        <?= _("Papierbasierte Evaluation") ?>
+                    </option>
+
+                </select>
+            </td>
+        </tr>
+
         </tbody>
 
     </table>

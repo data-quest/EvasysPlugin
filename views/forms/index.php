@@ -6,6 +6,7 @@
             <tr>
                 <th width="20"></th>
                 <th><?= _("Name") ?></th>
+                <th><?= _("Überschrift") ?></th>
                 <th><?= _("Anzahl Veranstaltungen") ?></th>
                 <th><?= _("Info") ?></th>
                 <th></th>
@@ -18,6 +19,7 @@
                         <input type="checkbox" name="a[]" value="<?= htmlReady($form->getId()) ?>" <?= $form['active'] ? " checked" : "" ?>>
                     </td>
                     <td><?= htmlReady($form['name']) ?></td>
+                    <td><?= htmlReady($form['description']) ?></td>
                     <td><?= htmlReady($form->getNumberOfCourses()) ?></td>
                     <td>
                         <? if ($form['link']) : ?>

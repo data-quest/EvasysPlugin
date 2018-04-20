@@ -32,6 +32,7 @@ class AddCourseProfiles extends Migration
             CREATE TABLE `evasys_forms` (
                 `form_id` int(11) NOT NULL,
                 `name` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                `description` text DEFAULT NULL,
                 `active` int(11) NOT NULL DEFAULT '0',
                 `link` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                 `chdate` int(11) DEFAULT NULL,
@@ -119,6 +120,14 @@ class AddCourseProfiles extends Migration
             'section' => "EVASYS_PLUGIN",
             'description' => "Are admins (not root) allowed to edit their institute-profiles?"
         ));
+        Config::get()->create("EVASYS_ENABLE_SPLITTING_COURSES", array(
+            'value' => 0,
+            'type' => "boolean",
+            'range' => "global",
+            'section' => "EVASYS_PLUGIN",
+            'description' => "May a course with multiple teachers be split into multiple evaluations?"
+        ));
+
     }
     
     public function down()

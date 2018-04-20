@@ -76,6 +76,8 @@ class ProfileController extends PluginController {
 
     public function bulkedit_action()
     {
+        Navigation::activateItem("/browse/my_courses/list");
+        PageLayout::setTitle(_("Evaluationsdaten"));
         $this->course_ids = array_keys(Request::getArray("c"));
         if (!count($this->course_ids)) {
             PageLayout::postError(_("Es wurden keine Veranstaltungen zum Bearbeiten ausgewählt."));
@@ -88,6 +90,11 @@ class ProfileController extends PluginController {
                 if (in_array("applied", Request::getArray("change"))) {
                     if (Request::get("applied") !== "") {
                         $profile['applied'] = Request::int("applied");
+                    }
+                }
+                if (in_array("split", Request::getArray("change"))) {
+                    if (Request::get("split") !== "") {
+                        $profile['split'] = Request::int("split");
                     }
                 }
                 if (in_array("begin", Request::getArray("change"))) {
@@ -110,16 +117,28 @@ class ProfileController extends PluginController {
                         $profile['end'] = null;
                     }
                 }
-
+                if (in_array("form_id", Request::getArray("change"))) {
+                    if (Request::option("form_id") !== "") {
+                        $profile['form_id'] = $profile->getPresetFormId() != Request::option("form_id")
+                            ? Request::option("form_id")
+                            : null;
+                    }
+                }
+                if (in_array("mode", Request::getArray("change"))) {
+                    if (Request::option("mode") !== "") {
+                        $profile['mode'] = $profile->getPresetMode() != Request::option("mode")
+                            ? Request::option("mode")
+                            : null;
+                    }
+                }
                 $profile->store();
             }
             PageLayout::postSuccess(_("Evaluationsdaten wurden gespeichert"));
             $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
         }
 
-        $this->values = array(
-            'applied' => null
-        );
+        $this->values = array();
+        $this->available_form_ids = null;
         foreach ($this->profiles as $profile) {
 
             if ($this->values['applied'] === null) {
@@ -140,6 +159,28 @@ class ProfileController extends PluginController {
             } elseif ($this->values['end'] !== $end) {
                 $this->values['end'] = "EVASYS_UNEINDEUTIGER_WERT";
             }
+
+            $form_id = $profile->getFinalFormId();
+            if ($this->values['form_id'] === null) {
+                $this->values['form_id'] = $form_id;
+            } elseif ($this->values['form_id'] !== $form_id) {
+                $this->values['form_id'] = "EVASYS_UNEINDEUTIGER_WERT";
+            }
+            $available = array($profile->getPresetFormId());
+            $available = array_unique(array_merge($available, $profile->getAvailableFormIds()));
+            if ($this->available_form_ids === null) {
+                $this->available_form_ids = $available;
+            } else {
+                $this->available_form_ids = array_intersect($this->available_form_ids, $available);
+            }
+
+            $mode = $profile->getFinalMode();
+            if ($this->values['mode'] === null) {
+                $this->values['mode'] = $mode;
+            } elseif ($this->values['mode'] !== $mode) {
+                $this->values['mode'] = "EVASYS_UNEINDEUTIGER_WERT";
+            }
+
         }
     }
 
