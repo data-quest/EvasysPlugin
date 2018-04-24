@@ -2,6 +2,21 @@
 
 class EvasysCourseProfile extends SimpleORMap {
 
+    static public function findBySemester($seminar_id, $semester_id = null)
+    {
+        $semester_id || $semester_id = Semester::findCurrent()->id;
+        $profile = self::findOneBySQL("seminar_id = :course_id AND semester_id = :semester_id", array(
+            'course_ids' => $seminar_id,
+            'semester_id' => $semester_id
+        ));
+        if (!$profile) {
+            $profile = new EvasysCourseProfile();
+            $profile['seminar_id'] = $seminar_id;
+            $profile['semester_id'] = $semester_id;
+        }
+        return $profile;
+    }
+
     static public function findManyBySemester($course_ids, $semester_id = null)
     {
         $semester_id || $semester_id = Semester::findCurrent()->id;
