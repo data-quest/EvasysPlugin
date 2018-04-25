@@ -20,43 +20,6 @@ class EvasysSeminar extends SimpleORMap {
     }
 
     /**
-     * Uploads all given seminars in one soap-call to EvaSys.
-     * @param array $seminars : array of EvasysSeminar
-     */
-    static public function UploadSessions(array $seminars)
-    {
-        $soap = EvasysSoap::get();
-        $courses = array();
-        foreach($seminars as $seminar) {
-            $part = $seminar->getCoursePart();
-            if ($part && $part !== "delete") {
-                $courses[] = $part;
-            } elseif($part === "delete") {
-                $soap->__soapCall("DeleteCourse", array(
-                    'CourseId' => $seminar['seminar_id'],
-                    'IdType' => "PUBLIC"
-                ));
-            }
-        }
-        $sessionlist = array(
-            array('CourseCreatorList' => $courses),
-            true
-        );
-        $evasys_sem_object = $soap->__soapCall("InsertCourses", $sessionlist);
-        if (is_a($evasys_sem_object, "SoapFault")) {
-            if ($evasys_sem_object->getMessage() == "Not Found") {
-                return "SoapPort der WSDL-Datei antwortet nicht.";
-            } else {
-                var_dump($evasys_sem_object);
-                var_dump($soap->__getLastResponse());die();
-                return "SOAP-error: " . $evasys_sem_object->getMessage().($evasys_sem_object->detail ? " (".$evasys_sem_object->detail.")" : "");
-            }
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Fetches all new evaluations (red icon) for the user.
      * @param string|null $user_id of the given user or null for current user
      * @return array : array of Seminar_ids with
@@ -90,119 +53,66 @@ class EvasysSeminar extends SimpleORMap {
         return (int) $_SESSION['EVASYS_SEMINARS_STATUS'][$this['Seminar_id']];
     }
 
+
     /**
-     * Returns all information for a seminar to be uploaded to EvaySys.
-     * @return array
+     * Uploads all given seminars in one soap-call to EvaSys.
+     * @param array $seminars : array of EvasysSeminar
      */
-    public function getSessionPart()
+    static public function UploadSessions(array $seminars)
     {
-        $db = DBManager::get();
-        $seminar = new Seminar($this['Seminar_id']);
-        //$dozent = $this->getDozent();
-        $participants = array();
-
-        $user_permissions = ['autor', 'tutor'];
-
-        if (EvasysPlugin::useLowerPermissionLevels()) {
-            $user_permissions[] = 'user';
-        }
-
-        $statement = DBManager::get()->prepare("
-            SELECT auth_user_md5.user_id
-            FROM auth_user_md5 
-                INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
-            WHERE seminar_user.Seminar_id = :seminar_id
-                AND seminar_user.status IN ( :user_permissions )
-        ");
-        $statement->execute(array(
-            'seminar_id' => $this['Seminar_id'],
-            'user_permissions' => $user_permissions
-        ));
-        $students = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-        foreach ($students as $student_id) {
-            $student = self::getStudipUser($student_id);
-            $participants[] = array(
-                'm_nId' => "",
-                'm_sTitle' => "",//$student['title_front'],
-                'm_sIdentifier' => $student['Email'],
-                'm_sEmail' => $student['Email'],
-                'm_sFirstname' => "", //$student['Vorname'],
-                'm_sLastname' => "", //$student['Nachname'],
-                'm_nGender' => "", //$student['geschlecht'] == 1 ? "m" : "w",
-                'm_sAddress' => "",
-                'm_sCustom1' => "",
-                'm_sCustom2' => "",
-                'm_sCustom3' => ""
-            );
-        }
-
-        $instructorlist = array();
-        $dozenten = $db->query(
-            "SELECT seminar_user.user_id " .
-            "FROM seminar_user " .
-            "WHERE seminar_user.Seminar_id = ".$db->quote($this['Seminar_id'])." " .
-                "AND seminar_user.status = 'dozent' " .
-            "ORDER BY seminar_user.position ASC " .
-        "")->fetchAll(PDO::FETCH_COLUMN, 0);
-        foreach ($dozenten as $dozent_id) {
-            $dozent = User::find($dozent_id);
-            if (in_array(Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD, array_keys($dozent->toArray()))) {
-                $id = $dozent[Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD];
-            } else {
-                $id = DatafieldEntryModel::findOneBySQL("datafield_id = ? AND range_id = ? AND range_type = 'user'", array(
-                    Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD,
-                    $dozent_id
-                ));
-                $id = $id ? $id->content : $dozent_id;
+        $soap = EvasysSoap::get();
+        $courses = array();
+        foreach($seminars as $seminar) {
+            $part = $seminar->getCoursePart();
+            if ($part && $part[0] !== "delete") {
+                if ($part['CourseName']) {
+                    $courses[] = $part;
+                } else {
+                    //we have split courses for each teacher
+                    foreach ($part as $subcourse) {
+                        $courses[] = $subcourse;
+                    }
+                    //try to delete a course-evaluation if we have a split course
+                    $soap->__soapCall("DeleteCourse", array(
+                        'CourseId' => $seminar['seminar_id'],
+                        'IdType' => "PUBLIC"
+                    ));
+                }
+            } elseif($part[0] === "delete") {
+                foreach ($part[1] as $seminar_id) {
+                    $soap->__soapCall("DeleteCourse", array(
+                        'CourseId' => $seminar_id,
+                        'IdType' => "PUBLIC"
+                    ));
+                }
             }
-            $instructorlist[] = array(
-                'InstructorUid' => $id,
-                'FirstName' => $dozent['Vorname'],
-                'LastName' => (Config::get()->EVASYS_EXPORT_TITLES ? $dozent['title_front']." ": "").$dozent['Nachname'],
-                'Gender' => $dozent['geschlecht'] == 1 ? "m" : "w",
-                'Email' => $dozent['Email']
-            );
         }
-        $stmt = DBManager::get()->prepare(
-            "SELECT DISTINCT IF(sem_tree.studip_object_id IS NOT NULL, (SELECT Institute.Name FROM Institute WHERE Institute.Institut_id = sem_tree.studip_object_id), sem_tree.name) ".
-            "FROM seminar_sem_tree ".
-                "INNER JOIN sem_tree ON (seminar_sem_tree.sem_tree_id = sem_tree.sem_tree_id) " .
-            "WHERE seminar_sem_tree.seminar_id = ? " .
-            "ORDER BY sem_tree.name ASC " .
-        "");
-        $stmt->execute(array($this['Seminar_id']));
-        $studienbereiche = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
-        $datenfelder = DataFieldEntry::getDataFieldEntries($this['Seminar_id'], 'sem', $seminar->status);
-        $custom_fields = array();
-        foreach ($datenfelder as $id => $datafield) {
-            $custom_fields[] = $datafield;
-        }
-        return array(
-            'CourseCode' => $this['Seminar_id'],
-            'CourseUid' => $this['Seminar_id'],
-            'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
-            'CoursePeriodIdType' => "PERIODDATE",
-            'CourseName' => $seminar->getName(),
-            'CourseType' => EvasysMatching::semtypeName($seminar->status),
-            'm_nUserId' => count($participants),
-            'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
-            'ParticipantList' => $participants,
-            'AnonymousParticipants' => true,
-            'InstructorList' => $instructorlist,
-            'CourseProgramOfStudy' => implode('|', $studienbereiche),
-            'RoomName' => ($seminar->location),
-            'CourseCustomField1' => $seminar->getNumber(),
-            'CourseCustomField2' => $custom_fields[0] ? $custom_fields[0]->getValue() : "",
-            'CourseCustomField3' => $custom_fields[1] ? $custom_fields[1]->getValue() : "",
-            'CourseCustomField4' => $custom_fields[2] ? $custom_fields[2]->getValue() : "",
-            'CourseCustomField5' => $custom_fields[3] ? $custom_fields[3]->getValue() : ""
+        $sessionlist = array(
+            array('CourseCreators' => $courses),
+            true
         );
+        $evasys_sem_object = $soap->__soapCall("InsertCourses", $sessionlist);
+        if (is_a($evasys_sem_object, "SoapFault")) {
+            if ($evasys_sem_object->getMessage() == "Not Found") {
+                return "SoapPort der WSDL-Datei antwortet nicht.";
+            } else {
+                var_dump($evasys_sem_object);
+                var_dump($soap->__getLastResponse());die();
+                return "SOAP-error: " . $evasys_sem_object->getMessage().($evasys_sem_object->detail ? " (".$evasys_sem_object->detail.")" : "");
+            }
+        } else {
+            return true;
+        }
     }
 
     public function getCoursePart()
     {
         $db = DBManager::get();
         $seminar = new Seminar($this['Seminar_id']);
+        $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
+        if (Config::get()->EVASYS_ENABLE_PROFILES && !$profile['applied'] && !$profile['split']) {
+            return $profile['transferred'] ? array("delete", array($this['Seminar_id'])) : null; //course should be deleted from evasys database
+        }
         //$dozent = $this->getDozent();
         $participants = array();
 
@@ -239,34 +149,6 @@ class EvasysSeminar extends SimpleORMap {
             );
         }
 
-        $instructorlist = array();
-        $dozenten = $db->query(
-            "SELECT seminar_user.user_id " .
-            "FROM seminar_user " .
-            "WHERE seminar_user.Seminar_id = ".$db->quote($this['Seminar_id'])." " .
-            "AND seminar_user.status = 'dozent' " .
-            "ORDER BY seminar_user.position ASC " .
-            "")->fetchAll(PDO::FETCH_COLUMN, 0);
-        foreach ($dozenten as $dozent_id) {
-            $dozent = User::find($dozent_id);
-            if (in_array(Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD, array_keys($dozent->toArray()))) {
-                $id = $dozent[Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD];
-            } else {
-                $id = DatafieldEntryModel::findOneBySQL("datafield_id = ? AND range_id = ? AND range_type = 'user'", array(
-                    Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD,
-                    $dozent_id
-                ));
-                $id = $id ? $id->content : $dozent_id;
-            }
-            $instructorlist[] = array(
-                'InstructorUid' => $id,
-                //'InstructorLogin' => "",
-                'FirstName' => $dozent['Vorname'],
-                'LastName' => (Config::get()->EVASYS_EXPORT_TITLES ? $dozent['title_front']." ": "").$dozent['Nachname'],
-                'Gender' => $dozent['geschlecht'] == 1 ? "m" : "w",
-                'Email' => $dozent['Email']
-            );
-        }
         $stmt = DBManager::get()->prepare("
             SELECT DISTINCT IF(sem_tree.studip_object_id IS NOT NULL, (SELECT Institute.Name FROM Institute WHERE Institute.Institut_id = sem_tree.studip_object_id), sem_tree.name) 
             FROM seminar_sem_tree 
@@ -278,57 +160,165 @@ class EvasysSeminar extends SimpleORMap {
         $studienbereiche = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
         $datenfelder = DataFieldEntry::getDataFieldEntries($this['Seminar_id'], 'sem', $seminar->status);
         $custom_fields = array(
-            'Veranstaltungsnummer' => $seminar->getNumber()
+            '1' => $seminar->getNumber(),
+            '2' => "" //Anzahl der Bögen
         );
+        $i = 3;
         foreach ($datenfelder as $id => $datafield) {
-            $custom_fields[DataField::find($id)->name] = $datafield;
+            $custom_fields[$i] = $datafield;
+            $i++;
         }
         $surveys = array();
 
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
-            $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
             $surveys[] = array(
                 'FormId' => $profile->getFinalFormId(),
                 'FormIdType' => "INTERNAL",
                 'PeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
                 'PeriodIdType' => "PERIODDATE",
                 'SurveyType' => array(
-                    'm_chSurveyType' => "",
-                    'm_sDescription' => ""
+                    'm_chSurveyType' => $profile['mode'] === "paper" ? "s" : "o" // o = online+TAN, d = Deckblatt, s = Selbstdruck
+                    //
+                    //'m_sDescription' => ""
                 ),
                 'Verification' => false,
                 'Notice' => "",
-                'FormRecipientList' => array(),
+                'FormRecipientList' => array(), //Emails, an die die PDF des Fragebogens verschickt wird, aber wie oft soll er ausdrucken??
                 'InviteParticipants' => false,
                 'InvitationTask' => array(
-                    'SurveyID' => "",
+                    //'SurveyID' => "",
                     'StartTime' => date("c", $profile->getFinalBegin())
                 ),
                 'CloseTask' => array(
-                    'SurveyID' => "",
+                    //'SurveyID' => "",
                     'StartTime' => date("c", $profile->getFinalEnd())
                 ),
                 'SerialPrint' => false
             );
         }
 
-        return array(
-            'CourseUid' => $this['Seminar_id'],
-            'CourseName' => $seminar->getName(),
-            'CourseCode' => $this['Seminar_id'],
-            'CourseType' => EvasysMatching::semtypeName($seminar->status),
-            'CourseProgramOfStudy' => implode('|', $studienbereiche),
-            'CourseEnrollment' => 0, // ?
-            'CustomFieldsJSON' => json_encode($custom_fields),
-            'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
-            'CoursePeriodIdType' => "PERIODDATE",
-            'InstructorList' => $instructorlist,
-            'RoomName' => ($seminar->location),
-            'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
-            'ParticipantList' => $participants,
-            'AnonymousParticipants' => true,
-            'SurveyCreatorList' => $surveys,
-        );
+        $dozenten = $db->query(
+            "SELECT seminar_user.user_id " .
+            "FROM seminar_user " .
+            "WHERE seminar_user.Seminar_id = ".$db->quote($this['Seminar_id'])." " .
+            "AND seminar_user.status = 'dozent' " .
+            "ORDER BY seminar_user.position ASC " .
+            "")->fetchAll(PDO::FETCH_COLUMN, 0);
+
+        if (Config::get()->EVASYS_ENABLE_PROFILES && $profile['applied'] && $profile['split']) {
+            //we split this course into one course for each teacher.
+            $parts = array();
+
+            foreach ($dozenten as $dozent_id) {
+                $instructorlist = array();
+
+                $instructorlist[] = $this->getInstructorPart($dozent_id);
+                $additional_receivers = preg_split("/\s+/", $profile['results_email'], -1, PREG_SPLIT_NO_EMPTY);
+                foreach ($additional_receivers as $email) {
+                    $instructorlist[] = $this->getInstructorPart($email, true);
+                }
+
+                $parts[] = array(
+                    'CourseUid' => $this['Seminar_id']."-".$dozent_id,
+                    'CourseName' => $seminar->getName(),
+                    'CourseCode' => $this['Seminar_id'],
+                    'CourseType' => EvasysMatching::semtypeName($seminar->status),
+                    'CourseProgramOfStudy' => implode('|', $studienbereiche),
+                    'CourseEnrollment' => 0, // ?
+                    'CustomFieldsJSON' => json_encode($custom_fields),
+                    'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
+                    'CoursePeriodIdType' => "PERIODDATE",
+                    'InstructorList' => $instructorlist,
+                    'RoomName' => ($seminar->location),
+                    'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
+                    'ParticipantList' => $participants,
+                    'AnonymousParticipants' => true,
+                    'SurveyCreatorList' => $surveys,
+                );
+            }
+            return $parts;
+
+        } elseif(Config::get()->EVASYS_ENABLE_PROFILES && !$profile['applied'] && $profile['split']) {
+            //we need to delete all former sub-courses
+            if ($profile['transferred']) {
+                $ids = array();
+                foreach ($dozenten as $dozent_id) {
+                    $ids[] = $this['Seminar_id']."-".$dozent_id;
+                }
+                return array("delete", $ids);
+            }  else {
+                return null;
+            }
+        } else {
+            //we just want to import/update this course
+            $instructorlist = array();
+            $instructors = array();
+            foreach ($dozenten as $dozent_id) {
+                if (count($dozenten) === 1 || !$profile['teachers'] || ($profile['teachers'] && in_array($dozent_id, $profile['teachers']->getArrayCopy()))) {
+                    $instructors[] = $dozent_id;
+                    $instructorlist[] = $this->getInstructorPart($dozent_id);
+                }
+            }
+            foreach ($dozenten as $dozent_id) {
+                if ((count($dozenten) === 1 || !$profile['teachers_results'] || ($profile['teachers_results'] && in_array($dozent_id, $profile['teachers_results']->getArrayCopy())))
+                    && (!in_array($dozent_id, $instructors))) {
+                    $instructors[] = $dozent_id;
+                    $instructorlist[] = $this->getInstructorPart($dozent_id);
+                }
+            }
+            $additional_receivers = preg_split("/\s+/", $profile['results_email'], -1, PREG_SPLIT_NO_EMPTY);
+            foreach ($additional_receivers as $email) {
+                $instructorlist[] = $this->getInstructorPart($email, true);
+            }
+
+            return array(
+                'CourseUid' => $this['Seminar_id'],
+                'CourseName' => $seminar->getName(),
+                'CourseCode' => $this['Seminar_id'],
+                'CourseType' => EvasysMatching::semtypeName($seminar->status),
+                'CourseProgramOfStudy' => implode('|', $studienbereiche),
+                'CourseEnrollment' => 0, // ?
+                'CustomFieldsJSON' => json_encode($custom_fields),
+                'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
+                'CoursePeriodIdType' => "PERIODDATE",
+                'InstructorList' => $instructorlist,
+                'RoomName' => ($seminar->location),
+                'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
+                'ParticipantList' => $participants,
+                'AnonymousParticipants' => true,
+                'SurveyCreatorList' => $surveys,
+            );
+        }
+    }
+
+    protected function getInstructorPart($id, $is_email = false)
+    {
+        $user = !$is_email ? User::find($id) : User::findOneBySQL("Email = ?", array($id));
+        if ($user) {
+            if (in_array(Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD, array_keys($user->toArray()))) {
+                $common_id = $user[Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD];
+            } else {
+                $common_id = DatafieldEntryModel::findOneBySQL("datafield_id = ? AND range_id = ? AND range_type = 'user'", array(
+                    Config::get()->EVASYS_EXPORT_DOZENT_BY_FIELD,
+                    $user->id
+                ));
+                $common_id = $common_id ? $common_id->content : $user->id;
+            }
+            return array(
+                'InstructorUid' => $common_id,
+                //'InstructorLogin' => "",
+                'FirstName' => $dozent['Vorname'],
+                'LastName' => (Config::get()->EVASYS_EXPORT_TITLES ? $user['title_front'] . " " : "") . $user['Nachname'],
+                'Gender' => $dozent['geschlecht'] == 1 ? "m" : "w",
+                'Email' => $dozent['Email']
+            );
+        } else {
+            return array(
+                'InstructorUid' => $email,
+                'LastName' => "N.N.",
+                'Email' => $id
+            );
+        }
     }
 
     public function getSurveys($user_id = null)
