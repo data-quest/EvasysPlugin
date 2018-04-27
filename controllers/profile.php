@@ -18,12 +18,8 @@ class ProfileController extends PluginController {
             $data = Request::getArray("data");
             $this->profile['applied'] = $data['applied'] ?: 0;
             $seminar = new Seminar($this->profile['seminar_id']);
-            $teachers = $seminar->getMembers("dozent");
-            $this->profile['teachers'] = $data['teachers'] && count($data['teachers']) !== count($teachers)
+            $this->profile['teachers'] = $data['teachers']
                 ? $data['teachers']
-                : null;
-            $this->profile['teachers_results'] = $data['teachers_results'] && count($data['teachers_results']) !== count($teachers)
-                ? $data['teachers_results']
                 : null;
             $this->profile['results_email'] = $data['results_email'] ?: null;
             $this->profile['split'] = $data['split'] ? 1 : 0;
@@ -146,6 +142,7 @@ class ProfileController extends PluginController {
             } elseif ($this->values['applied'] !== $profile['applied']) {
                 $this->values['applied'] = "EVASYS_UNEINDEUTIGER_WERT";
             }
+
 
             $begin = $profile->getFinalBegin();
             if ($this->values['begin'] === null) {

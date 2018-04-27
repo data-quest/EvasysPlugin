@@ -23,6 +23,17 @@
             <? $teachers = $seminar->getMembers("dozent") ?>
             <?= _("Wer wird evaluiert?") ?>
             <ul class="clean evasys_teachers">
+                <?
+                $active = array_flip($profile['teachers'] ? $profile['teachers']->getArrayCopy() : array());
+                usort($teachers, function ($a, $b) use ($active) {
+                    if (!isset($active[$a['user_id']])) {
+                        return 1;
+                    }
+                    if (!isset($active[$b['user_id']])) {
+                        return -1;
+                    }
+                    return $active[$a['user_id']] < $active[$b['user_id']] ? -1 : 1;
+                }) ?>
                 <? foreach ($teachers as $teacher) : ?>
                 <li>
                     <label>
@@ -34,6 +45,7 @@
                                <?= count($teachers) === 1 || !$profile['teachers'] || ($profile['teachers'] && in_array($teacher['user_id'], $profile['teachers']->getArrayCopy())) ? " checked" : "" ?>>
                         <?= Icon::create("radiobutton-unchecked", "clickable")->asImg(20) ?>
                         <?= Icon::create("check-circle", "clickable")->asImg(20) ?>
+                        <span class="note">(<?= _("Wird auf dem Fragebogen genannt.") ?>)</span>
                     </label>
                 </li>
                 <? endforeach ?>
@@ -44,31 +56,10 @@
                 <input type="checkbox"
                        name="data[split]"
                        value="1"
-                       <?= $profile['split'] ? " checked" : "" ?>
-                       onChange="jQuery('.evasys_teachers_results').toggle(!this.checked);">
+                       <?= $profile['split'] ? " checked" : "" ?>>
                 <?= _("Lehrende einzeln evaluieren") ?>
             </label>
             <? endif ?>
-
-            <div class="evasys_teachers_results" style="margin-top: 10px; <?= $profile['split'] ? "display: none; " : "" ?>">
-                <?= _("Wer bekommt die Evaluationsergebnisse?") ?>
-                <ul class="clean evasys_teachers">
-                    <? foreach ($teachers as $teacher) : ?>
-                        <li>
-                            <label>
-                                <span class="avatar" style="background-image: url('<?= Avatar::getAvatar($teacher['user_id'])->getURL(Avatar::MEDIUM) ?>');"></span>
-                                <?= htmlReady($teacher['fullname']) ?>
-                                <input type="checkbox"
-                                       name="data[teachers_results][]"
-                                       value="<?= htmlReady($teacher['user_id']) ?>"
-                                    <?= count($teachers) === 1 || !$profile['teachers_results'] || ($profile['teachers_results'] && in_array($teacher['user_id'], $profile['teachers_results']->getArrayCopy())) ? " checked" : "" ?>>
-                                <?= Icon::create("radiobutton-unchecked", "clickable")->asImg(20) ?>
-                                <?= Icon::create("check-circle", "clickable")->asImg(20) ?>
-                            </label>
-                        </li>
-                    <? endforeach ?>
-                </ul>
-            </div>
 
             <label>
                 <?= _("Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>
@@ -78,14 +69,64 @@
             <label>
                 <?= _("Evaluationsbeginn") ?>
                 <? $begin = $profile->getFinalBegin() ?>
-                <input type="text" name="data[begin]" value="<?= $begin ? date("d.m.Y H:i", $begin) : "" ?>" class="datepicker">
+                <input type="text" name="data[begin]" value="<?= $begin ? date("d.m.Y H:i", $begin) : "" ?>" class="datepicker evasys_begin">
             </label>
 
             <label>
                 <?= _("Evaluationsende") ?>
                 <? $end = $profile->getFinalEnd() ?>
-                <input type="text" name="data[end]" value="<?= $end ? date("d.m.Y H:i", $end) : "" ?>" class="datepicker">
+                <input type="text" name="data[end]" value="<?= $end ? date("d.m.Y H:i", $end) : "" ?>" class="datepicker evasys_end">
             </label>
+
+            <? if (!$profile->hasDatesInEvalTimespan()) : ?>
+                <?= MessageBox::error(_("Kein Veranstaltungstermin befindet sich in dem vorgesehenen Evaluationszeitraum!")) ?>
+                <? if (count($profile->course->dates)) : ?>
+                <?= _("Anderen Termin aussuchen") ?>
+                <div class="evasys_propose_dates">
+                    <table class="default nohover">
+                        <tbody>
+                        <? foreach ($profile->course->dates as $date) : ?>
+                            <? if (($date['end_time'] > time()) && ($date['date'] < Semester::findCurrent()->ende)) : ?>
+                            <? $found = true ?>
+                            <tr>
+                                <td>
+                                    <? if (date("d.m.Y", $date['date']) !== date("d.m.Y", $date['end_time'])) : ?>
+                                    <?= date("d.m.Y H:i", $date['date']) ?> - <?= date("d.m.Y H:i", $date['end_time']) ?>
+                                    <? else : ?>
+                                        <?= date("d.m.Y H:i", $date['date']) ?> - <?= date("H:i", $date['end_time']) ?>
+                                    <? endif ?>
+                                </td>
+                                <td>
+                                    <? if (count($profile->course->statusgruppen) != count($date->statusgruppen)) : ?>
+                                        <? foreach ($date->statusgruppen as $i => $statusgruppe) : ?>
+                                        <? if ($i > 0) : ?>
+                                            ,
+                                        <? endif ?>
+                                        <?= htmlReady($statusgruppe['name']) ?>
+                                        <? endforeach ?>
+                                    <? endif ?>
+                                </td>
+                                <td class="actions">
+                                    <a href="#" onClick="console.log(jQuery('.evasys_begin')); jQuery('.evasys_begin').val('<?= date("d.m.Y H:i", $date['date']) ?>'); jQuery('.evasys_end').val('<?= date("d.m.Y H:i", $date['end_time']) ?>'); return false;"
+                                       title="<?= _("Termin als Evaluationszeitraum auswählen") ?>">
+                                        <?= Icon::create("date+move_up", "clickable")->asImg(20) ?>
+                                    </a>
+                                </td>
+                            </tr>
+                            <? endif ?>
+                        <? endforeach ?>
+                        <? if (!$found) : ?>
+                        <tr>
+                            <td style="text-align: center;">
+                                <?= _("Keine möglichen Termine gefunden.") ?>
+                            </td>
+                        </tr>
+                        <? endif ?>
+                        </tbody>
+                    </table>
+                    <? endif ?>
+                </div>
+            <? endif ?>
 
             <div style="margin-top: 10px;">
                 <table class="default nohover">
@@ -160,13 +201,7 @@
 
                 <label>
                     <?= _("Sprache") ?>
-                    <select name="data[language]">
-                        <? foreach ($GLOBALS['INSTALLED_LANGUAGES'] as $key => $language) : ?>
-                        <option value="<?= htmlReady($key) ?>"<?= $profile['language'] === $key ? " selected" : "" ?>>
-                            <?= htmlReady($language['name']) ?>
-                        </option>
-                        <? endforeach ?>
-                    </select>
+                    <textarea name="data[language]"><?= htmlReady($profile['language']) ?></textarea>
                 </label>
 
                 <label>
@@ -178,9 +213,25 @@
 
     </fieldset>
 
+    <? if (!$profile->isNew()) : ?>
+    <fieldset>
+        <legend><?= _("Log") ?></legend>
+
+        <?= MessageBox::info(sprintf(_("Letzte Bearbeitung von %s am %s Uhr"), get_fullname($profile['user_id']), date("d.m.Y H:i", $profile['chdate'])) ) ?>
+
+        <? if ($profile['transferred']) : ?>
+            <?= MessageBox::info(_("Diese Veranstaltung wurde bereits an den Evaluationsserver übertragen.")) ?>
+        <? endif ?>
+    </fieldset>
+    <? endif ?>
+
     <script>
         jQuery(function () {
             jQuery("input.datepicker").datetimepicker();
+            jQuery(".evasys_teachers").sortable({
+                "axis": "y",
+                "handle": ".avatar"
+            });
         });
     </script>
 

@@ -52,6 +52,13 @@
             <textarea name="data[address]"><?= htmlReady($profile['address']) ?></textarea>
         </label>
 
+        <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
+        <label>
+            <?= _("Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>
+            <input type="text" name="data[results_email]" value="<?= htmlReady($profile['results_email']) ?>">
+        </label>
+        <? endif ?>
+
     </fieldset>
 
     <fieldset class="forms_for_types">

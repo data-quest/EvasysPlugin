@@ -106,7 +106,7 @@
                     <td><?= _("Auswertung der Evaluation") ?></td>
                     <td>
                         <a href="<?= htmlReady($pdf_link) ?>" target="_blank">
-                            <img src="<?= htmlReady($GLOBALS['ABSOLUTE_URI_STUDIP'].$plugin->getPluginPath()."/file-pdf.png") ?>" title="<?= _("Testergebnisse als PDF") ?>">
+                            <?= Icon::create("file-pdf", "clickable")->asImg(48) ?>
                             <?= _("Ergebnisse als PDF") ?>
                         </a>
                     </td>

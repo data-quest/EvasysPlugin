@@ -78,6 +78,9 @@ class EvasysSeminar extends SimpleORMap {
                         'IdType' => "PUBLIC"
                     ));
                 }
+                $profile = EvasysCourseProfile::findBySemester($seminar['Seminar_id']);
+                $profile['transferred'] = 1;
+                $profile->store();
             } elseif($part[0] === "delete") {
                 foreach ($part[1] as $seminar_id) {
                     $soap->__soapCall("DeleteCourse", array(
@@ -213,8 +216,7 @@ class EvasysSeminar extends SimpleORMap {
                 $instructorlist = array();
 
                 $instructorlist[] = $this->getInstructorPart($dozent_id);
-                $additional_receivers = preg_split("/\s+/", $profile['results_email'], -1, PREG_SPLIT_NO_EMPTY);
-                foreach ($additional_receivers as $email) {
+                foreach ($profile->getFinalResultsEmails() as $email) {
                     $instructorlist[] = $this->getInstructorPart($email, true);
                 }
 
@@ -253,21 +255,18 @@ class EvasysSeminar extends SimpleORMap {
             //we just want to import/update this course
             $instructorlist = array();
             $instructors = array();
-            foreach ($dozenten as $dozent_id) {
-                if (count($dozenten) === 1 || !$profile['teachers'] || ($profile['teachers'] && in_array($dozent_id, $profile['teachers']->getArrayCopy()))) {
+            if ($profile['teachers']) {
+                foreach ($profile['teachers'] as $dozent_id) {
+                    $instructors[] = $dozent_id;
+                    $instructorlist[] = $this->getInstructorPart($dozent_id);
+                }
+            } else {
+                foreach ($dozenten as $dozent_id) {
                     $instructors[] = $dozent_id;
                     $instructorlist[] = $this->getInstructorPart($dozent_id);
                 }
             }
-            foreach ($dozenten as $dozent_id) {
-                if ((count($dozenten) === 1 || !$profile['teachers_results'] || ($profile['teachers_results'] && in_array($dozent_id, $profile['teachers_results']->getArrayCopy())))
-                    && (!in_array($dozent_id, $instructors))) {
-                    $instructors[] = $dozent_id;
-                    $instructorlist[] = $this->getInstructorPart($dozent_id);
-                }
-            }
-            $additional_receivers = preg_split("/\s+/", $profile['results_email'], -1, PREG_SPLIT_NO_EMPTY);
-            foreach ($additional_receivers as $email) {
+            foreach ($profile->getFinalResultsEmails() as $email) {
                 $instructorlist[] = $this->getInstructorPart($email, true);
             }
 
@@ -464,4 +463,5 @@ class EvasysSeminar extends SimpleORMap {
             "ORDER BY position ASC " .
         "")->fetch(PDO::FETCH_COLUMN, 0);
     }
+
 }

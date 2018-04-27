@@ -6,7 +6,7 @@ class EvasysCourseProfile extends SimpleORMap {
     {
         $semester_id || $semester_id = Semester::findCurrent()->id;
         $profile = self::findOneBySQL("seminar_id = :course_id AND semester_id = :semester_id", array(
-            'course_ids' => $seminar_id,
+            'course_id' => $seminar_id,
             'semester_id' => $semester_id
         ));
         if (!$profile) {
@@ -20,10 +20,11 @@ class EvasysCourseProfile extends SimpleORMap {
     static public function findManyBySemester($course_ids, $semester_id = null)
     {
         $semester_id || $semester_id = Semester::findCurrent()->id;
-        return self::findBySQL("seminar_id IN (:course_ids) AND semester_id = :semester_id", array(
-            'course_ids' => $course_ids,
-            'semester_id' => $semester_id
-        ));
+        $profiles = array();
+        foreach ($course_ids as $course_id) {
+            $profiles[] = self::findBySemester($course_id, $semester_id);
+        }
+        return $profiles;
     }
 
     protected static function configure($config = array())
@@ -53,7 +54,6 @@ class EvasysCourseProfile extends SimpleORMap {
             'get' => 'getFinalAddress'
         );
         $config['serialized_fields']['teachers'] = "JSONArrayObject";
-        $config['serialized_fields']['teachers_results'] = "JSONArrayObject";
         parent::configure($config);
     }
 
@@ -343,5 +343,60 @@ class EvasysCourseProfile extends SimpleORMap {
     public function isEditable()
     {
         return EvasysPlugin::isAdmin() || EvasysPlugin::isRoot();
+    }
+
+    public function hasDatesInEvalTimespan()
+    {
+        $profile = EvasysCourseProfile::findBySemester($this['seminar_id']);
+        $begin = $profile->getFinalBegin();
+        $end = $profile->getFinalEnd();
+        if (!$begin || !$end) {
+            $semester = Semester::findCurrent();
+            if (!$begin) {
+                $begin = $semester['beginn'];
+            }
+            if (!$end) {
+                $end = $semester['ende'];
+            }
+        }
+        $statement = DBManager::get()->prepare("
+            SELECT 1
+            FROM termine
+            WHERE range_id = :course_id
+                AND (
+                    (date >= :begin AND date < :end)
+                    OR (end_time > :begin AND end_time <= :end)
+                    OR (date < :begin AND end_time > :end)
+                )
+        ");
+        $statement->execute(array(
+            'course_id' => $this['Seminar_id'],
+            'begin' => $begin,
+            'end' => $end
+        ));
+        return (bool) $statement->fetch(PDO::FETCH_COLUMN, 0);
+    }
+
+    public function getFinalResultsEmails()
+    {
+        $emails = $profile['results_email'];
+
+        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
+        if ($inst_profile) {
+            $emails .= " " . $inst_profile['results_email'];
+        }
+        $fakultaet_id = $this->course->home_institut->fakultaets_id;
+        if ($fakultaet_id !== $institut_id) {
+            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id);
+            if ($inst_profile[$attribute]) {
+                $emails .= " ".$inst_profile['results_email'];
+            }
+        }
+        if (!trim($emails)) {
+            return array();
+        } else {
+            $emails = preg_split("/\s+/", strtolower($emails), -1, PREG_SPLIT_NO_EMPTY);
+            return array_unique($emails);
+        }
     }
 }

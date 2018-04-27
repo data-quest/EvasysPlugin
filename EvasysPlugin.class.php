@@ -56,6 +56,72 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 && ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")) {
             $this->addStylesheet("assets/evasys.less");
             PageLayout::addScript($this->getPluginURL()."/assets/insert_button.js");
+            NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");
+        }
+        NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
+    }
+
+    public function addNonfittingDatesFilterToSidebar()
+    {
+        $widget = new OptionsWidget();
+        $widget->setTitle(_("Zeiten im Evaluationszeitraum"));
+        $widget->addCheckbox(
+            _("Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"),
+            $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
+            PluginEngine::getURL($this, array(), "toggle_nonfittingdates_filter")
+        );
+        Sidebar::Get()->insertWidget($widget, "editmode", "filter_nonfittingdates");
+    }
+
+    /**
+     * Toggle the filter in the sidebar of the admin-page and redirect there
+     */
+    public function toggle_nonfittingdates_filter_action()
+    {
+        $oldvalue = (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES");
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_NONFITTING_DATES", $oldvalue ? 0 : 1);
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
+    public function addNonfittingDatesFilter($event, $filter)
+    {
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES")) {
+            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                'join' => "INNER JOIN",
+                'on' => "
+                seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                    AND evasys_course_profiles.semester_id = :evasys_semester_id
+                "
+            );
+            $filter->settings['query']['joins']['evasys_institute_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id 
+                    AND evasys_institute_profiles.semester_id = :evasys_semester_id"
+            );
+            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'table' => "evasys_institute_profiles",
+                'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id 
+                    AND evasys_fakultaet_profiles.semester_id = :evasys_semester_id"
+            );
+            $filter->settings['query']['joins']['evasys_global_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "evasys_global_profiles.semester_id = :evasys_semester_id"
+            );
+            $filter->settings['query']['joins']['termine'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "
+                    seminare.Seminar_id = termine.range_id
+                    AND (
+                        (termine.date >= IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.date < IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
+                        OR (termine.end_time > IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.end_time <= IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
+                        OR (termine.date < IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.end_time > IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
+                    )
+                "
+            );
+            $filter->settings['query']['where']['date_not_in_timespan'] = "termine.termin_id IS NULL";
+            $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
         }
     }
 

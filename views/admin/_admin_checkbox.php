@@ -5,6 +5,10 @@
            <?= EvasysSeminar::countBySQL("Seminar_id = ? AND activated = 1", array($course_id)) > 0 ? " checked" : "" ?>>
     <input type="hidden" name="course[]" value="<?= htmlReady($course_id) ?>">
 <? else : ?>
+    <? if ($profile && $profile['applied'] && !$profile->hasDatesInEvalTimespan()) : ?>
+        <?= Icon::create("exclaim-circle", "status-red")->asImg(20, array('title' => _("Es gibt keinen Termin dieser Veranstaltung im gewünschten Evaluationszeitraum"))) ?>
+    <? endif ?>
+
     <a href="<?= PluginEngine::getLink($plugin, array(), "profile/edit/".$course_id) ?>" data-dialog>
         <?= Icon::create(($profile && $profile['applied']) ? "check-circle" : "radiobutton-unchecked", "clickable")->asImg(20) ?>
     </a>
