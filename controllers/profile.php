@@ -4,6 +4,9 @@ class ProfileController extends PluginController {
 
     public function edit_action($course_id)
     {
+        if (Navigation::hasItem("/course/admin/evasys")) {
+            Navigation::activateItem("/course/admin/evasys");
+        }
         PageLayout::setTitle(_("Evaluationsdaten bearbeiten"));
         $this->profile = EvasysCourseProfile::findOneBySQL("seminar_id = :seminar_id AND semester_id = :semester_id", array(
             'seminar_id' => $course_id,
@@ -17,7 +20,6 @@ class ProfileController extends PluginController {
         if (Request::isPost() && $this->profile->isEditable()) {
             $data = Request::getArray("data");
             $this->profile['applied'] = $data['applied'] ?: 0;
-            $seminar = new Seminar($this->profile['seminar_id']);
             $this->profile['teachers'] = $data['teachers']
                 ? $data['teachers']
                 : null;
@@ -60,8 +62,28 @@ class ProfileController extends PluginController {
             $this->profile['language'] = $data['language'] ?: null;
 
             $this->profile['user_id'] = $GLOBALS['user']->id;
+            if ($this->profile->isNew() && !EvasysPlugin::isAdmin() && !EvasysPlugin::isRoot()) {
+                $this->profile['by_dozent'] = 1;
+                //Nachricht an zentrale QM und an Mitdozenten:
+            }
+
+            StudipLog::log(
+                $this->profile->isNew() ? 'LAVE_LEHRAUFTRAG_CREATE' : 'LAVE_LEHRAUFTRAG_UPDATE',
+                $this->user_id,
+                $this->profile['seminar_id'],
+                Semester::findCurrent()->id,
+                json_encode([
+                    'lehrauftrag' => $delta_lehrauftrag,
+                    'user'        => $delta_user,
+                    'userdata'    => $delta_userdata
+                ]));
 
             $this->profile->store();
+
+            if ($this->profile['by_dozent'] && (EvasysPlugin::isAdmin() || EvasysPlugin::isRoot())) {
+                //Nachricht an Dozenten:
+            }
+
             PageLayout::postSuccess(_("Daten wurden gespeichert."));
             $this->response->add_header("X-Dialog-Execute", json_encode(array(
                 'func' => "STUDIP.EVASYS.refreshCourseInOverview",

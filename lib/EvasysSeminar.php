@@ -27,9 +27,22 @@ class EvasysSeminar extends SimpleORMap {
      */
     public function getEvaluationStatus($user_id = null)
     {
+        $profile = EvasysCourseProfile::findBySemester($seminar['Seminar_id']);
+        if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES && $profile['split']) {
+            $seminar_ids = array();
+            foreach ($profile['teachers'] as $dozent_id) {
+                $seminar_ids[] = $seminar['Seminar_id'] . $dozent_id;
+            }
+        } else {
+            $seminar_ids = array($seminar['Seminar_id']);
+        }
         if (isset($_SESSION['EVASYS_SEMINARS_STATUS'])
             && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE) {
-            return (int) $_SESSION['EVASYS_SEMINARS_STATUS'][$this['Seminar_id']];
+            $new = 0;
+            foreach ($seminar_ids as $seminar_id) {
+                $new += $_SESSION['EVASYS_SEMINARS_STATUS'][$seminar_id];
+            }
+            return $new;
         }
         $soap = EvasysSoap::get();
         $user = $user_id ? User::find($user_id) : User::findCurrent();
@@ -50,7 +63,11 @@ class EvasysSeminar extends SimpleORMap {
             }
         }
         $_SESSION['EVASYS_STATUS_EXPIRE'] = time();
-        return (int) $_SESSION['EVASYS_SEMINARS_STATUS'][$this['Seminar_id']];
+        $new = 0;
+        foreach ($seminar_ids as $seminar_id) {
+            $new += $_SESSION['EVASYS_SEMINARS_STATUS'][$seminar_id];
+        }
+        return $new;
     }
 
 
@@ -104,6 +121,29 @@ class EvasysSeminar extends SimpleORMap {
                 return "SOAP-error: " . $evasys_sem_object->getMessage().($evasys_sem_object->detail ? " (".$evasys_sem_object->detail.")" : "");
             }
         } else {
+            //Speichern der survey_ids, sodass wir beim nächsten Mal die alten Survey_ids mitgeben können.
+            foreach ((array) $evasys_sem_object->UploadStatus as $status) {
+
+                $course_uid = $status->CourseUid;
+                if (strlen($course_uid) > 32) {
+                    $course_id = substr($course_uid, 0, 32);
+                } else {
+                    $course_id = $course_uid;
+                }
+                $profile = EvasysCourseProfile::findBySemester($course_id);
+                if (!$profile->isNew()) {
+                    foreach ($status->SurveyStatusList->SurveyStatusArray as $survey_status) {
+                        if ($survey_status->SurveyId) {
+                            if (!$profile['surveys']) {
+                                $profile['surveys'] = array($course_uid => $survey_status->SurveyId);
+                            } else {
+                                $profile['surveys'][$course_uid] = $survey_status->SurveyId;
+                            }
+                        }
+                    }
+                    $profile->store();
+                }
+            }
             return true;
         }
     }
@@ -116,7 +156,6 @@ class EvasysSeminar extends SimpleORMap {
         if (Config::get()->EVASYS_ENABLE_PROFILES && !$profile['applied'] && !$profile['split']) {
             return $profile['transferred'] ? array("delete", array($this['Seminar_id'])) : null; //course should be deleted from evasys database
         }
-        //$dozent = $this->getDozent();
         $participants = array();
 
         $user_permissions = ['autor', 'tutor'];
@@ -177,23 +216,31 @@ class EvasysSeminar extends SimpleORMap {
             $surveys[] = array(
                 'FormId' => $profile->getFinalFormId(),
                 'FormIdType' => "INTERNAL",
+                'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
+                    ? $profile['surveys'][$this['Seminar_id']]
+                    : "", //experimental
                 'PeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
                 'PeriodIdType' => "PERIODDATE",
                 'SurveyType' => array(
-                    'm_chSurveyType' => $profile['mode'] === "paper" ? "s" : "o" // o = online+TAN, d = Deckblatt, s = Selbstdruck
-                    //
-                    //'m_sDescription' => ""
+                    'm_chSurveyType' => ($profile['mode'] === "paper" && !Config::get()->EVASYS_FORCE_ONLINE)
+                        ? "d"  // d = Deckblatt, s = Selbstdruck
+                        : "o", // o = online+TAN
+                    'm_sDescription' => ""
                 ),
                 'Verification' => false,
                 'Notice' => "",
                 'FormRecipientList' => array(), //Emails, an die die PDF des Fragebogens verschickt wird, aber wie oft soll er ausdrucken??
                 'InviteParticipants' => false,
                 'InvitationTask' => array(
-                    //'SurveyID' => "",
+                    'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
+                        ? $profile['surveys'][$this['Seminar_id']]
+                        : "",
                     'StartTime' => date("c", $profile->getFinalBegin())
                 ),
                 'CloseTask' => array(
-                    //'SurveyID' => "",
+                    'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
+                        ? $profile['surveys'][$this['Seminar_id']]
+                        : "",
                     'StartTime' => date("c", $profile->getFinalEnd())
                 ),
                 'SerialPrint' => false
@@ -220,8 +267,17 @@ class EvasysSeminar extends SimpleORMap {
                     $instructorlist[] = $this->getInstructorPart($email, true);
                 }
 
+                $surveys2 = $surveys;
+                foreach ($surveys2 as $i => $survey) {
+                    if ($profile['surveys'] && $profile['surveys'][$this['Seminar_id'].$dozent_id]) {
+                        $surveys2[$i]['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id]; //experimental
+                        $surveys2[$i]['InvitationTask']['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id];
+                        $surveys2[$i]['CloseTask']['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id];
+                    }
+                }
+
                 $parts[] = array(
-                    'CourseUid' => $this['Seminar_id']."-".$dozent_id,
+                    'CourseUid' => $this['Seminar_id'].$dozent_id,
                     'CourseName' => $seminar->getName(),
                     'CourseCode' => $this['Seminar_id'],
                     'CourseType' => EvasysMatching::semtypeName($seminar->status),
@@ -235,7 +291,7 @@ class EvasysSeminar extends SimpleORMap {
                     'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
                     'ParticipantList' => $participants,
                     'AnonymousParticipants' => true,
-                    'SurveyCreatorList' => $surveys,
+                    'SurveyCreatorList' => $surveys2,
                 );
             }
             return $parts;
@@ -245,7 +301,7 @@ class EvasysSeminar extends SimpleORMap {
             if ($profile['transferred']) {
                 $ids = array();
                 foreach ($dozenten as $dozent_id) {
-                    $ids[] = $this['Seminar_id']."-".$dozent_id;
+                    $ids[] = $this['Seminar_id'].$dozent_id;
                 }
                 return array("delete", $ids);
             }  else {
@@ -327,7 +383,7 @@ class EvasysSeminar extends SimpleORMap {
             return $_SESSION['EVASYS_SEMINAR_SURVEYS'][$this['Seminar_id']];
         }
         $soap = EvasysSoap::get();
-        $sem = new Seminar($this['Seminar_id']);
+        //$sem = new Seminar($this['Seminar_id']);
         $user_id || $user_id = $GLOBALS['user']->id;
         $email = DBManager::get()->query("SELECT Email FROM auth_user_md5 WHERE user_id = ".DBManager::get()->quote($user_id))->fetch(PDO::FETCH_COLUMN, 0);
 

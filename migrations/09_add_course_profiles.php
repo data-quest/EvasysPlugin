@@ -15,7 +15,8 @@ class AddCourseProfiles extends Migration
                 `teachers` text COLLATE utf8mb4_unicode_ci,
                 `results_email` text COLLATE utf8mb4_unicode_ci,
                 `applied` tinyint(4) NOT NULL DEFAULT '0',
-                `transferred` tinyint(4) DEFAULT NULL,
+                `transferred` tinyint(4) NOT NULL DEFAULT '0',
+                `surveys` text COLLATE utf8mb4_unicode_ci,
                 `by_dozent` tinyint(4) NOT NULL DEFAULT '0',
                 `mode` enum('paper','online') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                 `address` text COLLATE utf8mb4_unicode_ci,
@@ -127,11 +128,24 @@ class AddCourseProfiles extends Migration
             'section' => "EVASYS_PLUGIN",
             'description' => "May a course with multiple teachers be split into multiple evaluations?"
         ));
+        Config::get()->create("EVASYS_FORCE_ONLINE", array(
+            'value' => 0,
+            'type' => "boolean",
+            'range' => "global",
+            'section' => "EVASYS_PLUGIN",
+            'description' => "In editing the profiles there are only online-evaluations allowed."
+        ));
 
+        StudipLog::registerActionPlugin('EVASYS_EVAL_APPLIED', 'Evasys: Lehrevaluation wurde beantragt', '%user beantragt neue Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
+        StudipLog::registerActionPlugin('EVASYS_EVAL_UPDATE', 'Evasys: Lehrevaluationsdaten geändert', '%user ändert Lehrevaluationsdaten %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
+        StudipLog::registerActionPlugin('EVASYS_EVAL_DELETE', 'Evasys: Lehrevaluation gelöscht', '%user löscht Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
+        StudipLog::registerActionPlugin('EVASYS_EVAL_TRANSFER', 'Evasys: Lehrevaluation nach Evasys übertragen', '%user überträgt Lehrevaluation %coaffected(%info) für %user(%affected) nach Evasys.', 'EvasysPlugin');
     }
     
     public function down()
     {
-
+        StudipLog::unregisterAction('EVASYS_EVAL_APPLIED');
+        StudipLog::unregisterAction('EVASYS_EVAL_UPDATE');
+        StudipLog::unregisterAction('EVASYS_EVAL_DELETE');
     }
 }

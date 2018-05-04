@@ -16,7 +16,7 @@ require_once __DIR__."/lib/EvasysGlobalProfile.php";
 require_once __DIR__."/lib/EvasysProfileSemtypeForm.php";
 require_once __DIR__."/lib/EvasysMatching.php";
 
-class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction
+class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction, Loggable
 {
 
     public function useLowerPermissionLevels()
@@ -56,9 +56,37 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 && ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")) {
             $this->addStylesheet("assets/evasys.less");
             PageLayout::addScript($this->getPluginURL()."/assets/insert_button.js");
+            NotificationCenter::addObserver($this, "addTransferredFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");
         }
+        if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin")) {
+            $nav = new Navigation(_("Lehrevaluationen"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
+            $nav->setImage(Icon::create("checkbox-checked", "clickable"));
+            $nav->setDescription(_("Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."));
+            Navigation::addItem("/course/admin/evasys", $nav);
+        }
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
+        NotificationCenter::addObserver($this, "addTransferredFilter", "AdminCourseFilterWillQuery");
+    }
+
+    public function addTransferredFilterToSidebar()
+    {
+        $widget = new SelectWidget(_("Transfer-Filter"), PluginEngine::getURL($this, array(), "change_transferred_filter"), "transferstatus", "post");
+        $widget->addElement(new SelectElement(
+            '',
+            ""
+        ));
+        $widget->addElement(new SelectElement(
+            'transferred',
+            _("Nach Evasys übertragen"),
+            $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
+        ));
+        $widget->addElement(new SelectElement(
+            'nottransferred',
+            _("Nach Evasys nicht übertragen"),
+            $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred"
+        ));
+        Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
     }
 
     public function addNonfittingDatesFilterToSidebar()
@@ -83,12 +111,38 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
     }
 
+    public function change_transferred_filter_action()
+    {
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_TRANSFERRED", Request::option("transferstatus"));
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
+    public function addTransferredFilter($event, $filter)
+    {
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
+            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "
+                seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                    AND evasys_course_profiles.semester_id = :evasys_semester_id
+                "
+            );
+            if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred") {
+                $filter->settings['query']['where']['evasys_transferred'] = "evasys_course_profiles.transferred = '1'";
+            } else {
+                $filter->settings['query']['where']['evasys_transferred'] = "(evasys_course_profiles.transferred = '0' OR evasys_course_profiles.transferred IS NULL)";
+            }
+            $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
+        }
+    }
+
     public function addNonfittingDatesFilter($event, $filter)
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = array(
-                'join' => "INNER JOIN",
+                'join' => "LEFT JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
@@ -120,7 +174,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     )
                 "
             );
-            $filter->settings['query']['where']['date_not_in_timespan'] = "termine.termin_id IS NULL";
+            $filter->settings['query']['where']['date_not_in_timespan'] = "termine.termin_id IS NULL AND evasys_course_profiles.applied = '1'";
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
         }
     }
@@ -207,5 +261,67 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function isAdmin()
     {
         return $GLOBALS['perm']->have_perm("admin") && !$GLOBALS['perm']->have_perm("root");
+    }
+
+    public function perform($unconsumed_path)
+    {
+        $this->addStylesheet("assets/evasys.less");
+        parent::perform($unconsumed_path);
+    }
+
+    public static function logFormat(LogEvent $event)
+    {
+        $tmpl = $event->action->info_template;
+
+        if (strpos($event->action->name, 'EVASYS') !== false) {
+            $course = Course::find($event->coaffected_range_id);
+            $semester = Semester::find($event->info);
+            if ($course) {
+                $url = PluginEngine::getURL('EvasysPlugin', array(), '/profile/edit/'
+                    . $event->coaffected_range_id, true);
+                $name = sprintf('<a data-dialog href="%s">%s - %s (%s)</a>',
+                    $url, $course->veranstaltungsnummer,
+                    $course->name, $semester->name);
+                $tmpl = str_replace('%coaffected(%info)', $name, $tmpl);
+            }
+        }
+
+        return $tmpl;
+    }
+
+    public static function logSearch($needle, $action_name = null)
+    {
+        $result = [];
+
+        if (strpos($action_name, 'EVASYS') !== false) {
+            $stmt = DBManager::get()->prepare(
+                'SELECT s.VeranstaltungsNummer, s.Name as coursename, '
+                . 'aum.user_id, aum.username, sd.name as semester '
+                . 'FROM evasys_course_profiles '
+                . 'LEFT JOIN seminare s ON evasys_course_profiles.seminar_id = s.Seminar_id '
+                . 'LEFT JOIN auth_user_md5 aum USING(user_id) '
+                . 'LEFT JOIN semester_data sd USING(semester_id) '
+                . "WHERE s.Name LIKE CONCAT('%', :needle, '%') "
+                . "OR s.VeranstaltungsNummer LIKE CONCAT('%', :needle, '%') "
+                . "OR CONCAT_WS(' ', aum.username, aum.Vorname, aum.Nachname) "
+                . "LIKE CONCAT('%', :needle, '%') "
+                . "OR CONCAT_WS(' ', sd.name, sd.semester_token) LIKE CONCAT('%', :needle, '%')");
+            $stmt->execute([':needle' => $needle]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+                $result[] = [
+                    $row['user_id'],
+                    sprintf('%s (%s), %s - %s (%s)',
+                        get_fullname($result['user_id']),
+                        $row['username'],
+                        $row['VeranstaltungsNummer'],
+                        $row['coursename'],
+                        $row['semester'])
+                ];
+            }
+        } else {
+            $result = StudipLog::searchUser($needle);
+        }
+
+        return $result;
     }
 }

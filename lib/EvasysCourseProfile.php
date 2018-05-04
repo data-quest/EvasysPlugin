@@ -54,7 +54,64 @@ class EvasysCourseProfile extends SimpleORMap {
             'get' => 'getFinalAddress'
         );
         $config['serialized_fields']['teachers'] = "JSONArrayObject";
+        $config['serialized_fields']['surveys'] = "JSONArrayObject";
+
+        $config['registered_callbacks']['before_create'] = ['profileCreated'];
+        $config['registered_callbacks']['before_store'] = ['profileUpdated'];
+        $config['registered_callbacks']['after_delete'] = ['profileDeleted'];
         parent::configure($config);
+    }
+
+    public function profileCreated()
+    {
+        StudipLog::log(
+            'EVASYS_EVAL_APPLIED',
+            $this->user_id,
+            $this->seminar_id,
+            Semester::findCurrent()->id,
+            json_encode($this->getLoginfo())
+        );
+        return true;
+    }
+
+    public function profileUpdated()
+    {
+        $delta_lehrauftrag = $this->getLoginfo($this);
+        if (count($delta_lehrauftrag) || count($delta_user) || count($delta_userdata)) {
+            ## Lehrauftrag isNew.. weil user und userdata fast immer existieren
+            StudipLog::log(
+                $this->isNew() ? 'EVASYS_EVAL_APPLIED' : 'EVASYS_EVAL_UPDATE',
+                $this->user_id,
+                $this->seminar_id,
+                Semester::findCurrent()->id,
+                json_encode($this->getLoginfo())
+            );
+        }
+        return true;
+    }
+
+    public function profileDeleted()
+    {
+        StudipLog::log(
+            'EVASYS_EVAL_DELETE',
+            $this->user_id,
+            $this->seminar_id,
+            Semester::findCurrent()->id);
+        return true;
+    }
+
+    protected function getLoginfo()
+    {
+        $updated_fields = array();
+        if ($lave_object) {
+            $meta = $this->getTableMetadata();
+            foreach ($meta['fields'] as $field) {
+                if ($this->isFieldDirty($field['name'])) {
+                    $updated_fields[$field['name']] = $this->getValue($field['name']);
+                }
+            }
+        }
+        return $updated_fields;
     }
 
     /**
@@ -342,7 +399,25 @@ class EvasysCourseProfile extends SimpleORMap {
 
     public function isEditable()
     {
-        return EvasysPlugin::isAdmin() || EvasysPlugin::isRoot();
+        if ($GLOBALS['perm']->have_studip_perm("dozent", $this['seminar_id']) && !$GLOBALS['perm']->have_studip_perm("admin", $this['seminar_id'])) {
+            if ($this['applied'] && !$this['by_dozent']) {
+                return false;
+            }
+            $begin = $this->getPresetAttribute("antrag_begin");
+            $end = $this->getPresetAttribute("antrag_end");
+            if ($begin && (time() >= $begin) && ((time() <= $end) || !$end)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return EvasysPlugin::isAdmin() || EvasysPlugin::isRoot();
+        }
+    }
+
+    public function getAntragInfo()
+    {
+        return $this->getPresetAttribute("antrag_info");
     }
 
     public function hasDatesInEvalTimespan()

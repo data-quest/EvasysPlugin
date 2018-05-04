@@ -1,6 +1,5 @@
 .evasys_teachers {
     .avatar {
-        cursor: grabbing;
         display: inline-block;
         width: 35px;
         height: 35px;
@@ -10,12 +9,22 @@
         border-radius: 25px;
         vertical-align: middle;
     }
+    &.editable {
+        .avatar {
+            cursor: grabbing;
+        }
+        input[type="checkbox"] + img {
+            cursor: pointer;
+        }
+        input[type="checkbox"]:checked + img + img {
+            cursor: pointer;
+        }
+    }
     input[type="checkbox"] {
         display: none;
     }
     input[type="checkbox"] + img {
         display: inline-block;
-        cursor: pointer;
         vertical-align: middle;
     }
     input[type="checkbox"] + img + img {
@@ -26,7 +35,6 @@
     }
     input[type="checkbox"]:checked + img + img {
         display: inline-block;
-        cursor: pointer;
         vertical-align: middle;
     }
     .note {
@@ -36,6 +44,9 @@
     > :first-child .note {
         opacity: 0.5;
         transition: opacity 500ms;
+    }
+    &.split .note {
+        opacity: 0.5;
     }
 }
 .evasys_propose_dates {
