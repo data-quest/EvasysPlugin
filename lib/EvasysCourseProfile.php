@@ -96,7 +96,8 @@ class EvasysCourseProfile extends SimpleORMap {
             'EVASYS_EVAL_DELETE',
             $this->user_id,
             $this->seminar_id,
-            Semester::findCurrent()->id);
+            Semester::findCurrent()->id
+        );
         return true;
     }
 
@@ -410,9 +411,17 @@ class EvasysCourseProfile extends SimpleORMap {
             } else {
                 return false;
             }
-        } else {
-            return EvasysPlugin::isAdmin() || EvasysPlugin::isRoot();
+        } elseif(EvasysPlugin::isRoot()) {
+            return true;
+        } elseif(EvasysPlugin::isAdmin()) {
+            $global_profile = EvasysGlobalProfile::findCurrent();
+            return (
+                $global_profile['adminedit_begin']
+                && ($global_profile['adminedit_begin'] >= time())
+                && (($global_profile['adminedit_end'] > time()) || !$global_profile['adminedit_end'])
+            );
         }
+        return false;
     }
 
     public function getAntragInfo()

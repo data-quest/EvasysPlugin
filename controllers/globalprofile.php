@@ -95,6 +95,8 @@ class GlobalprofileController extends PluginController
             $data = Request::getArray("data");
             $data['begin'] = $data['begin'] ? strtotime($data['begin']) : null;
             $data['end'] = $data['end'] ? strtotime($data['end']) : null;
+            $data['adminedit_begin'] = $data['adminedit_begin'] ? strtotime($data['adminedit_begin']) : null;
+            $data['adminedit_end'] = $data['adminedit_end'] ? strtotime($data['adminedit_end']) : null;
             $data['form_id'] = $data['form_id'] ?: null;
             $data['mode'] = $data['mode'] ?: null;
             $data['antrag_begin'] = $data['antrag_begin'] ? strtotime($data['antrag_begin']) : null;

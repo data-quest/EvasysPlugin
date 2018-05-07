@@ -8,10 +8,7 @@ class ProfileController extends PluginController {
             Navigation::activateItem("/course/admin/evasys");
         }
         PageLayout::setTitle(_("Evaluationsdaten bearbeiten"));
-        $this->profile = EvasysCourseProfile::findOneBySQL("seminar_id = :seminar_id AND semester_id = :semester_id", array(
-            'seminar_id' => $course_id,
-            'semester_id' => Semester::findCurrent()->id
-        ));
+        $this->profile = EvasysCourseProfile::findBySemester($course_id);
         if (!$this->profile) {
             $this->profile = new EvasysCourseProfile();
             $this->profile['seminar_id'] = $course_id;

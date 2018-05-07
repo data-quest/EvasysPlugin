@@ -2,6 +2,8 @@
 
 class EvasysGlobalProfile extends SimpleORMap {
 
+    static protected $singleton = null;
+
     protected static function configure($config = array())
     {
         $config['db_table'] = 'evasys_global_profiles';
@@ -18,6 +20,9 @@ class EvasysGlobalProfile extends SimpleORMap {
      */
     static public function findCurrent()
     {
+        if (self::$singleton) {
+            return self::$singleton;
+        }
         $semester = Semester::findCurrent(); //findNext ?
         if (!$semester) {
             trigger_error("Kein aktuelles Semester, kann kein globales EvasysProfil erstellen.", E_USER_WARNING);
@@ -66,6 +71,7 @@ class EvasysGlobalProfile extends SimpleORMap {
                 'old_semester' => $last_semester->getId()
             ));
         }
+        self::$singleton = $profile;
         return $profile;
     }
 }

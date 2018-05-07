@@ -10,7 +10,33 @@ class EvaluationController extends PluginController
 
         PageLayout::addScript($this->plugin->getPluginURL()."/assets/qrcode.js");
 
-        $evasys_seminars = EvasysSeminar::findBySeminar(Context::get()->id);
+        $profile = EvasysCourseProfile::findBySemester(Context::get()->id);
+        if (Config::get()->EVASYS_ENABLE_PROFILES && $profile['split']) {
+            $evasys_seminars = array();
+            if ($profile['teachers']) {
+                foreach ($profile['teachers'] as $dozent_id) {
+                    $teachers = $profile['teachers']->getArrayCopy();
+                }
+            } else {
+                $teachers = $db->query(
+                    "SELECT seminar_user.user_id " .
+                    "FROM seminar_user " .
+                    "WHERE seminar_user.Seminar_id = ".$db->quote(Context::get()->id)." " .
+                    "AND seminar_user.status = 'dozent' " .
+                    "ORDER BY seminar_user.position ASC " .
+                "")->fetchAll(PDO::FETCH_COLUMN, 0);
+            }
+            foreach ($teachers as $dozent_id) {
+                $evasys_seminars = array_merge(
+                    $evasys_seminars,
+                    EvasysSeminar::findBySeminar(Context::get()->id.$dozent_id)
+                );
+            }
+            //TODO maybe we do something different here and not use EvasysSeminar::findBySeminar or change getSurveyInformation?
+        } else {
+            $evasys_seminars = EvasysSeminar::findBySeminar(Context::get()->id);
+        }
+
         $this->surveys = array();
         $this->open_surveys = array();
         $active = array();

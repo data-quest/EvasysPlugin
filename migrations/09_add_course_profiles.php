@@ -67,6 +67,8 @@ class AddCourseProfiles extends Migration
                 `form_id` int(11) DEFAULT NULL,
                 `begin` int(11) DEFAULT NULL,
                 `end` int(11) DEFAULT NULL,
+                `adminedit_begin` int(11) DEFAULT NULL,
+                `adminedit_end` int(11) DEFAULT NULL,
                 `mode` enum('paper','online') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                 `address` text COLLATE utf8mb4_unicode_ci,
                 `antrag_begin` int(11) DEFAULT NULL,

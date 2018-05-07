@@ -235,7 +235,8 @@ class EvasysSeminar extends SimpleORMap {
                     'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
                         ? $profile['surveys'][$this['Seminar_id']]
                         : "",
-                    'StartTime' => date("c", $profile->getFinalBegin())
+                    'StartTime' => date("c", $profile->getFinalBegin()),
+                    'EmailSubject' => "###PREVENT_DISPATCH###" //Keine Mail an die Studierenden mit den TANs senden
                 ),
                 'CloseTask' => array(
                     'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
@@ -260,39 +261,41 @@ class EvasysSeminar extends SimpleORMap {
             $parts = array();
 
             foreach ($dozenten as $dozent_id) {
-                $instructorlist = array();
+                if (!$profile['teachers'] || in_array($dozent_id, $profile['teachers']->getArrayCopy())) {
+                    $instructorlist = array();
 
-                $instructorlist[] = $this->getInstructorPart($dozent_id);
-                foreach ($profile->getFinalResultsEmails() as $email) {
-                    $instructorlist[] = $this->getInstructorPart($email, true);
-                }
-
-                $surveys2 = $surveys;
-                foreach ($surveys2 as $i => $survey) {
-                    if ($profile['surveys'] && $profile['surveys'][$this['Seminar_id'].$dozent_id]) {
-                        $surveys2[$i]['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id]; //experimental
-                        $surveys2[$i]['InvitationTask']['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id];
-                        $surveys2[$i]['CloseTask']['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id];
+                    $instructorlist[] = $this->getInstructorPart($dozent_id);
+                    foreach ($profile->getFinalResultsEmails() as $email) {
+                        $instructorlist[] = $this->getInstructorPart($email, true);
                     }
-                }
 
-                $parts[] = array(
-                    'CourseUid' => $this['Seminar_id'].$dozent_id,
-                    'CourseName' => $seminar->getName(),
-                    'CourseCode' => $this['Seminar_id'],
-                    'CourseType' => EvasysMatching::semtypeName($seminar->status),
-                    'CourseProgramOfStudy' => implode('|', $studienbereiche),
-                    'CourseEnrollment' => 0, // ?
-                    'CustomFieldsJSON' => json_encode($custom_fields),
-                    'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
-                    'CoursePeriodIdType' => "PERIODDATE",
-                    'InstructorList' => $instructorlist,
-                    'RoomName' => ($seminar->location),
-                    'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
-                    'ParticipantList' => $participants,
-                    'AnonymousParticipants' => true,
-                    'SurveyCreatorList' => $surveys2,
-                );
+                    $surveys2 = $surveys;
+                    foreach ($surveys2 as $i => $survey) {
+                        if ($profile['surveys'] && $profile['surveys'][$this['Seminar_id'] . $dozent_id]) {
+                            $surveys2[$i]['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id]; //experimental
+                            $surveys2[$i]['InvitationTask']['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id];
+                            $surveys2[$i]['CloseTask']['SurveyID'] = $profile['surveys'][$this['Seminar_id'] . $dozent_id];
+                        }
+                    }
+
+                    $parts[] = array(
+                        'CourseUid' => $this['Seminar_id'] . $dozent_id,
+                        'CourseName' => $seminar->getName(),
+                        'CourseCode' => $this['Seminar_id'],
+                        'CourseType' => EvasysMatching::semtypeName($seminar->status),
+                        'CourseProgramOfStudy' => implode('|', $studienbereiche),
+                        'CourseEnrollment' => 0, // ?
+                        'CustomFieldsJSON' => json_encode($custom_fields),
+                        'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
+                        'CoursePeriodIdType' => "PERIODDATE",
+                        'InstructorList' => $instructorlist,
+                        'RoomName' => ($seminar->location),
+                        'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
+                        'ParticipantList' => $participants,
+                        'AnonymousParticipants' => true,
+                        'SurveyCreatorList' => $surveys2,
+                    );
+                }
             }
             return $parts;
 

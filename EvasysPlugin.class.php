@@ -181,13 +181,24 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
 
     public function getIconNavigation($course_id, $last_visit, $user_id = null) {
-        $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
         $activated = false;
-        foreach ($evasys_seminars as $evasys_seminar) {
-            if ($evasys_seminar['activated']) {
+        if (Config::get()->EVASYS_ENABLE_PROFILES) {
+            $profile = EvasysCourseProfile::findBySemester($course_id);
+            if ($profile['applied']
+                    && $profile['transferred']
+                    && ($profile['begin'] <= time())
+                    && ($profile['end'] > time())) {
                 $activated = true;
             }
+        } else {
+            $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
+            foreach ($evasys_seminars as $evasys_seminar) {
+                if ($evasys_seminar['activated']) {
+                    $activated = true;
+                }
+            }
         }
+
         if ($activated) {
             $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
             $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Evaluationen")));
@@ -200,11 +211,21 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     }
 
     public function getTabNavigation($course_id) {
-        $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
         $activated = false;
-        foreach ($evasys_seminars as $evasys_seminar) {
-            if ($evasys_seminar['activated']) {
+        if (Config::get()->EVASYS_ENABLE_PROFILES) {
+            $profile = EvasysCourseProfile::findBySemester($course_id);
+            if ($profile['applied']
+                    && $profile['transferred']
+                    && ($profile['begin'] <= time())
+                    && ($profile['end'] > time())) {
                 $activated = true;
+            }
+        } else {
+            $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
+            foreach ($evasys_seminars as $evasys_seminar) {
+                if ($evasys_seminar['activated']) {
+                    $activated = true;
+                }
             }
         }
         if ($activated) {

@@ -22,13 +22,26 @@
             <input type="text" name="data[end]" value="<?= $profile['end'] ? date("d.m.Y H:i", $profile['end']) : "" ?>" class="datepicker">
         </label>
 
+        <? if (is_a($profile, "EvasysGlobalProfile")) : ?>
+            <label>
+                <?= _("Beginn Berabeitungszeitraum der Admins") ?>
+                <input type="text" name="data[adminedit_begin]" value="<?= $profile['adminedit_begin'] ? date("d.m.Y H:i", $profile['adminedit_begin']) : "" ?>" class="datepicker">
+            </label>
+
+            <label>
+                <?= _("Ende Bearbeitungszeitraum der Admins") ?>
+                <input type="text" name="data[adminedit_end]" value="<?= $profile['adminedit_end'] ? date("d.m.Y H:i", $profile['adminedit_end']) : "" ?>" class="datepicker">
+            </label>
+        <? endif ?>
+
         <label>
             <?= _("Standardfragebogen (nur aktive werden angezeigt)") ?>
             <select name="data[form_id]" class="select2">
                 <option value=""></option>
                 <? foreach (EvasysForm::findBySQL("active = '1' ORDER BY name ASC") as $form) : ?>
                     <option value="<?= htmlReady($form->getId()) ?>"<?= $form->getId() == $profile['form_id'] ? " selected" : "" ?> title="<?= htmlReady($form['description']) ?>">
-                        <?= htmlReady($form['name']) ?>
+                        <?= htmlReady($form['name']) ?>:
+                        <?= htmlReady($form['description']) ?>
                     </option>
                 <? endforeach ?>
             </select>
@@ -82,7 +95,8 @@
                                 <option value=""></option>
                                 <? foreach (EvasysForm::findBySQL("active = '1' ORDER BY name ASC") as $form) : ?>
                                     <option value="<?= htmlReady($form->getId()) ?>"<?= $forms_by_type[$sem_type['id']][0] == $form->getId() ? " selected" : "" ?>  title="<?= htmlReady($form['description']) ?>">
-                                        <?= htmlReady($form['name']) ?>
+                                        <?= htmlReady($form['name']) ?>:
+                                        <?= htmlReady($form['description']) ?>
                                     </option>
                                 <? endforeach ?>
                             </select>
@@ -95,7 +109,7 @@
                             <select name="available_forms_by_type[<?= htmlReady($sem_type['id']) ?>][]" multiple class="select2">
                                 <option value=""></option>
                                 <? foreach (EvasysForm::findBySQL("active = '1' ORDER BY name ASC") as $form) : ?>
-                                    <option value="<?= htmlReady($form->getId()) ?>"<?= in_array($form->getId(), (array) $available_forms_by_type[$sem_type['id']]) ? " selected" : "" ?>  title="<?= htmlReady($form['description']) ?>">
+                                    <option value="<?= htmlReady($form->getId()) ?>"<?= in_array($form->getId(), (array) $available_forms_by_type[$sem_type['id']]) ? " selected" : "" ?>  title="<?= htmlReady($form['name'].": ".$form['description']) ?>">
                                         <?= htmlReady($form['name']) ?>
                                     </option>
                                 <? endforeach ?>
