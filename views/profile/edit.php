@@ -292,6 +292,11 @@
                             <?= _("Anzahl gedruckter Fragebögen") ?>
                             <input type="text" name="data[number_of_sheets]" value="<?= htmlReady($profile['number_of_sheets']) ?>" <?= !$editable ? " readonly" : "" ?>>
                         </label>
+
+                        <label>
+                            <?= _("Sonstige Hinweise") ?>
+                            <textarea name="data[hinweis]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($profile['hinweis']) ?></textarea>
+                        </label>
                     </div>
                 <? endif ?>
             </div>
@@ -320,7 +325,8 @@
                     jQuery("input.datepicker").datetimepicker();
                     jQuery(".evasys_teachers").sortable({
                         "axis": "y",
-                        "handle": ".avatar"
+                        "handle": ".avatar",
+                        "revert": 300
                     });
                 });
             </script>

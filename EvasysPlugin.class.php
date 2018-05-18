@@ -16,7 +16,15 @@ require_once __DIR__."/lib/EvasysGlobalProfile.php";
 require_once __DIR__."/lib/EvasysProfileSemtypeForm.php";
 require_once __DIR__."/lib/EvasysMatching.php";
 
-class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction, Loggable
+if (!interface_exists("AdminCourseContents")) {
+    interface AdminCourseContents
+    {
+        public function adminAvailableContents();
+        public function adminAreaGetCourseContent($course, $index);
+    }
+}
+
+class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction, Loggable, AdminCourseContents
 {
 
     public function useLowerPermissionLevels()
@@ -29,7 +37,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         parent::__construct();
         
         //The user must be root
-        if ($this->isRoot()) {
+        if (self::isRoot()) {
             $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), Config::get()->EVASYS_ENABLE_PROFILES ? "globalprofile" : "forms/index"));
             Navigation::addItem("/admin/evasys", $nav);
             if (Config::get()->EVASYS_ENABLE_PROFILES) {
@@ -39,6 +47,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 Navigation::addItem("/admin/evasys/instituteprofile", clone $nav);
                 $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
                 Navigation::addItem("/admin/evasys/forms", clone $nav);
+
+                $nav = new Navigation(ucfirst(EvasysMatching::wording("freiwillige Evaluationen")), PluginEngine::getURL($this, array(), "individual/list"));
+                Navigation::addItem("/admin/evasys/individual", clone $nav);
             }
             $nav = new Navigation(_("Matching Veranstaltungstypen"), PluginEngine::getURL($this, array(), "matching/seminartypes"));
             Navigation::addItem("/admin/evasys/matchingtypes", clone $nav);
@@ -182,6 +193,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getIconNavigation($course_id, $last_visit, $user_id = null) {
         $activated = false;
+        $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
             $profile = EvasysCourseProfile::findBySemester($course_id);
             if ($profile['applied']
@@ -191,7 +203,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $activated = true;
             }
         } else {
-            $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
             foreach ($evasys_seminars as $evasys_seminar) {
                 if ($evasys_seminar['activated']) {
                     $activated = true;
@@ -202,7 +213,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if ($activated) {
             $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
             $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Evaluationen")));
-            $number = $evasys_seminar->getEvaluationStatus();
+            $number = 0;
+            foreach ($evasys_seminars as $evasys_seminar) {
+                $number += $evasys_seminar->getEvaluationStatus();
+            }
             if ($number > 0) {
                 $tab->setImage(Icon::create("evaluation", "new"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
             }
@@ -269,8 +283,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             'seminar_id' => $course_id,
             'semester_id' => Semester::findCurrent()->id
         )));
-        $template->set_attribute("course_id", $course_id);
         $template->set_attribute("plugin", $this);
+        $template->set_attribute("checkbox", true);
         return $template;
     }
 
@@ -308,6 +322,39 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
 
         return $tmpl;
+    }
+
+    public function adminAvailableContents() {
+        return array(
+            'form' => _("Fragebogen"),
+            'mode' => _("Evaluationsart"),
+            'timespan' => _("Eval-Zeitraum")
+        );
+    }
+
+    public function adminAreaGetCourseContent($course, $index) {
+        switch ($index) {
+            case "form":
+                $profile = EvasysCourseProfile::findBySemester($course->getId());
+                $form_id = $profile->getFinalFormId();
+                if ($form_id) {
+                    $form = EvasysForm::find($form_id);
+                    return $form['name'].": ".$form['description'];
+                } else {
+                    return "";
+                }
+            case "mode":
+                if (Config::get()->EVASYS_FORCE_ONLINE) {
+                    return _("Online");
+                }
+                $profile = EvasysCourseProfile::findBySemester($course->getId());
+                return $profile->getFinalMode() === "online" ? _("Online") : _("Papier");
+            case "timespan":
+                $profile = EvasysCourseProfile::findBySemester($course->getId());
+                $begin = $profile->getFinalBegin();
+                $end = $profile->getFinalEnd();
+                return date("d.m.Y H:i", $begin)." - ".date("d.m.Y H:i", $end);
+        }
     }
 
     public static function logSearch($needle, $action_name = null)

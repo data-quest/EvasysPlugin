@@ -6,23 +6,24 @@ class AddCourseProfiles extends Migration
     {
         DBManager::get()->exec("
             CREATE TABLE `evasys_course_profiles` (
-                `course_profile_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-                `seminar_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-                `semester_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+                `course_profile_id` varchar(32) NOT NULL,
+                `seminar_id` varchar(32) NOT NULL DEFAULT '',
+                `semester_id` varchar(32) NOT NULL DEFAULT '',
                 `form_id` int(11) DEFAULT NULL,
                 `begin` int(11) DEFAULT NULL,
                 `end` int(11) DEFAULT NULL,
-                `teachers` text COLLATE utf8mb4_unicode_ci,
-                `results_email` text COLLATE utf8mb4_unicode_ci,
+                `teachers` text ,
+                `results_email` text,
                 `applied` tinyint(4) NOT NULL DEFAULT '0',
                 `transferred` tinyint(4) NOT NULL DEFAULT '0',
-                `surveys` text COLLATE utf8mb4_unicode_ci,
+                `surveys` text,
                 `by_dozent` tinyint(4) NOT NULL DEFAULT '0',
-                `mode` enum('paper','online') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-                `address` text COLLATE utf8mb4_unicode_ci,
-                `language` text COLLATE utf8mb4_unicode_ci,
+                `mode` enum('paper','online') DEFAULT NULL,
+                `address` text,
+                `language` text,
                 `number_of_sheets` int(11) DEFAULT NULL,
-                `user_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                `hinweis` text,
+                `user_id` varchar(32) DEFAULT NULL,
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
                 PRIMARY KEY (`course_profile_id`)
@@ -31,10 +32,10 @@ class AddCourseProfiles extends Migration
         DBManager::get()->exec("
             CREATE TABLE `evasys_forms` (
                 `form_id` int(11) NOT NULL,
-                `name` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                `name` varchar(256) DEFAULT NULL,
                 `description` text DEFAULT NULL,
                 `active` int(11) NOT NULL DEFAULT '0',
-                `link` varchar(128) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                `link` varchar(128) DEFAULT NULL,
                 `chdate` int(11) DEFAULT NULL,
                 `mkdate` int(11) DEFAULT NULL,
                 PRIMARY KEY (`form_id`)
@@ -42,19 +43,19 @@ class AddCourseProfiles extends Migration
         ");
         DBManager::get()->exec("
             CREATE TABLE `evasys_institute_profiles` (
-                `institute_profile_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-                `institut_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-                `semester_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+                `institute_profile_id` varchar(32) NOT NULL DEFAULT '',
+                `institut_id` varchar(32) NOT NULL DEFAULT '',
+                `semester_id` varchar(32) NOT NULL DEFAULT '',
                 `form_id` int(11) DEFAULT NULL,
                 `begin` int(11) DEFAULT NULL,
                 `end` int(11) DEFAULT NULL,
-                `results_email` text COLLATE utf8mb4_unicode_ci,
-                `mode` enum('paper','online') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-                `address` text COLLATE utf8mb4_unicode_ci,
+                `results_email` text,
+                `mode` enum('paper','online') DEFAULT NULL,
+                `address` text,
                 `antrag_begin` int(11) DEFAULT NULL,
                 `antrag_end` int(11) DEFAULT NULL,
-                `antrag_info` text COLLATE utf8mb4_unicode_ci,
-                `user_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                `antrag_info` text,
+                `user_id` varchar(32) DEFAULT NULL,
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
                 PRIMARY KEY (`institute_profile_id`),
@@ -137,6 +138,18 @@ class AddCourseProfiles extends Migration
             'section' => "EVASYS_PLUGIN",
             'description' => "In editing the profiles there are only online-evaluations allowed."
         ));
+        Config::get()->create("EVASYS_ENABLE_MESSAGE_FOR_ADMINS", array(
+            'value' => 1,
+            'type' => "boolean",
+            'range' => "global",
+            'section' => "EVASYS_PLUGIN",
+            'description' => "Should admins receive messages if a new profile is edited by a teacher?"
+        ));
+        DBManager::get()->exec("
+            INSERT INTO roles
+            SET rolename = 'Evasys-Admin',
+            system = 'n'
+        ");
 
         StudipLog::registerActionPlugin('EVASYS_EVAL_APPLIED', 'Evasys: Lehrevaluation wurde beantragt', '%user beantragt neue Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
         StudipLog::registerActionPlugin('EVASYS_EVAL_UPDATE', 'Evasys: Lehrevaluationsdaten geändert', '%user ändert Lehrevaluationsdaten %coaffected(%info) für %user(%affected).', 'EvasysPlugin');

@@ -1,6 +1,15 @@
 <?php
 
-class AdminController extends PluginController {
+class AdminController extends PluginController
+{
+
+    function before_filter(&$action, &$args)
+    {
+        parent::before_filter($action, $args);
+        if (!EvasysPlugin::isRoot() && !EvasysPlugin::isAdmin()) {
+            throw new AccessDeniedException();
+        }
+    }
 
     public function course_tr_action($course_id)
     {
@@ -60,8 +69,6 @@ class AdminController extends PluginController {
         }
         $this->redirect(URLHelper::getURL("dispatch.php/admin/courses/index"));
     }
-
-
 
 
 

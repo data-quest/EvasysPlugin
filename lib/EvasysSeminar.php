@@ -22,8 +22,7 @@ class EvasysSeminar extends SimpleORMap {
     /**
      * Fetches all new evaluations (red icon) for the user.
      * @param string|null $user_id of the given user or null for current user
-     * @return array : array of Seminar_ids with
-     * @throws Exception
+     * @return integer : number of new surveys
      */
     public function getEvaluationStatus($user_id = null)
     {
@@ -386,7 +385,6 @@ class EvasysSeminar extends SimpleORMap {
             return $_SESSION['EVASYS_SEMINAR_SURVEYS'][$this['Seminar_id']];
         }
         $soap = EvasysSoap::get();
-        //$sem = new Seminar($this['Seminar_id']);
         $user_id || $user_id = $GLOBALS['user']->id;
         $email = DBManager::get()->query("SELECT Email FROM auth_user_md5 WHERE user_id = ".DBManager::get()->quote($user_id))->fetch(PDO::FETCH_COLUMN, 0);
 
@@ -409,7 +407,8 @@ class EvasysSeminar extends SimpleORMap {
         return $_SESSION['EVASYS_SEMINAR_SURVEYS'][$this['Seminar_id']] = $surveys->OnlineSurveyKeys;
     }
 
-    static public function compareSurveysDESC($a, $b) {
+    static public function compareSurveysDESC($a, $b)
+    {
         return $a->m_oPeriod->m_sEndDate < $b->m_oPeriod->m_sEndDate;
     }
 

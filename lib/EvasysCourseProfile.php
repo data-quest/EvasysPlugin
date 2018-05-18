@@ -479,8 +479,15 @@ class EvasysCourseProfile extends SimpleORMap {
         if (!trim($emails)) {
             return array();
         } else {
-            $emails = preg_split("/\s+/", strtolower($emails), -1, PREG_SPLIT_NO_EMPTY);
+            $emails = preg_split("/[\s,;]+/", strtolower($emails), -1, PREG_SPLIT_NO_EMPTY);
             return array_unique($emails);
         }
+    }
+
+    public function getFinalTeilnehmer()
+    {
+        return count($this->course->members->filter(function ($member) {
+            return in_array($member['status'], array("autor", "user", "tutor"));
+        }));
     }
 }
