@@ -191,7 +191,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     }
 
 
-    public function getIconNavigation($course_id, $last_visit, $user_id = null) {
+    public function getIconNavigation($course_id, $last_visit, $user_id = null)
+    {
         $activated = false;
         $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
@@ -224,7 +225,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
     }
 
-    public function getTabNavigation($course_id) {
+    public function getTabNavigation($course_id)
+    {
         $activated = false;
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
             $profile = EvasysCourseProfile::findBySemester($course_id);
@@ -272,11 +274,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             : null;
     }
 
-    public function useMultimode() {
+    public function useMultimode()
+    {
         return _("Übertragen");
     }
 
-    public function getAdminCourseActionTemplate($course_id, $values = null, $semester = null) {
+    public function getAdminCourseActionTemplate($course_id, $values = null, $semester = null)
+    {
         $factory = new Flexi_TemplateFactory(__DIR__."/views");
         $template = $factory->open("admin/_admin_checkbox.php");
         $template->set_attribute("profile", EvasysCourseProfile::findOneBySQL("seminar_id = :seminar_id AND semester_id = :semester_id", array(
@@ -332,7 +336,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         );
     }
 
-    public function adminAreaGetCourseContent($course, $index) {
+    public function adminAreaGetCourseContent($course, $index)
+    {
         switch ($index) {
             case "form":
                 $profile = EvasysCourseProfile::findBySemester($course->getId());
@@ -362,18 +367,18 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         $result = [];
 
         if (strpos($action_name, 'EVASYS') !== false) {
-            $stmt = DBManager::get()->prepare(
-                'SELECT s.VeranstaltungsNummer, s.Name as coursename, '
-                . 'aum.user_id, aum.username, sd.name as semester '
-                . 'FROM evasys_course_profiles '
-                . 'LEFT JOIN seminare s ON evasys_course_profiles.seminar_id = s.Seminar_id '
-                . 'LEFT JOIN auth_user_md5 aum USING(user_id) '
-                . 'LEFT JOIN semester_data sd USING(semester_id) '
-                . "WHERE s.Name LIKE CONCAT('%', :needle, '%') "
-                . "OR s.VeranstaltungsNummer LIKE CONCAT('%', :needle, '%') "
-                . "OR CONCAT_WS(' ', aum.username, aum.Vorname, aum.Nachname) "
-                . "LIKE CONCAT('%', :needle, '%') "
-                . "OR CONCAT_WS(' ', sd.name, sd.semester_token) LIKE CONCAT('%', :needle, '%')");
+            $stmt = DBManager::get()->prepare("
+                SELECT s.VeranstaltungsNummer, s.Name as coursename,
+                    aum.user_id, aum.username, sd.name as semester
+                FROM evasys_course_profiles
+                    LEFT JOIN seminare s ON evasys_course_profiles.seminar_id = s.Seminar_id
+                    LEFT JOIN auth_user_md5 aum USING (user_id)
+                    LEFT JOIN semester_data sd USING (semester_id)
+                WHERE s.Name LIKE CONCAT('%', :needle, '%')
+                    OR s.VeranstaltungsNummer LIKE CONCAT('%', :needle, '%')
+                    OR CONCAT_WS(' ', aum.username, aum.Vorname, aum.Nachname) LIKE CONCAT('%', :needle, '%')
+                    OR CONCAT_WS(' ', sd.name, sd.semester_token) LIKE CONCAT('%', :needle, '%')
+            ");
             $stmt->execute([':needle' => $needle]);
             foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
                 $result[] = [

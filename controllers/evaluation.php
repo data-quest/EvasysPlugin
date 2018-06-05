@@ -29,7 +29,7 @@ class EvaluationController extends PluginController
             foreach ($teachers as $dozent_id) {
                 $evasys_seminars = array_merge(
                     $evasys_seminars,
-                    EvasysSeminar::findBySeminar(Context::get()->id.$dozent_id)
+                    EvasysSeminar::findBySeminar(Context::get()->id . $dozent_id)
                 );
             }
             //TODO maybe we do something different here and not use EvasysSeminar::findBySeminar or change getSurveyInformation?

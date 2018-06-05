@@ -51,6 +51,7 @@
                     <li>
                         <? if ($editable) : ?>
                         <label>
+                            <?= Assets::img("anfasser_24.png", array('class' => "anfasser")) ?>
                         <? endif ?>
                             <span class="avatar" style="background-image: url('<?= Avatar::getAvatar($teacher['user_id'])->getURL(Avatar::MEDIUM) ?>');"></span>
                             <?= htmlReady($teacher['fullname']) ?>
@@ -58,8 +59,6 @@
                                    name="data[teachers][]"
                                    value="<?= htmlReady($teacher['user_id']) ?>"
                                    <?= count($teachers) === 1 || !$profile['teachers'] || ($profile['teachers'] && in_array($teacher['user_id'], $profile['teachers']->getArrayCopy())) ? " checked" : "" ?>>
-                            <?= Icon::create("radiobutton-unchecked", "clickable")->asImg(20) ?>
-                            <?= Icon::create("check-circle", "clickable")->asImg(20) ?>
                             <span class="note">(<?= _("Wird auf dem Fragebogen genannt.") ?>)</span>
                         <? if ($editable) : ?>
                         </label>
@@ -325,7 +324,7 @@
                     jQuery("input.datepicker").datetimepicker();
                     jQuery(".evasys_teachers").sortable({
                         "axis": "y",
-                        "handle": ".avatar",
+                        "handle": ".avatar, .anfasser",
                         "revert": 300
                     });
                 });

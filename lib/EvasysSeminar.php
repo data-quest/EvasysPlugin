@@ -140,6 +140,7 @@ class EvasysSeminar extends SimpleORMap {
                             }
                         }
                     }
+                    $profile['surveys']['form_id'] = $profile->getFinalFormId();
                     $profile->store();
                 }
             }
@@ -212,8 +213,45 @@ class EvasysSeminar extends SimpleORMap {
         $surveys = array();
 
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
+            $form_id = $profile->getFinalFormId();
+            if ($profile['applied'] && $profile['surveys']['form_id'] && ($profile['surveys']['form_id'] != $form_id)) {
+                //We need to update the surveys manually via SOAP before updating the rest of the course-info
+                //Otherwise we would have two or more surveys, because Evasys ignores the SurveyId in
+                //the InsertCourses-method and identifies the survey just by course_id, semester and form_id.
+
+                //UpdateSurvey
+                if (!$profile['split']) {
+                    $seminar_ids = array($this['Seminar_id']);
+                } else {
+                    $seminar_ids = $profile['surveys']->getArrayCopy();
+                    $seminar_ids = array_keys($seminar_ids);
+                }
+
+                foreach ($seminar_ids as $seminar_id) {
+                    if ($seminar_id !== "form_id") {
+                        //Check if we are allowed to change the survey?
+                        //And what happens if the check fails and we are not allowed?
+                        $survey = array(
+                            'm_sTitle' => "bla", //necessary but useless ... ?
+                            'm_nSurveyId' => $profile['surveys'] && $profile['surveys'][$seminar_id]
+                                ? $profile['surveys'][$seminar_id]
+                                : "", //experimental
+                            'm_cType' => "",
+                            'm_nFrmid' => $form_id,
+                            'm_sLastDataCollectionDate' => "",
+                            'm_sMaskTan' => ""
+                        );
+                        $soap = EvasysSoap::get();
+                        $data = array(
+                            'oSurvey' => $survey
+                        );
+                        $soap->__soapCall("UpdateSurvey", $data);
+                    }
+                }
+            }
+
             $surveys[] = array(
-                'FormId' => $profile->getFinalFormId(),
+                'FormId' => $form_id,
                 'FormIdType' => "INTERNAL",
                 'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
                     ? $profile['surveys'][$this['Seminar_id']]
