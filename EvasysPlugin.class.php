@@ -57,7 +57,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             Navigation::addItem("/admin/evasys/matchinginstitutes", clone $nav);
             $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "matching/wording"));
             Navigation::addItem("/admin/evasys/wording", clone $nav);
-        } elseif ($this->isAdmin() && Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
+        } elseif (self::isAdmin() && Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
             $nav = new Navigation(_("Standard-Evaluationsprofil"), PluginEngine::getURL($this, array(), "instituteprofile"));
             Navigation::addItem("/admin/institute/instituteprofile", $nav);
         }
@@ -293,14 +293,22 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         return $template;
     }
 
-    public function isRoot()
+    static public function isRoot()
     {
         return $GLOBALS['perm']->have_perm("root");
     }
 
-    public function isAdmin()
+    static public function isAdmin()
     {
-        return $GLOBALS['perm']->have_perm("admin") && !$GLOBALS['perm']->have_perm("root");
+        if ($GLOBALS['perm']->have_perm("root")) {
+            return false;
+        } elseif ($GLOBALS['perm']->have_perm("admin") && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
+            $global_profile = EvasysGlobalProfile::findCurrent();
+            if ($global_profile['adminedit_begin']) {
+                return (time() >= $global_profile['adminedit_begin']) && (!$global_profile['adminedit_end'] || time() <= $global_profile['adminedit_end']);
+            }
+        }
+        return false;
     }
 
     public function perform($unconsumed_path)

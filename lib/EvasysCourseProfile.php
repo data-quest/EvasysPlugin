@@ -413,13 +413,15 @@ class EvasysCourseProfile extends SimpleORMap {
             }
         } elseif(EvasysPlugin::isRoot()) {
             return true;
-        } elseif(EvasysPlugin::isAdmin()) {
+        } elseif(EvasysPlugin::isAdmin() && $GLOBALS['perm']->have_studip_perm("admin", $this['seminar_id'])) {
             $global_profile = EvasysGlobalProfile::findCurrent();
             return (
                 $global_profile['adminedit_begin']
-                && ($global_profile['adminedit_begin'] >= time())
+                && ($global_profile['adminedit_begin'] <= time())
                 && (($global_profile['adminedit_end'] > time()) || !$global_profile['adminedit_end'])
             );
+        } else {
+            //TODO: check for new role of EVAL_ADMIN
         }
         return false;
     }
