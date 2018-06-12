@@ -17,6 +17,7 @@ class AddCourseProfiles extends Migration
                 `applied` tinyint(4) NOT NULL DEFAULT '0',
                 `transferred` tinyint(4) NOT NULL DEFAULT '0',
                 `surveys` text,
+                `split` tinyint(4) NOT NULL DEFAULT '0',
                 `by_dozent` tinyint(4) NOT NULL DEFAULT '0',
                 `mode` enum('paper','online') DEFAULT NULL,
                 `address` text,
@@ -88,6 +89,7 @@ class AddCourseProfiles extends Migration
                 `profile_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
                 `profile_type` enum('global','institute') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'global',
                 `form_id` int(11) NOT NULL,
+                `sem_type` int(11) NOT NULL,
                 `position` int(11) DEFAULT NULL,
                 `standard` tinyint(4) NOT NULL DEFAULT '0',
                 `chdate` int(11) DEFAULT NULL,
@@ -155,6 +157,7 @@ class AddCourseProfiles extends Migration
         StudipLog::registerActionPlugin('EVASYS_EVAL_UPDATE', 'Evasys: Lehrevaluationsdaten geändert', '%user ändert Lehrevaluationsdaten %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
         StudipLog::registerActionPlugin('EVASYS_EVAL_DELETE', 'Evasys: Lehrevaluation gelöscht', '%user löscht Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
         StudipLog::registerActionPlugin('EVASYS_EVAL_TRANSFER', 'Evasys: Lehrevaluation nach Evasys übertragen', '%user überträgt Lehrevaluation %coaffected(%info) für %user(%affected) nach Evasys.', 'EvasysPlugin');
+        SimpleORMap::expireTableScheme();
     }
     
     public function down()

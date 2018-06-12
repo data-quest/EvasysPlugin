@@ -7,7 +7,6 @@
                 <th width="20"></th>
                 <th><?= _("Name") ?></th>
                 <th><?= _("Überschrift") ?></th>
-                <th><?= _("Anzahl Veranstaltungen") ?></th>
                 <th><?= _("Info") ?></th>
                 <th></th>
             </tr>
@@ -20,7 +19,6 @@
                     </td>
                     <td><?= htmlReady($form['name']) ?></td>
                     <td><?= htmlReady($form['description']) ?></td>
-                    <td><?= htmlReady($form->getNumberOfCourses()) ?></td>
                     <td>
                         <? if ($form['link']) : ?>
                             <a href="<?= htmlReady($form['link']) ?>" target="_blank">

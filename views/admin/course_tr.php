@@ -136,6 +136,16 @@
                         </span>
             </td>
         <? endif ?>
+        <? foreach (PluginManager::getInstance()->getPlugins("AdminCourseContents") as $plugin) : ?>
+            <? foreach ($plugin->adminAvailableContents() as $index => $label) : ?>
+                <? if (in_array($plugin->getPluginId()."_".$index, $view_filter)) : ?>
+                    <td style="text-align: center;">
+                        <? $content = $plugin->adminAreaGetCourseContent($course, $index) ?>
+                        <?= is_a($content, "Flexi_Template") ? $content->render() : $content ?>
+                    </td>
+                <? endif ?>
+            <? endforeach ?>
+        <? endforeach ?>
         <td style="text-align: right;" class="actions">
             <? if ($actions[$selected_action]['multimode'] && is_numeric($selected_action)) : ?>
                 <? if ($GLOBALS['perm']->have_studip_perm('tutor', $semid)) : ?>

@@ -10,9 +10,12 @@
           class="default">
 
         <? if ($editable && !EvasysPlugin::isAdmin() && !EvasysPlugin::isRoot()) : ?>
+            <? $antrag_info = $profile->getAntragInfo() ?>
+            <? if (trim($antrag_info)) : ?>
             <fieldset style="padding-top: 10px;">
                 <?= formatReady($profile->getAntragInfo()) ?>
             </fieldset>
+            <? endif ?>
         <? endif ?>
 
         <fieldset>
@@ -35,7 +38,7 @@
                 <? $seminar = new Seminar($profile['seminar_id']) ?>
                 <? $teachers = $seminar->getMembers("dozent") ?>
                 <?= _("Wer wird evaluiert?") ?>
-                <ul class="clean evasys_teachers<?= $editable ? " editable" : "" ?><?= $profile['split'] ? " split" : "" ?>">
+                <ul class="clean evasys_teachers<?= $editable ? " editable" : "" ?><?= Config::get()->EVASYS_ENABLE_SPLITTING_COURSES && $profile['split'] ? " split" : "" ?>">
                     <?
                     $active = array_flip($profile['teachers'] ? $profile['teachers']->getArrayCopy() : array());
                     usort($teachers, function ($a, $b) use ($active) {
@@ -49,7 +52,7 @@
                     }) ?>
                     <? foreach ($teachers as $teacher) : ?>
                     <li>
-                        <? if ($editable) : ?>
+                        <? if ($editable && count($teachers) > 1) : ?>
                         <label>
                             <?= Assets::img("anfasser_24.png", array('class' => "anfasser")) ?>
                         <? endif ?>
@@ -60,14 +63,14 @@
                                    value="<?= htmlReady($teacher['user_id']) ?>"
                                    <?= count($teachers) === 1 || !$profile['teachers'] || ($profile['teachers'] && in_array($teacher['user_id'], $profile['teachers']->getArrayCopy())) ? " checked" : "" ?>>
                             <span class="note">(<?= _("Wird auf dem Fragebogen genannt.") ?>)</span>
-                        <? if ($editable) : ?>
+                        <? if ($editable && count($teachers) > 1) : ?>
                         </label>
                         <? endif ?>
                     </li>
                     <? endforeach ?>
                 </ul>
 
-                <? if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES) : ?>
+                <? if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES && count($teachers) > 1) : ?>
                 <label>
                     <? if ($editable) : ?>
                     <input type="checkbox"
@@ -84,7 +87,7 @@
 
                 <? if ($editable || trim($profile['results_email'])) : ?>
                 <label>
-                    <?= _("Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>
+                    <?= _("Weitere Emailadressen, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>
                     <? if ($editable) : ?>
                     <input type="text" name="data[results_email]" value="<?= htmlReady($profile['results_email']) ?>">
                     <? else : ?>
@@ -322,11 +325,13 @@
             <script>
                 jQuery(function () {
                     jQuery("input.datepicker").datetimepicker();
+                    <? if ($editable && count($teachers) > 1) : ?>
                     jQuery(".evasys_teachers").sortable({
                         "axis": "y",
                         "handle": ".avatar, .anfasser",
                         "revert": 300
                     });
+                    <? endif ?>
                 });
             </script>
 

@@ -142,7 +142,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred") {
                 $filter->settings['query']['where']['evasys_transferred'] = "evasys_course_profiles.transferred = '1'";
             } else {
-                $filter->settings['query']['where']['evasys_transferred'] = "(evasys_course_profiles.transferred = '0' OR evasys_course_profiles.transferred IS NULL)";
+                $filter->settings['query']['where']['evasys_transferred'] = "(evasys_course_profiles.applied = '1' && evasys_course_profiles.transferred = '0')";
             }
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
         }
@@ -287,6 +287,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             'seminar_id' => $course_id,
             'semester_id' => Semester::findCurrent()->id
         )));
+        $template->set_attribute("course_id", $course_id);
         $template->set_attribute("plugin", $this);
         $template->set_attribute("checkbox", true);
         return $template;
@@ -338,13 +339,16 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function adminAreaGetCourseContent($course, $index)
     {
+        $profile = EvasysCourseProfile::findBySemester($course->getId());
+        if (!$profile || !$profile['applied']) {
+            return "";
+        }
         switch ($index) {
             case "form":
-                $profile = EvasysCourseProfile::findBySemester($course->getId());
                 $form_id = $profile->getFinalFormId();
                 if ($form_id) {
                     $form = EvasysForm::find($form_id);
-                    return $form['name'].": ".$form['description'];
+                    return $form['name'];
                 } else {
                     return "";
                 }
@@ -352,10 +356,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 if (Config::get()->EVASYS_FORCE_ONLINE) {
                     return _("Online");
                 }
-                $profile = EvasysCourseProfile::findBySemester($course->getId());
                 return $profile->getFinalMode() === "online" ? _("Online") : _("Papier");
             case "timespan":
-                $profile = EvasysCourseProfile::findBySemester($course->getId());
                 $begin = $profile->getFinalBegin();
                 $end = $profile->getFinalEnd();
                 return date("d.m.Y H:i", $begin)." - ".date("d.m.Y H:i", $end);
