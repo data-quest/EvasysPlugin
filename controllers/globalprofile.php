@@ -39,11 +39,6 @@ class GlobalprofileController extends PluginController
             $this->profile = EvasysGlobalProfile::findCurrent();
         } elseif($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT && $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT !== "all") {
             $this->profile = EvasysInstituteProfile::findByInstitute($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT);
-            if (!$this->profile) {
-                $this->profile = new EvasysInstituteProfile();
-                $this->profile['institut_id'] = $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT;
-                $this->profile['semester_id'] = Semester::findCurrent()->id;
-            }
         }
         $this->con = $this->profile_type."profile";
 

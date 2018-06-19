@@ -23,6 +23,11 @@ class EvasysInstituteProfile extends SimpleORMap {
             $institut_id,
             $semester->getId()
         ));
+        if (!$profile) {
+            $profile = new EvasysInstituteProfile();
+            $profile['institut_id'] = $institut_id;
+            $profile['semester_id'] = $semester->getId();
+        }
         return $profile;
     }
 }
