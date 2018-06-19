@@ -492,4 +492,9 @@ class EvasysCourseProfile extends SimpleORMap {
             return in_array($member['status'], array("autor", "user", "tutor"));
         }));
     }
+
+    public function getOldValues()
+    {
+        return $this->content_db;
+    }
 }

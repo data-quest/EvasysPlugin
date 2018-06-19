@@ -56,6 +56,7 @@ class AddCourseProfiles extends Migration
                 `antrag_begin` int(11) DEFAULT NULL,
                 `antrag_end` int(11) DEFAULT NULL,
                 `antrag_info` text,
+                `language` text DEFAULT NULL,
                 `user_id` varchar(32) DEFAULT NULL,
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
@@ -76,6 +77,7 @@ class AddCourseProfiles extends Migration
                 `antrag_begin` int(11) DEFAULT NULL,
                 `antrag_end` int(11) DEFAULT NULL,
                 `antrag_info` text COLLATE utf8mb4_unicode_ci,
+                `language` text DEFAULT NULL,
                 `user_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
@@ -152,6 +154,14 @@ class AddCourseProfiles extends Migration
             SET rolename = 'Evasys-Admin',
             system = 'n'
         ");
+        Config::get()->create("EVASYS_LANGUAGE_OPTIONS", array(
+            'value' => "",
+            'type' => "string",
+            'range' => "global",
+            'section' => "EVASYS_PLUGIN",
+            'description' => "Name the languages (Deutsch English), which are selectable for paper-evaluations. Separate them with newlines. Leave empty for free text."
+        ));
+
 
         StudipLog::registerActionPlugin('EVASYS_EVAL_APPLIED', 'Evasys: Lehrevaluation wurde beantragt', '%user beantragt neue Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
         StudipLog::registerActionPlugin('EVASYS_EVAL_UPDATE', 'Evasys: Lehrevaluationsdaten geändert', '%user ändert Lehrevaluationsdaten %coaffected(%info) für %user(%affected).', 'EvasysPlugin');

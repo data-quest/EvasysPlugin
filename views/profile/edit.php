@@ -287,7 +287,17 @@
 
                         <label>
                             <?= _("Sprache") ?>
-                            <textarea name="data[language]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($profile['language']) ?></textarea>
+                            <? if (!trim(Config::get()->EVASYS_LANGUAGE_OPTIONS)) : ?>
+                                <textarea name="data[language]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($profile['language']) ?></textarea>
+                            <? else : ?>
+                                <select name="data[language]"<?= !$editable ? " readonly" : "" ?>>
+                                    <? foreach (explode("\n", Config::get()->EVASYS_LANGUAGE_OPTIONS) as $language) : ?>
+                                    <option value="<?= htmlReady($language) ?>"<?= $profile['language'] === $language  ? " selected" : "" ?>>
+                                        <?= htmlReady($language) ?>
+                                    </option>
+                                    <? endforeach ?>
+                                </select>
+                            <? endif ?>
                         </label>
 
                         <label>

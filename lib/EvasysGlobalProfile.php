@@ -62,7 +62,7 @@ class EvasysGlobalProfile extends SimpleORMap {
             //We should also take over the old institute_profiles:
             $statement = DBManager::get()->prepare("
                 INSERT INTO evasys_institute_profiles (institute_profile_id, institut_id, semester, form_id, `mode`, address, antrag_info, chdate, mkdate)
-                SELECT MD5(CONCAT(institute_profile_id, :new_semester), institut_id, :new_semester, form_id, `mode`, address, antrag_info, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
+                SELECT MD5(CONCAT(institute_profile_id, :new_semester)), institut_id, :new_semester, form_id, `mode`, address, antrag_info, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
                 FROM evasys_institute_profiles
                 WHERE semester_id = :old_semester
             ");

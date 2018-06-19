@@ -146,8 +146,41 @@
                     <option value="paper"<?= $values['mode'] == "paper" ? " selected" : "" ?>>
                         <?= _("Papierbasierte Evaluation") ?>
                     </option>
-
                 </select>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <label>
+                    <input type="checkbox" name="change[]" value="language" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                    <?= _("Sprache") ?>
+                </label>
+            </td>
+            <td>
+                <? if (!trim(Config::get()->EVASYS_LANGUAGE_OPTIONS)) : ?>
+                    <textarea name="language"
+                              onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');"
+                              placeholder="<?= $values['language'] === "EVASYS_UNEINDEUTIGER_WERT" ? _("Unterschiedliche Werte") : "" ?>"><?
+                         if ($values['language'] !== "EVASYS_UNEINDEUTIGER_WERT") {
+                             echo htmlReady($values['language']);
+                         }
+                    ?></textarea>
+                <? else : ?>
+                    <select name="language"
+                            onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                        <option value="">
+                            <? if ($values['language'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
+                                <?= _("Unterschiedliche Werte") ?>
+                            <? endif ?>
+                        </option>
+                        <? foreach (explode("\n", Config::get()->EVASYS_LANGUAGE_OPTIONS) as $language) : ?>
+                            <option value="<?= htmlReady($language) ?>"<?= $values['language'] == $language ? " selected" : "" ?>>
+                                <?= htmlReady($language) ?>
+                            </option>
+                        <? endforeach ?>
+                    </select>
+                <? endif ?>
             </td>
         </tr>
 

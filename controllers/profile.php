@@ -59,103 +59,11 @@ class ProfileController extends PluginController {
             $this->profile['language'] = $data['language'] ?: null;
 
             $this->profile['user_id'] = $GLOBALS['user']->id;
-            if ($this->profile->isNew() && !EvasysPlugin::isAdmin() && !EvasysPlugin::isRoot()) {
-                $this->profile['by_dozent'] = 1;
-                //Nachricht an zentrale QM und an Mitdozenten:
-            }
 
-            StudipLog::log(
-                $this->profile->isNew() ? 'LAVE_LEHRAUFTRAG_CREATE' : 'LAVE_LEHRAUFTRAG_UPDATE',
-                $this->user_id,
-                $this->profile['seminar_id'],
-                Semester::findCurrent()->id,
-                json_encode([
-                    'lehrauftrag' => $delta_lehrauftrag,
-                    'user'        => $delta_user,
-                    'userdata'    => $delta_userdata
-                ]));
+            $oldvalues = $profile->getOldValues();
+            $profile->store();
 
-            $wasnew = $this->profile->isNew();
-            $this->profile->store();
-
-            if ($this->profile['by_dozent']) {
-                //Nachricht an Dozenten:
-                if (EvasysPlugin::isRoot()
-                        || EvasysPlugin::isAdmin()
-                        || Config::get()->EVASYS_ENABLE_MESSAGE_FOR_ADMINS
-                        //|| !$wasnew
-                        ) {
-                    //Nur Dozenten
-                    $statement = DBManager::get()->prepare("
-                        SELECT username
-                        FROM auth_user_md5
-                            INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
-                        WHERE seminar_user.status = 'dozent'
-                            AND seminar_user.Seminar_id = :seminar_id
-                    ");
-                    $statement->execute(array(
-                        'seminar_id' => $this->profile['seminar_id']
-                    ));
-
-                } else {
-                    //Dozenten und Admins:
-                    $statement = DBManager::get()->prepare("
-                        SELECT username
-                        FROM auth_user_md5
-                            INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
-                        WHERE seminar_user.status = 'dozent'
-                            AND seminar_user.Seminar_id = :seminar_id
-                        UNION SELECT username
-                        FROM auth_user_md5
-                            INNER JOIN roles_user ON (roles_user.userid = auth_user_md5.user_id)
-                            INNER JOIN roles ON (roles.roleid = roles_user.roleid)
-                        WHERE roles.rolename = 'Evasys-Admin'
-                            AND (roles_user.institut_id = '' OR roles_user.institut_id = :institut_id)
-                    ");
-                    $statement->execute(array(
-                        'seminar_id' => $this->profile['seminar_id'],
-                        'institut_id' => $this->profile->course['institut_id']
-                    ));
-                }
-                $dozenten = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-
-                foreach ($dozenten as $dozent_username) {
-                    if ($dozent_username !== $GLOBALS['user']->username) {
-                        $messaging = new messaging();
-                        $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
-                        if ($wasnew) {
-                            $message = sprintf(
-                                _("%s hat gerade für die Veranstaltung %s eine Lehrevaluation beantragt. Die eingetragenen Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
-                                get_fullname($GLOBALS['user']->id),
-                                $this->profile->course['name'],
-                                URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this->profile['seminar_id'], array('cid' => $this->profile['seminar_id']), true)
-                            );
-                        } else {
-                            $message = sprintf(
-                                _("%s hat gerade die Lehrevaluationsdaten der Veranstaltung %s verändert. Die geänderten Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
-                                get_fullname($GLOBALS['user']->id),
-                                $this->profile->course['name'],
-                                URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this->profile['seminar_id'], array('cid' => $this->profile['seminar_id']), true)
-                            );
-                        }
-                        $messaging->insert_message(
-                            $message,
-                            $dozent_username,
-                            "____%system%____",
-                            "",
-                            "",
-                            "",
-                            "",
-                            _("Bearbeitung der Evaluationsdaten"),
-                            true,
-                            "normal",
-                            array("Lehrevaluation")
-                        );
-                        URLHelper::setBaseURL($oldbase);
-                    }
-                }
-
-            }
+            $this->postProfileEdited($this->profile, $oldvalues);
 
             PageLayout::postSuccess(_("Daten wurden gespeichert."));
             $this->response->add_header("X-Dialog-Execute", json_encode(array(
@@ -164,6 +72,8 @@ class ProfileController extends PluginController {
             )));
         }
     }
+
+
 
     public function bulkedit_action()
     {
@@ -178,6 +88,9 @@ class ProfileController extends PluginController {
 
         if (Request::isPost() && Request::submitted("submit")) {
             foreach ($this->profiles as $profile) {
+                if (!$profile->isEditable()) {
+                    continue;
+                }
                 if (in_array("applied", Request::getArray("change"))) {
                     if (Request::get("applied") !== "") {
                         $profile['applied'] = Request::int("applied");
@@ -222,7 +135,15 @@ class ProfileController extends PluginController {
                             : null;
                     }
                 }
+                if (in_array("language", Request::getArray("change"))) {
+                    if (Request::option("language") !== "") {
+                        $profile['language'] = Request::get("language");
+                    }
+                }
+
+                $oldvalues = $profile->getOldValues();
                 $profile->store();
+                $this->postProfileEdited($profile, $oldvalues);
             }
             PageLayout::postSuccess(_("Evaluationsdaten wurden gespeichert"));
             $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
@@ -271,6 +192,144 @@ class ProfileController extends PluginController {
                 $this->values['mode'] = $mode;
             } elseif ($this->values['mode'] !== $mode) {
                 $this->values['mode'] = "EVASYS_UNEINDEUTIGER_WERT";
+            }
+
+            $language = $profile['language'];
+            if ($this->values['language'] === null) {
+                $this->values['language'] = $language;
+            } elseif ($this->values['language'] !== $language) {
+                $this->values['language'] = "EVASYS_UNEINDEUTIGER_WERT";
+            }
+
+        }
+    }
+
+
+    protected function postProfileEdited($profile, $oldvalues)
+    {
+        $applied = !$oldvalues['applied'] && $profile['applied'];
+        if ($applied && !EvasysPlugin::isAdmin() && !EvasysPlugin::isRoot()) {
+            $profile['by_dozent'] = 1;
+            //Nachricht an zentrale QM und an Mitdozenten:
+            $statement = DBManager::get()->prepare("
+                SELECT roles_user.userid
+                FROM roles_user
+                    INNER JOIN roles ON (roles_user.roleid = roles.roleid)
+                WHERE roles.rolename = ?
+            ");
+            $statement->execute(array("Evasys-Admin"));
+            $user_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+            $messaging = new messaging();
+            foreach ($user_ids as $user_id) {
+                $message = sprintf(
+                    _("%s hat eine neue Lehrevaluation beantragt."),
+                    get_fullname($user_id)
+                );
+                $messaging->insert_message(
+                    $message,
+                    get_username($user_id),
+                    "____%system%____",
+                    "",
+                    "",
+                    "",
+                    "",
+                    _("Bearbeitung der Evaluationsdaten"),
+                    true,
+                    "normal",
+                    array("Lehrevaluation")
+                );
+            }
+            URLHelper::setBaseURL($oldbase);
+        }
+
+        StudipLog::log(
+            $applied ? 'EVASYS_EVAL_APPLIED' : 'EVASYS_EVAL_UPDATE',
+            $GLOBALS['user']->id,
+            $profile['seminar_id'],
+            Semester::findCurrent()->id,
+            json_encode([
+                'lehrauftrag' => $delta_lehrauftrag,
+                'user'        => $delta_user,
+                'userdata'    => $delta_userdata
+            ])
+        );
+
+        if ($profile['by_dozent']) {
+            //Nachricht an Dozenten:
+            if (EvasysPlugin::isRoot()
+                || EvasysPlugin::isAdmin()
+                || Config::get()->EVASYS_ENABLE_MESSAGE_FOR_ADMINS
+                //|| !$applied
+            ) {
+                //Nur Dozenten
+                $statement = DBManager::get()->prepare("
+                        SELECT username
+                        FROM auth_user_md5
+                            INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
+                        WHERE seminar_user.status = 'dozent'
+                            AND seminar_user.Seminar_id = :seminar_id
+                    ");
+                $statement->execute(array(
+                    'seminar_id' => $profile['seminar_id']
+                ));
+
+            } else {
+                //Dozenten und Admins:
+                $statement = DBManager::get()->prepare("
+                        SELECT username
+                        FROM auth_user_md5
+                            INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
+                        WHERE seminar_user.status = 'dozent'
+                            AND seminar_user.Seminar_id = :seminar_id
+                        UNION SELECT username
+                        FROM auth_user_md5
+                            INNER JOIN roles_user ON (roles_user.userid = auth_user_md5.user_id)
+                            INNER JOIN roles ON (roles.roleid = roles_user.roleid)
+                        WHERE roles.rolename = 'Evasys-Admin'
+                            AND (roles_user.institut_id = '' OR roles_user.institut_id = :institut_id)
+                    ");
+                $statement->execute(array(
+                    'seminar_id' => $profile['seminar_id'],
+                    'institut_id' => $profile->course['institut_id']
+                ));
+            }
+            $dozenten = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+
+            foreach ($dozenten as $dozent_username) {
+                if ($dozent_username !== $GLOBALS['user']->username) {
+                    $messaging = new messaging();
+                    $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+                    if ($applied) {
+                        $message = sprintf(
+                            _("%s hat gerade für die Veranstaltung %s eine Lehrevaluation beantragt. Die eingetragenen Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
+                            get_fullname($GLOBALS['user']->id),
+                            $profile->course['name'],
+                            URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $profile['seminar_id'], array('cid' => $profile['seminar_id']), true)
+                        );
+                    } else {
+                        $message = sprintf(
+                            _("%s hat gerade die Lehrevaluationsdaten der Veranstaltung %s verändert. Die geänderten Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
+                            get_fullname($GLOBALS['user']->id),
+                            $profile->course['name'],
+                            URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $profile['seminar_id'], array('cid' => $profile['seminar_id']), true)
+                        );
+                    }
+                    $messaging->insert_message(
+                        $message,
+                        $dozent_username,
+                        "____%system%____",
+                        "",
+                        "",
+                        "",
+                        "",
+                        _("Bearbeitung der Evaluationsdaten"),
+                        true,
+                        "normal",
+                        array("Lehrevaluation")
+                    );
+                    URLHelper::setBaseURL($oldbase);
+                }
             }
 
         }
