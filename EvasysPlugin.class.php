@@ -57,7 +57,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             Navigation::addItem("/admin/evasys/matchinginstitutes", clone $nav);
             $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "matching/wording"));
             Navigation::addItem("/admin/evasys/wording", clone $nav);
-        } elseif (self::isAdmin() && Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
+        } elseif (self::isAdmin() && Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS && Navigation::hasItem("/admin/institute")) {
             $nav = new Navigation(_("Standard-Evaluationsprofil"), PluginEngine::getURL($this, array(), "instituteprofile"));
             Navigation::addItem("/admin/institute/instituteprofile", $nav);
         }
@@ -66,12 +66,15 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 && ((stripos($_SERVER['REQUEST_URI'], "dispatch.php/admin/courses") !== false) || (stripos($_SERVER['REQUEST_URI'], "plugins.php/evasysplugin/profile/bulkedit") !== false))
                 && ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")) {
             $this->addStylesheet("assets/evasys.less");
-            PageLayout::addScript($this->getPluginURL()."/assets/insert_button.js");
+            if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)) {
+                PageLayout::addScript($this->getPluginURL() . "/assets/insert_button.js");
+            }
+            PageLayout::addScript($this->getPluginURL() . "/assets/admin_area.js");
             NotificationCenter::addObserver($this, "addTransferredFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");
         }
         if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin")) {
-            $nav = new Navigation(_("Lehrevaluationen"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
+            $nav = new Navigation(_("Lehrveranstaltungsevaluation"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
             $nav->setImage(Icon::create("checkbox-checked", "clickable"));
             $nav->setDescription(_("Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."));
             Navigation::addItem("/course/admin/evasys", $nav);
@@ -269,27 +272,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getAdminActionURL()
     {
-        return $this->isRoot() || $this->isAdmin()
+        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)
             ? PluginEngine::getURL($this, array(), "admin/upload_courses")
-            : null;
+            : PluginEngine::getURL($this, array(), "profile/bulkedit");
     }
 
     public function useMultimode()
     {
-        return _("Übertragen");
+        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)
+            ? _("Übertragen")
+            : _("Bearbeiten");
     }
 
     public function getAdminCourseActionTemplate($course_id, $values = null, $semester = null)
     {
         $factory = new Flexi_TemplateFactory(__DIR__."/views");
         $template = $factory->open("admin/_admin_checkbox.php");
-        $template->set_attribute("profile", EvasysCourseProfile::findOneBySQL("seminar_id = :seminar_id AND semester_id = :semester_id", array(
+        $profile = EvasysCourseProfile::findOneBySQL("seminar_id = :seminar_id AND semester_id = :semester_id", array(
             'seminar_id' => $course_id,
             'semester_id' => Semester::findCurrent()->id
-        )));
+        ));
+        $template->set_attribute("profile", $profile);
         $template->set_attribute("course_id", $course_id);
         $template->set_attribute("plugin", $this);
-        $template->set_attribute("checkbox", true);
         return $template;
     }
 
@@ -298,14 +303,41 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         return $GLOBALS['perm']->have_perm("root");
     }
 
-    static public function isAdmin()
+    static public function isAdmin($seminar_id = null)
     {
         if ($GLOBALS['perm']->have_perm("root")) {
             return false;
+        } elseif ($seminar_id && $GLOBALS['perm']->have_studip_perm("admin", $seminar_id) && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
+            $global_profile = EvasysGlobalProfile::findCurrent();
+            if ($global_profile['adminedit_begin']) {
+                return (time() >= $global_profile['adminedit_begin']) && (!$global_profile['adminedit_end'] || time() <= $global_profile['adminedit_end']);
+            }
         } elseif ($GLOBALS['perm']->have_perm("admin") && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
             $global_profile = EvasysGlobalProfile::findCurrent();
             if ($global_profile['adminedit_begin']) {
                 return (time() >= $global_profile['adminedit_begin']) && (!$global_profile['adminedit_end'] || time() <= $global_profile['adminedit_end']);
+            }
+        } elseif ($GLOBALS['perm']->have_perm("dozent") && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
+            $statement = DBManager::get()->prepare("
+                SELECT *
+                FROM roles
+                    INNER JOIN roles_user ON (roles_user.roleid = roles.roleid)
+                WHERE rolename = 'Evasys-Dozent-Admin'
+                    AND roles_user.userid = ?
+            ");
+            $statement->execute(array($GLOBALS['user']->id));
+            $roles = $statement->fetchAll(PDO::FETCH_ASSOC);
+            if (!$seminar_id && count($roles)) {
+                return true;
+            } else {
+
+                foreach ($roles as $role) {
+                    if (!$role['institut_id']
+                            || $role['institut_id'] === $course['institut_id']
+                            || $role['institut_id'] === $course->institut['fakultaet_id']) {
+                        return true;
+                    }
+                }
             }
         }
         return false;

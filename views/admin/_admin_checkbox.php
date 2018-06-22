@@ -1,5 +1,5 @@
 <? if (!Config::get()->EVASYS_ENABLE_PROFILES) : ?>
-    <? if ($checkbox) : ?>
+    <? if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)) : ?>
         <input type="checkbox"
                name="c[<?= htmlReady($course_id) ?>]"
                value="1"
@@ -15,14 +15,17 @@
         <?= Icon::create("arr_1up", "inactive")->asImg(20, array('title' => _("Veranstaltung wurde bereits übertragen."))) ?>
     <? endif ?>
 
-    <a href="<?= PluginEngine::getLink($plugin, array(), "profile/edit/".$course_id) ?>" data-dialog>
-        <?= Icon::create(($profile && $profile['applied']) ? "check-circle" : "radiobutton-unchecked", "clickable")->asImg(20) ?>
-    </a>
-
-    <? if ($checkbox) : ?>
-        <input type="checkbox"
-               name="c[<?= htmlReady($course_id) ?>]"
-               value="1">
-        <input type="hidden" name="course[]" value="<?= htmlReady($course_id) ?>">
+    <? if ($profile->isEditable()) : ?>
+        <a href="<?= PluginEngine::getLink($plugin, array('cid' => $course_id), "profile/edit/".$course_id) ?>" data-dialog>
+            <?= Icon::create(($profile && $profile['applied']) ? "check-circle" : "radiobutton-unchecked", "clickable")->asImg(20) ?>
+        </a>
+    <? else : ?>
+        <?= Icon::create(($profile && $profile['applied']) ? "check-circle" : "radiobutton-unchecked", "inactive")->asImg(20) ?>
     <? endif ?>
+
+    <input type="checkbox"
+           name="c[<?= htmlReady($course_id) ?>]"
+           <?= !$profile->isEditable() ? "disabled" : ""?>
+           value="1">
+    <input type="hidden" name="course[]" value="<?= htmlReady($course_id) ?>">
 <? endif ?>

@@ -1,5 +1,7 @@
 <?php
 
+require_once "lib/archiv.inc.php";
+
 class AdminController extends PluginController
 {
 
@@ -31,7 +33,7 @@ class AdminController extends PluginController
 
     public function upload_courses_action()
     {
-        if (Request::isPost()) {
+        if (Request::isPost() && $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)) {
             $activate = Request::getArray("c");
             $evasys_seminar = array();
             foreach (Request::getArray("course") as $course_id) {

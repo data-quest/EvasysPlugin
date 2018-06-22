@@ -154,12 +154,24 @@ class AddCourseProfiles extends Migration
             SET rolename = 'Evasys-Admin',
             system = 'n'
         ");
+        DBManager::get()->exec("
+            INSERT INTO roles
+            SET rolename = 'Evasys-Dozent-Admin',
+            system = 'n'
+        ");
         Config::get()->create("EVASYS_LANGUAGE_OPTIONS", array(
             'value' => "",
             'type' => "string",
             'range' => "global",
             'section' => "EVASYS_PLUGIN",
             'description' => "Name the languages (Deutsch English), which are selectable for paper-evaluations. Separate them with newlines. Leave empty for free text."
+        ));
+        Config::get()->create("EVASYS_TRANSFER_PERMISSION", array(
+            'value' => "root",
+            'type' => "string",
+            'range' => "global",
+            'section' => "EVASYS_PLUGIN",
+            'description' => "Which permission state is necessary to transfer a course to evasys (root, admin, dozent)."
         ));
 
 

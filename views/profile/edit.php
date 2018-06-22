@@ -9,7 +9,7 @@
           <?= Request::isDialog() ? "data-dialog" : "" ?>
           class="default">
 
-        <? if ($editable && !EvasysPlugin::isAdmin() && !EvasysPlugin::isRoot()) : ?>
+        <? if ($editable && !EvasysPlugin::isAdmin($profile['seminar_id']) && !EvasysPlugin::isRoot()) : ?>
             <? $antrag_info = $profile->getAntragInfo() ?>
             <? if (trim($antrag_info)) : ?>
             <fieldset style="padding-top: 10px;">
@@ -60,6 +60,7 @@
                             <?= htmlReady($teacher['fullname']) ?>
                             <input type="checkbox"
                                    name="data[teachers][]"
+                                   <?= $profile->isEditable() ? "" : "disabled" ?>
                                    value="<?= htmlReady($teacher['user_id']) ?>"
                                    <?= count($teachers) === 1 || !$profile['teachers'] || ($profile['teachers'] && in_array($teacher['user_id'], $profile['teachers']->getArrayCopy())) ? " checked" : "" ?>>
                             <span class="note">(<?= _("Wird auf dem Fragebogen genannt.") ?>)</span>
@@ -321,7 +322,7 @@
 
             <?= MessageBox::info(sprintf(_("Letzte Bearbeitung von %s am %s Uhr"), get_fullname($profile['user_id']), date("d.m.Y H:i", $profile['chdate'])) ) ?>
 
-            <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin())) : ?>
+            <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id']))) : ?>
                 <?= MessageBox::info(sprintf(_("Diese Veranstaltung ist eine %s."), EvasysMatching::wording("freiwillige Evaluation"))) ?>
             <? endif ?>
 
@@ -346,6 +347,10 @@
             </script>
 
             <div data-dialog-button>
+                <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id']))) : ?>
+                    <?= \Studip\Button::create(_("In Pflichtevaluation umwandeln"), "unset_by_dozent", array('onclick' => "return window.confirm('"._("Wirklich in Pflichtevaluation umwandeln?")."');")) ?>
+                <? endif ?>
+
                 <?= \Studip\Button::create(_("Speichern")) ?>
             </div>
         <? endif ?>
