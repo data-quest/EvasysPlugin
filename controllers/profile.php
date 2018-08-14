@@ -98,6 +98,13 @@ class ProfileController extends PluginController {
                 if (in_array("applied", Request::getArray("change"))) {
                     if (Request::get("applied") !== "") {
                         $profile['applied'] = Request::int("applied");
+                        if ($profile['applied'] && $profile['teachers'] === null) {
+                            $seminar = new Seminar($profile['seminar_id']);
+                            $teachers = $seminar->getMembers("dozent");
+                            $profile['teachers'] = array_values(array_map(function ($t) {
+                                return $t['user_id'];
+                            }, $teachers));
+                        }
                     }
                 }
                 if (in_array("split", Request::getArray("change"))) {

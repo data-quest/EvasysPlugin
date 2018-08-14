@@ -3,51 +3,54 @@
 class EvaluationController extends PluginController
 {
 
-    public function show_action()
+    public function before_filter(&$action, &$args)
     {
+        parent::before_filter($action, $args);
         $tab = Navigation::getItem("/course/evasys");
         $tab->setImage(Icon::create("evaluation", "info"));
-
+        $this->profile = EvasysCourseProfile::findBySemester(Context::get()->id);
         PageLayout::addScript($this->plugin->getPluginURL()."/assets/qrcode.js");
 
-        $profile = EvasysCourseProfile::findBySemester(Context::get()->id);
-        if (Config::get()->EVASYS_ENABLE_PROFILES && $profile['split']) {
-            $evasys_seminars = array();
-            if ($profile['teachers']) {
-                foreach ($profile['teachers'] as $dozent_id) {
-                    $teachers = $profile['teachers']->getArrayCopy();
+        if (Config::get()->EVASYS_ENABLE_PROFILES && $this->profile['split']) {
+            $this->evasys_seminars = array();
+            if ($this->profile['teachers']) {
+                foreach ($this->profile['teachers'] as $dozent_id) {
+                    $teachers = $this->profile['teachers']->getArrayCopy();
                 }
             } else {
-                $teachers = $db->query(
-                    "SELECT seminar_user.user_id " .
-                    "FROM seminar_user " .
-                    "WHERE seminar_user.Seminar_id = ".$db->quote(Context::get()->id)." " .
-                    "AND seminar_user.status = 'dozent' " .
-                    "ORDER BY seminar_user.position ASC " .
-                "")->fetchAll(PDO::FETCH_COLUMN, 0);
+                $statement = DBManager::get()->prepare("
+                    SELECT seminar_user.user_id 
+                    FROM seminar_user 
+                    WHERE seminar_user.Seminar_id = ?
+                        AND seminar_user.status = 'dozent' 
+                    ORDER BY seminar_user.position ASC 
+                ");
+                $statement->execute(array(Context::get()->id));
+                $teachers = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+
             }
             foreach ($teachers as $dozent_id) {
-                $evasys_seminars = array_merge(
-                    $evasys_seminars,
+                $this->evasys_seminars = array_merge(
+                    $this->evasys_seminars,
                     EvasysSeminar::findBySeminar(Context::get()->id . $dozent_id)
                 );
             }
             //TODO maybe we do something different here and not use EvasysSeminar::findBySeminar or change getSurveyInformation?
         } else {
-            $evasys_seminars = EvasysSeminar::findBySeminar(Context::get()->id);
+            $this->evasys_seminars = EvasysSeminar::findBySeminar(Context::get()->id);
         }
+    }
+
+    public function show_action()
+    {
+
 
         $this->surveys = array();
         $this->open_surveys = array();
         $active = array();
         $user_can_participate = array();
         $publish = false;
-        if (Request::get("dozent_vote")) {
-            foreach ($evasys_seminars as $evasys_seminar) {
-                $evasys_seminar->vote(Request::get("dozent_vote") === "y");
-            }
-        }
-        foreach ($evasys_seminars as $evasys_seminar) {
+        foreach ($this->evasys_seminars as $evasys_seminar) {
             $survey_information = $evasys_seminar->getSurveyInformation();
             $publish = $publish || $evasys_seminar->publishingAllowed();
             if (is_array($survey_information)) {
@@ -59,9 +62,9 @@ class EvaluationController extends PluginController
                 }
             }
         }
-        if (count($evasys_seminars)
+        if (count($this->evasys_seminars)
             && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
-            $this->open_surveys = $evasys_seminars[0]->getSurveys($GLOBALS['user']->id);
+            $this->open_surveys = $this->evasys_seminars[0]->getSurveys($GLOBALS['user']->id);
             if (is_array($this->open_surveys)) {
                 foreach ($this->open_surveys as $one) {
                     if (is_object($one)) {
@@ -82,6 +85,17 @@ class EvaluationController extends PluginController
             }
             $this->render_template("evaluation/survey_student", $GLOBALS['template_factory']->open("layouts/base"));
         }
+    }
+
+    public function toggle_publishing_action()
+    {
+        if (Request::get("dozent_vote")) {
+            foreach ($this->evasys_seminars as $evasys_seminar) {
+                $evasys_seminar->vote(Request::get("dozent_vote") === "y");
+            }
+        }
+        $this->redirect("evaluation/show");
+
     }
 
 }

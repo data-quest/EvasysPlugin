@@ -1,5 +1,6 @@
 <table class="default evasys_individuelle_liste">
     <thead>
+        <caption><?= htmlReady(ucfirst(EvasysMatching::wording("freiwillige Evaluationen"))) ?></caption>
         <tr>
             <th><?= _("Nummer") ?></th>
             <th><?= _("Veranstaltung") ?></th>
@@ -12,9 +13,17 @@
         </tr>
     </thead>
     <tbody>
+        <? if (count($profiles)) : ?>
         <? foreach ($profiles as $profile) : ?>
             <?= $this->render_partial("individual/course", compact("profile")) ?>
         <? endforeach ?>
+        <? else : ?>
+        <tr>
+            <td colspan="100" style="text-align: center;">
+                <?= sprintf(_("Noch keine %s in diesem Semester."), EvasysMatching::wording("freiwillige Evaluationen")) ?>
+            </td>
+        </tr>
+        <? endif ?>
         <? if ($more) : ?>
             <tr class="more" data-offset="<?= count($profiles) ?>">
                 <td style="text-align: center;" colspan="100">
@@ -24,6 +33,7 @@
         <? endif ?>
     </tbody>
 </table>
+<input type="hidden" id="semester_id" value="<?= htmlReady($semester_id) ?>">
 
 <script>
     jQuery(function () {
@@ -38,7 +48,8 @@
                     jQuery.ajax({
                         url: STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/evasysplugin/individual/more",
                         data: {
-                            'offset': jQuery(".evasys_individuelle_liste > tbody > tr").length - 1
+                            'offset': jQuery(".evasys_individuelle_liste > tbody > tr").length - 1,
+                            'semester_id': jQuery("#semester_id").val()
                         },
                         dataType: "json",
                         success: function (response) {
@@ -63,7 +74,6 @@
         STUDIP.Evasys = {
             refreshCourseInOverview: function (course_id) {
                 jQuery.get(STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/evasysplugin/individual/course/" + course_id, function(data) {
-                    console.log("#course-" + course_id);
                     jQuery("#course-" + course_id).replaceWith(data);
                 });
             }
@@ -76,7 +86,18 @@
 $actions = new ActionsWidget();
 $actions->addLink(
     _("Export als CSV"),
-    PluginEngine::getURL($plugin, array(), "individual/csv"),
+    PluginEngine::getURL($plugin, array('semester_id' => $semester_id), "individual/csv"),
     Icon::create("file-excel", "clickable")
 );
 Sidebar::Get()->addWidget($actions);
+
+$semester_select = new SelectWidget(
+    _("Semesterauswahl"),
+    PluginEngine::getURL($plugin, array(), "individual/list"),
+    'semester_id'
+);
+foreach (array_reverse(Semester::getAll()) as $semester) {
+    $element = new SelectElement($semester->getId(), $semester['name'], $semester->getId() === $semester_id);
+    $semester_select->addElement($element);
+}
+Sidebar::Get()->addWidget($semester_select);

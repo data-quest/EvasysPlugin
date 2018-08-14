@@ -7,11 +7,14 @@ class EvasysSeminar extends SimpleORMap {
 
     protected $db_table = 'evasys_seminar';
 
-    static public function getStudipUser($user_id)
+    protected static function configure($config = array())
     {
-        $st = DbManager::get()->prepare("SELECT *,a.user_id FROM auth_user_md5 a LEFT JOIN user_info b USING(user_id) WHERE a.user_id = ?");
-        $st->execute(array($user_id));
-        return $st->fetch(PDO::FETCH_ASSOC);
+        $config['db_table'] = 'evasys_seminar';
+        $config['belongs_to']['course'] = array(
+            'class_name' => 'Course',
+            'foreign_key' => 'seminar_id'
+        );
+        parent::configure($config);
     }
 
     static public function findBySeminar($course_id)
@@ -83,6 +86,11 @@ class EvasysSeminar extends SimpleORMap {
             if ($part && $part[0] !== "delete") {
                 if ($part['CourseName']) {
                     $courses[] = $part;
+                    $profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
+                    if (!$profile->isNew()) {
+                        $profile['transferred'] = 1;
+                        $profile->store();
+                    }
                 } else {
                     //we have split courses for each teacher
                     foreach ($part as $subcourse) {
@@ -93,16 +101,24 @@ class EvasysSeminar extends SimpleORMap {
                         'CourseId' => $seminar['seminar_id'],
                         'IdType' => "PUBLIC"
                     ));
+                    $profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
+                    if (!$profile->isNew()) {
+                        $profile['transferred'] = 0;
+                        $profile->store();
+                    }
                 }
-                $profile = EvasysCourseProfile::findBySemester($seminar['Seminar_id']);
-                $profile['transferred'] = 1;
-                $profile->store();
+
             } elseif($part[0] === "delete") {
                 foreach ($part[1] as $seminar_id) {
                     $soap->__soapCall("DeleteCourse", array(
                         'CourseId' => $seminar_id,
                         'IdType' => "PUBLIC"
                     ));
+                    $profile = EvasysCourseProfile::findBySemester($seminar['Seminar_id']);
+                    if (!$profile->isNew()) {
+                        $profile['transferred'] = 0;
+                        $profile->store();
+                    }
                 }
             }
         }
@@ -177,12 +193,12 @@ class EvasysSeminar extends SimpleORMap {
         ));
         $students = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
         foreach ($students as $student_id) {
-            $student = self::getStudipUser($student_id);
+            $student = User::find($student_id);
             $participants[] = array(
                 'm_nId' => "",
                 'm_sTitle' => "",//$student['title_front'],
-                'm_sIdentifier' => $student['Email'],
-                'm_sEmail' => $student['Email'],
+                'm_sIdentifier' => $student['email'],
+                'm_sEmail' => $student['email'],
                 'm_sFirstname' => "", //$student['Vorname'],
                 'm_sLastname' => "", //$student['Nachname'],
                 'm_nGender' => "", //$student['geschlecht'] == 1 ? "m" : "w",

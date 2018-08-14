@@ -42,6 +42,9 @@
                     <?
                     $active = array_flip($profile['teachers'] ? $profile['teachers']->getArrayCopy() : array());
                     usort($teachers, function ($a, $b) use ($active) {
+                        if (!isset($active[$a['user_id']]) && !isset($active[$b['user_id']])) {
+                            return $a['position'] < $b['position'] ? -1 : 1;
+                        }
                         if (!isset($active[$a['user_id']])) {
                             return 1;
                         }

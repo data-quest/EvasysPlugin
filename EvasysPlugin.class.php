@@ -288,10 +288,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $factory = new Flexi_TemplateFactory(__DIR__."/views");
         $template = $factory->open("admin/_admin_checkbox.php");
-        $profile = EvasysCourseProfile::findOneBySQL("seminar_id = :seminar_id AND semester_id = :semester_id", array(
-            'seminar_id' => $course_id,
-            'semester_id' => Semester::findCurrent()->id
-        ));
+        $profile = EvasysCourseProfile::findBySemester($course_id, Semester::findCurrent()->id);
         $template->set_attribute("profile", $profile);
         $template->set_attribute("course_id", $course_id);
         $template->set_attribute("plugin", $this);

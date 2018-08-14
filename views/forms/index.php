@@ -1,7 +1,7 @@
-<h1><?= _("EvaSys-Fragebögen") ?></h1>
 <form action="<?= PluginEngine::getLink($plugin, array(), "forms/activate") ?>" method="post">
 
     <table class="default">
+        <caption><?= _("EvaSys-Fragebögen") ?></caption>
         <thead>
             <tr>
                 <th width="20"></th>

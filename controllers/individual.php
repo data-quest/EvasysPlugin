@@ -18,14 +18,14 @@ class IndividualController extends PluginController
     {
         PageLayout::setTitle(ucfirst(EvasysMatching::wording("freiwillige Evaluationen")));
         Navigation::activateItem("/admin/evasys/individual");
-        $semester_id = Request::option("semester_id", Semester::findCurrent()->id);
+        $this->semester_id = Request::option("semester_id", Semester::findCurrent()->id);
         $this->profiles = EvasysCourseProfile::findBySQL("
             by_dozent = '1'
             AND applied = '1'
             AND semester_id = :semester_id
             ORDER BY mkdate DESC
             LIMIT ".($this->max_list_items + 1)."
-        ", array('semester_id' => $semester_id));
+        ", array('semester_id' => $this->semester_id));
         if (count($this->profiles) > $this->max_list_items) {
             array_pop($this->profiles);
             $this->more = true;
@@ -127,8 +127,8 @@ class IndividualController extends PluginController
             }
         }
 
-        //$this->response->add_header("Content-Type", "text/csv");
-        //$this->response->add_header("Content-Disposition", "attachment; filename=\"Anmeldungen.csv\"");
+        $this->response->add_header("Content-Type", "text/csv");
+        $this->response->add_header("Content-Disposition", "attachment; filename=\"Anmeldungen.csv\"");
         $this->render_text(array_to_csv($data, null, $caption));
     }
 
