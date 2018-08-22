@@ -140,7 +140,7 @@
             <? foreach ($plugin->adminAvailableContents() as $index => $label) : ?>
                 <? if (in_array($plugin->getPluginId()."_".$index, $view_filter)) : ?>
                     <td style="text-align: center;">
-                        <? $content = $plugin->adminAreaGetCourseContent($course, $index) ?>
+                        <? $content = $plugin->adminAreaGetCourseContent(Course::find($semid), $index) ?>
                         <?= is_a($content, "Flexi_Template") ? $content->render() : $content ?>
                     </td>
                 <? endif ?>

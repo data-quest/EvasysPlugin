@@ -1,15 +1,41 @@
-<? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
-    <?= $this->render_partial("evaluation/_survey_dozent.php", array(
-        'surveys' => $surveys,
-        'evasys_seminar' => $evasys_seminars
-    )) ?>
-<? else : ?>
-    <?= $this->render_partial("evaluation/_survey_student.php", array(
-        'surveys' => $surveys,
-        'evasys_seminar' => $evasys_seminars
-    )) ?>
-<? endif ?>
+<? $active = false ?>
+<div id="evasys_tabs">
+    <ul>
+        <? foreach ($profile['teachers'] as $user_id) : ?>
+        <li>
+            <a href="#tab-<?= htmlReady($user_id) ?>">
+                <?= htmlReady(get_fullname($user_id)) ?>
+            </a>
+        </li>
+        <? endforeach ?>
+    </ul>
+    <? foreach ($profile['teachers'] as $i => $user_id) : ?>
+        <div id="tab-<?= htmlReady($user_id) ?>">
+            <? if ($user_id === $GLOBALS['user']->id) : ?>
+                <?= $this->render_partial("evaluation/_survey_dozent.php", array(
+                    'surveys' => $surveys[$user_id],
+                    'evasys_seminar' => $evasys_seminars[$user_id]
+                )) ?>
+            <? else : ?>
+                <?= $this->render_partial("evaluation/_survey_student.php", array(
+                    'surveys' => $surveys[$user_id],
+                    'evasys_seminar' => $evasys_seminars[$user_id]
+                )) ?>
+            <? endif ?>
+        </div>
+        <? if ($user_id === $GLOBALS['user']->id) {
+            $active = $i; //open the tab of the teacher
+        } ?>
+    <? endforeach ?>
+</div>
 
+<script>
+    jQuery(function () {
+        jQuery("#evasys_tabs").tabs({
+            "active": <?= $active === false ? 0 : (int) $active ?>
+        });
+    });
+</script>
 
 
 <? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>

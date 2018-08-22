@@ -13,7 +13,11 @@
         <? endif ?>
     <? endforeach ?>
 <? else : ?>
-    <?= MessageBox::info(_("Es gibt für Sie keine aktuellen, ausstehenden Evaluationen zu dieser Veranstaltung.")) ?>
+    <? if ($evasys_seminar->isPublishingAllowed()) : ?>
+        Ergebnisse
+    <? else : ?>
+        <?= MessageBox::info(_("Es gibt für Sie keine aktuellen, ausstehenden Evaluationen zu dieser Veranstaltung.")) ?>
+    <? endif ?>
 <? endif ?>
 <script>
     jQuery("iframe[id^=survey_]").each(function (index, frame) {

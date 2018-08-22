@@ -57,7 +57,7 @@ class EvasysForm extends SimpleORMap
                     $form->setId($formdata['FormId']);
                 }
                 $form['name'] = $formdata['ShortName'];
-                $form['description'] = strip_tags($formdata['Description']);
+                $form['description'] = html_entity_decode(strip_tags($formdata['Description']));
                 $form->store();
                 $form_ids[] = $formdata['FormId'];
             }

@@ -1,10 +1,12 @@
 <form action="<?= PluginEngine::getLink($plugin, array(), "forms/activate") ?>" method="post">
 
-    <table class="default">
+    <table class="default evasys_formstable">
         <caption><?= _("EvaSys-Fragebögen") ?></caption>
         <thead>
             <tr>
-                <th width="20"></th>
+                <th width="20">
+                    <input data-proxyfor=".evasys_formstable tbody input[type=checkbox]" type="checkbox">
+                </th>
                 <th><?= _("Name") ?></th>
                 <th><?= _("Überschrift") ?></th>
                 <th><?= _("Info") ?></th>

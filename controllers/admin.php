@@ -49,7 +49,7 @@ class AdminController extends PluginController
                         }
                     }
                 } else {
-                    $evasys_seminar[$course_id] = new EvasysSeminar(array($course_id, ""));
+                    $evasys_seminar[$course_id] = new EvasysSeminar($course_id);
                     $evasys_seminar[$course_id]['activated'] = $activate[$course_id] ? 1 : 0;
                 }
             }
@@ -98,7 +98,7 @@ class AdminController extends PluginController
 
     protected function getViewFilters()
     {
-        return array(
+        $views = array(
             'number'        => _('Nr.'),
             'name'          => _('Name'),
             'type'          => _('Veranstaltungstyp'),
@@ -111,6 +111,12 @@ class AdminController extends PluginController
             'contents'      => _('Inhalt'),
             'last_activity' => _('Letzte Aktivität'),
         );
+        foreach (PluginManager::getInstance()->getPlugins("AdminCourseContents") as $plugin) {
+            foreach ($plugin->adminAvailableContents() as $index => $label) {
+                $views[$plugin->getPluginId() . "_" . $index] = $label;
+            }
+        }
+        return $views;
     }
 
     protected function getCourses($params = array())

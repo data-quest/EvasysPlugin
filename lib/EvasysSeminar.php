@@ -3,7 +3,8 @@
 require_once dirname(__file__)."/EvasysSoap.php";
 require_once dirname(__file__)."/EvasysSoapClient.php";
 
-class EvasysSeminar extends SimpleORMap {
+class EvasysSeminar extends SimpleORMap
+{
 
     protected $db_table = 'evasys_seminar';
 
@@ -440,10 +441,10 @@ class EvasysSeminar extends SimpleORMap {
         }
         $soap = EvasysSoap::get();
         $user_id || $user_id = $GLOBALS['user']->id;
-        $email = DBManager::get()->query("SELECT Email FROM auth_user_md5 WHERE user_id = ".DBManager::get()->quote($user_id))->fetch(PDO::FETCH_COLUMN, 0);
+        $user = new User($user_id);
 
         $surveys = $soap->__soapCall("GetPswdsByParticipant", array(
-            'UserMailAddress' => $email,
+            'UserMailAddress' => $user->email,
             'CourseCode' => $this['Seminar_id']
         ));
 
@@ -517,41 +518,19 @@ class EvasysSeminar extends SimpleORMap {
         }
     }
 
-    public function getVotesForPublishing()
-    {
-        $db = DBManager::get();
-        return $db->query(
-            "SELECT COUNT(*) " .
-            "FROM evasys_publishing_votes " .
-            "WHERE seminar_id = ".$db->quote($this['Seminar_id'])." " .
-                "AND vote = '1' " .
-        "")->fetch(PDO::FETCH_COLUMN, 0);
-    }
-
-    public function publishingAllowed()
+    public function publishingAllowed($user_id = null)
     {
         if (Config::get()->EVASYS_PUBLISH_RESULTS) {
-            /*$sem = new Seminar($this->getId());
-            return count($sem->getMembers("dozent")) == $this->getVotesForPublishing();
-            */
+            $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
+            if ($profile && $profile['split']) {
+                return $this->publishing_allowed_by_dozent[$user_id];
+            } else {
+                return $this->publishing_allowed;
+            }
             return $this->publishing_allowed;
         } else {
             return false;
         }
-    }
-
-    public function getMyVote()
-    {
-        $db = DBManager::get();
-        if (!$GLOBALS['perm']->have_studip_perm("dozent", $this['Seminar_id'])) {
-            return false;
-        }
-        return (bool) $db->query(
-            "SELECT vote " .
-            "FROM evasys_publishing_votes " .
-            "WHERE seminar_id = ".$db->quote($this->getId())." " .
-                "AND user_id = ".$db->quote($GLOBALS['user']->id)." " .
-        "")->fetch(PDO::FETCH_COLUMN, 0);
     }
 
     public function vote($vote)
@@ -559,10 +538,13 @@ class EvasysSeminar extends SimpleORMap {
         if (!$GLOBALS['perm']->have_studip_perm("dozent", $this['Seminar_id'])) {
             return false;
         }
+        $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
+        if ($profile && $profile['split']) {
+            $this->publishing_allowed_by_dozent[$GLOBALS['user_id']] = (bool) $vote;
+        }
         $this->publishing_allowed = (int) $vote;
         return $this->store();
     }
-
 
     public function getDozent()
     {

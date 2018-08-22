@@ -215,7 +215,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
 
         if ($activated) {
-            $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            $tab = new Navigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            if ($profile && $profile['split']) {
+                $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
+            }
             $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Evaluationen")));
             $number = 0;
             foreach ($evasys_seminars as $evasys_seminar) {
@@ -248,7 +251,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             }
         }
         if ($activated) {
-            $tab = new AutoNavigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            $tab = new Navigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            if ($profile && $profile['split']) {
+                $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
+            }
             $tab->setImage(Icon::create("evaluation", "info_alt"));
             return array('evasys' => $tab);
         }
