@@ -26,7 +26,6 @@ class EvaluationController extends PluginController
         foreach ($this->evasys_seminars as $evasys_seminar) {
             $survey_information = $evasys_seminar->getSurveyInformation();
             $publish = $publish || $evasys_seminar->publishingAllowed();
-            var_dump($evasys_seminar);
             if (is_array($survey_information)) {
                 foreach ($survey_information as $info) {
                     $this->surveys[] = $info;

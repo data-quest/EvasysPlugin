@@ -127,6 +127,7 @@ class EvasysSeminar extends SimpleORMap
             array('CourseCreators' => $courses),
             true
         );
+        //var_dump($sessionlist); die();
         $evasys_sem_object = $soap->__soapCall("InsertCourses", $sessionlist);
         if (is_a($evasys_sem_object, "SoapFault")) {
             if ($evasys_sem_object->getMessage() == "Not Found") {
@@ -343,8 +344,8 @@ class EvasysSeminar extends SimpleORMap
                         'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
                         'CoursePeriodIdType' => "PERIODDATE",
                         'InstructorList' => $instructorlist,
-                        'RoomName' => ($seminar->location),
-                        'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
+                        'RoomName' => (string) $seminar->location,
+                        'SubunitName' => (string) EvasysMatching::instituteName($seminar->institut_id),
                         'ParticipantList' => $participants,
                         'AnonymousParticipants' => true,
                         'SurveyCreatorList' => $surveys2,
@@ -394,8 +395,8 @@ class EvasysSeminar extends SimpleORMap
                 'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
                 'CoursePeriodIdType' => "PERIODDATE",
                 'InstructorList' => $instructorlist,
-                'RoomName' => ($seminar->location),
-                'SubunitName' => EvasysMatching::instituteName($seminar->institut_id),
+                'RoomName' => (string) $seminar->location,
+                'SubunitName' => (string) EvasysMatching::instituteName($seminar->institut_id),
                 'ParticipantList' => $participants,
                 'AnonymousParticipants' => true,
                 'SurveyCreatorList' => $surveys,
@@ -417,16 +418,16 @@ class EvasysSeminar extends SimpleORMap
                 $common_id = $common_id ? $common_id->content : $user->id;
             }
             return array(
-                'InstructorUid' => $common_id,
+                'InstructorUid' => $common_id ?: "",
                 //'InstructorLogin' => "",
-                'FirstName' => $dozent['Vorname'],
+                'FirstName' => $user['Vorname'] ?: "",
                 'LastName' => (Config::get()->EVASYS_EXPORT_TITLES ? $user['title_front'] . " " : "") . $user['Nachname'],
-                'Gender' => $dozent['geschlecht'] == 1 ? "m" : "w",
-                'Email' => $dozent['Email']
+                'Gender' => $user['geschlecht'] == 1 ? "m" : "w",
+                'Email' => $user['Email']
             );
         } else {
             return array(
-                'InstructorUid' => $email,
+                'InstructorUid' => $id,
                 'LastName' => "N.N.",
                 'Email' => $id
             );
