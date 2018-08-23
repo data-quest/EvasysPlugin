@@ -48,7 +48,7 @@ class EvaluationController extends PluginController
 
 
 
-        if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)
+        /*if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)
             || ($active && $publish && !count($this->open_surveys))) {
             $this->evasys_seminar = $evasys_seminar;
             $this->render_template("evaluation/survey_dozent", $GLOBALS['template_factory']->open("layouts/base"));
@@ -72,7 +72,7 @@ class EvaluationController extends PluginController
                 unset($_SESSION['EVASYS_SEMINAR_SURVEYS'][Context::get()->id]);
             }
             $this->render_template("evaluation/survey_student", $GLOBALS['template_factory']->open("layouts/base"));
-        }
+        }*/
     }
 
     public function split_action()

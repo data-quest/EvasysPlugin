@@ -1,12 +1,12 @@
 <? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
     <?= $this->render_partial("evaluation/_survey_dozent.php", array(
         'surveys' => $surveys,
-        'evasys_seminar' => $evasys_seminars
+        'evasys_seminar' => $evasys_seminars[0]
     )) ?>
 <? else : ?>
     <?= $this->render_partial("evaluation/_survey_student.php", array(
         'surveys' => $surveys,
-        'evasys_seminar' => $evasys_seminars
+        'evasys_seminar' => $evasys_seminars[0]
     )) ?>
 <? endif ?>
 

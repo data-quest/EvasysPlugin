@@ -444,6 +444,9 @@ class EvasysSeminar extends SimpleORMap
         $user_id || $user_id = $GLOBALS['user']->id;
         $user = new User($user_id);
 
+        var_dump($user->email);
+        var_dump($this['Seminar_id']);
+
         $surveys = $soap->__soapCall("GetPswdsByParticipant", array(
             'UserMailAddress' => $user->email,
             'CourseCode' => $this['Seminar_id']
@@ -519,16 +522,15 @@ class EvasysSeminar extends SimpleORMap
         }
     }
 
-    public function publishingAllowed($user_id = null)
+    public function publishingAllowed($dozent_id = null)
     {
         if (Config::get()->EVASYS_PUBLISH_RESULTS) {
             $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
             if ($profile && $profile['split']) {
-                return $this->publishing_allowed_by_dozent[$user_id];
+                return $this->publishing_allowed_by_dozent[$dozent_id];
             } else {
                 return $this->publishing_allowed;
             }
-            return $this->publishing_allowed;
         } else {
             return false;
         }
