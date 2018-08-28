@@ -3,7 +3,7 @@
     <ul>
         <? foreach ($profile['teachers'] as $user_id) : ?>
         <li>
-            <a href="#tab-<?= htmlReady($user_id) ?>">
+            <a href="<?= PluginEngine::getLink($plugin, array(), "evaluation/split#tab-".$user_id) ?>">
                 <?= htmlReady(get_fullname($user_id)) ?>
             </a>
         </li>

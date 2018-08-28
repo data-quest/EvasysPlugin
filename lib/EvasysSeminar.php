@@ -104,7 +104,7 @@ class EvasysSeminar extends SimpleORMap
                     ));
                     $profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
                     if (!$profile->isNew()) {
-                        $profile['transferred'] = 0;
+                        $profile['transferred'] = 1;
                         $profile->store();
                     }
                 }
@@ -221,7 +221,7 @@ class EvasysSeminar extends SimpleORMap
         $datenfelder = DataFieldEntry::getDataFieldEntries($this['Seminar_id'], 'sem', $seminar->status);
         $custom_fields = array(
             '1' => $seminar->getNumber(),
-            '2' => "" //Anzahl der Bögen
+            '2' => "" //Anzahl der Bögen ?
         );
         $i = 3;
         foreach ($datenfelder as $id => $datafield) {

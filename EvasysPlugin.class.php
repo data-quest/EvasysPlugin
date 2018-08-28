@@ -238,8 +238,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $profile = EvasysCourseProfile::findBySemester($course_id);
             if ($profile['applied']
                     && $profile['transferred']
-                    && ($profile['begin'] <= time())
-                    && ($profile['end'] > time())) {
+                    && ($profile->getFinalBegin() <= time())
+                    && ($profile->getFinalEnd() > time())) {
                 $activated = true;
             }
         } else {

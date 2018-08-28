@@ -1,6 +1,5 @@
 <? if (count($surveys)) : ?>
 
-    <? var_dump($evasys_seminar->getSurveys()) ?>
     <? foreach ($evasys_seminar->getSurveys() as $survey_data) : ?>
         <? if ($survey_data->TransactionNumber && ($survey_data->TransactionNumber !== "null")) : ?>
             <iframe
@@ -15,8 +14,11 @@
         <? endif ?>
     <? endforeach ?>
 <? else : ?>
-    <? if ($evasys_seminar->isPublishingAllowed()) : ?>
-        Ergebnisse
+    <? if ($evasys_seminar->publishingAllowed()) : ?>
+        <?= $this->render_partial("evaluation/_survey_dozent.php", array(
+            'surveys' => $surveys,
+            'evasys_seminar' => $evasys_seminars
+        )) ?>
     <? else : ?>
         <?= MessageBox::info(_("Es gibt für Sie keine aktuellen, ausstehenden Evaluationen zu dieser Veranstaltung.")) ?>
     <? endif ?>

@@ -33,7 +33,7 @@ class EvaluationController extends PluginController
             }
         }
 
-        $active = false;
+        /*$active = false;
         foreach ($this->surveys as $survey) {
             if ($survey->m_nState > 0) {
                 $active = true;
@@ -48,7 +48,7 @@ class EvaluationController extends PluginController
 
 
 
-        /*if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)
+        if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)
             || ($active && $publish && !count($this->open_surveys))) {
             $this->evasys_seminar = $evasys_seminar;
             $this->render_template("evaluation/survey_dozent", $GLOBALS['template_factory']->open("layouts/base"));
@@ -116,7 +116,7 @@ class EvaluationController extends PluginController
 
 
 
-        $active = false;
+        /*$active = false;
         foreach ($this->surveys as $dozent_id => $surveys) {
             foreach ($surveys as $survey) {
                 if ($survey->m_nState > 0) {
@@ -124,25 +124,24 @@ class EvaluationController extends PluginController
                     break;
                 }
             }
-        }
+        }*/
 
         $this->open_surveys = array();
 
-        $user_can_participate = array();
-        $publish = false;
+        //$user_can_participate = array();
 
         if (count($this->evasys_seminars)
             && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
             foreach ($this->evasys_seminars as $dozent_id => $seminar) {
                 $this->open_surveys[$dozent_id] = $seminar->getSurveys($GLOBALS['user']->id);
-                if (is_array($this->open_surveys)) {
+                /*if (is_array($this->open_surveys)) {
                     foreach ($this->open_surveys as $one) {
                         if (is_object($one)) {
                             $user_can_participate[] = count($this->open_surveys) - 1;
                             break;
                         }
                     }
-                }
+                }*/
             }
         }
 
@@ -151,9 +150,8 @@ class EvaluationController extends PluginController
     public function toggle_publishing_action()
     {
         if (Request::get("dozent_vote")) {
-            foreach ($this->evasys_seminars as $evasys_seminar) {
-                $evasys_seminar->vote(Request::get("dozent_vote") === "y");
-            }
+            $evasys_seminar = EvasysSeminar::find(Context::get()->id);
+            $evasys_seminar->vote(Request::get("dozent_vote") === "y");
         }
         $this->redirect("evaluation/show");
     }
