@@ -4,6 +4,10 @@
       method="post"
       class="default">
 
+    <div style="text-align: center;">
+        <?= \Studip\Button::create(_("Speichern")) ?>
+    </div>
+
     <fieldset>
         <legend>
             <? if ($this->controller->profile_type !== "institute") : ?>

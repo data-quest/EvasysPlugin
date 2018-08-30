@@ -14,7 +14,7 @@
         <? endif ?>
     <? endforeach ?>
 <? else : ?>
-    <? if ($evasys_seminar->publishingAllowed()) : ?>
+    <? if ($evasys_seminar->publishingAllowed($dozent_id)) : ?>
         <?= $this->render_partial("evaluation/_survey_dozent.php", array(
             'surveys' => $surveys,
             'evasys_seminar' => $evasys_seminars

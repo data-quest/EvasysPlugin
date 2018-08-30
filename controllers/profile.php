@@ -101,9 +101,8 @@ class ProfileController extends PluginController {
                         if ($profile['applied'] && $profile['teachers'] === null) {
                             $seminar = new Seminar($profile['seminar_id']);
                             $teachers = $seminar->getMembers("dozent");
-                            $profile['teachers'] = array_values(array_map(function ($t) {
-                                return $t['user_id'];
-                            }, $teachers));
+                            $teacher = array_shift(array_values($teachers));
+                            $profile['teachers'] = array($teacher['user_id']);
                         }
                     }
                 }

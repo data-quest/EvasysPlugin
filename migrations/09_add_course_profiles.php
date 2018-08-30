@@ -174,6 +174,11 @@ class AddCourseProfiles extends Migration
             'description' => "Which permission state is necessary to transfer a course to evasys (root, admin, dozent)."
         ));
 
+        DBManager::get()->exec("
+            ALTER TABLE `evasys_seminar`
+            ADD COLUMN `publishing_allowed_by_dozent` TEXT NULL
+        ");
+
         DBManager::get()->exec("ALTER TABLE evasys_seminar DROP PRIMARY KEY");
         DBManager::get()->exec("
             DELETE e1 FROM evasys_seminar AS e1, evasys_seminar AS e2

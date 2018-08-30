@@ -151,7 +151,7 @@ class EvaluationController extends PluginController
     {
         if (Request::get("dozent_vote")) {
             $evasys_seminar = EvasysSeminar::find(Context::get()->id);
-            $evasys_seminar->vote(Request::get("dozent_vote") === "y");
+            $evasys_seminar->allowPublishing(Request::get("dozent_vote") === "y");
         }
         $this->redirect("evaluation/show");
     }

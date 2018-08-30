@@ -15,6 +15,7 @@ class EvasysSeminar extends SimpleORMap
             'class_name' => 'Course',
             'foreign_key' => 'seminar_id'
         );
+        $config['serialized_fields']['publishing_allowed_by_dozent'] = "JSONArrayObject";
         parent::configure($config);
     }
 
@@ -30,6 +31,10 @@ class EvasysSeminar extends SimpleORMap
      */
     public function getEvaluationStatus($user_id = null)
     {
+        $user = $user_id ? User::find($user_id) : User::findCurrent();
+        if ($GLOBALS['perm']->have_perm("admin", $user->getId())) {
+            return 0;
+        }
         $profile = EvasysCourseProfile::findBySemester($seminar['Seminar_id']);
         if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES && $profile['split']) {
             $seminar_ids = array();
@@ -48,15 +53,13 @@ class EvasysSeminar extends SimpleORMap
             return $new;
         }
         $soap = EvasysSoap::get();
-        $user = $user_id ? User::find($user_id) : User::findCurrent();
         $evasys_sem_object = $soap->__soapCall("GetEvaluationSummaryByParticipant", array($user['email']));
         if (is_a($evasys_sem_object, "SoapFault")) {
             if ($evasys_sem_object->getMessage() === "ERR_212") {
                 $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
             } else {
-                var_dump($evasys_sem_object);
-                die();
-                throw new Exception("SOAP-error: " . $evasys_sem_object->detail);
+                PageLayout::postError("SOAP-error: " . $evasys_sem_object->detail);
+                return 0;
             }
         } else {
             foreach ((array) $evasys_sem_object->SurveySummary as $survey) {
@@ -527,16 +530,16 @@ class EvasysSeminar extends SimpleORMap
         if (Config::get()->EVASYS_PUBLISH_RESULTS) {
             $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
             if ($profile && $profile['split']) {
-                return $this->publishing_allowed_by_dozent[$dozent_id];
+                return (bool) $this->publishing_allowed_by_dozent[$dozent_id];
             } else {
-                return $this->publishing_allowed;
+                return (bool) $this->publishing_allowed;
             }
         } else {
             return false;
         }
     }
 
-    public function vote($vote)
+    public function allowPublishing($vote)
     {
         if (!$GLOBALS['perm']->have_studip_perm("dozent", $this['Seminar_id'])) {
             return false;

@@ -12,7 +12,10 @@
     <? endif ?>
 
     <? if ($profile && $profile['transferred']) : ?>
-        <?= Icon::create("arr_1up", "inactive")->asImg(20, array('title' => _("Veranstaltung wurde bereits übertragen."))) ?>
+        <?= Icon::create($plugin->getPluginURL()."/assets/evasys-export_grey.svg", "inactive")->asImg(38, array(
+                'title' => _("Veranstaltung wurde bereits übertragen."),
+                'style' => "margin-top: -11px;"
+        )) ?>
     <? endif ?>
 
     <? if ($profile->isEditable()) : ?>

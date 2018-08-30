@@ -14,12 +14,14 @@
             <? if ($user_id === $GLOBALS['user']->id) : ?>
                 <?= $this->render_partial("evaluation/_survey_dozent.php", array(
                     'surveys' => $surveys[$user_id],
-                    'evasys_seminar' => $evasys_seminars[$user_id]
+                    'evasys_seminar' => $evasys_seminars[$user_id],
+                    'dozent_id' => $user_id
                 )) ?>
             <? else : ?>
                 <?= $this->render_partial("evaluation/_survey_student.php", array(
                     'surveys' => $surveys[$user_id],
-                    'evasys_seminar' => $evasys_seminars[$user_id]
+                    'evasys_seminar' => $evasys_seminars[$user_id],
+                    'dozent_id' => $user_id
                 )) ?>
             <? endif ?>
         </div>
@@ -83,7 +85,7 @@ if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
     Sidebar::Get()->addWidget($actions);
 
     if (Config::get()->EVASYS_PUBLISH_RESULTS) {
-        $publish = $evasys_seminar->publishingAllowed();
+        $publish = $evasys_seminar->publishingAllowed($GLOBALS['user']->id);
         $option = new OptionsWidget();
         $option->addCheckbox(
             _("Veröffentlichung der Ergebnisse an Studenten erlauben."),
