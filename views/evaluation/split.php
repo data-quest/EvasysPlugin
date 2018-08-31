@@ -18,6 +18,7 @@
                     'dozent_id' => $user_id
                 )) ?>
             <? else : ?>
+
                 <?= $this->render_partial("evaluation/_survey_student.php", array(
                     'surveys' => $surveys[$user_id],
                     'evasys_seminar' => $evasys_seminars[$user_id],

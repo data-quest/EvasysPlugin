@@ -89,6 +89,7 @@ class EvasysSeminar extends SimpleORMap
             $part = $seminar->getCoursePart();
             if ($part && $part[0] !== "delete") {
                 if ($part['CourseName']) {
+                    //singe course with data
                     $courses[] = $part;
                     $profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
                     if (!$profile->isNew()) {
@@ -113,6 +114,7 @@ class EvasysSeminar extends SimpleORMap
                 }
 
             } elseif($part[0] === "delete") {
+                //we need to delete the course from evasys
                 foreach ($part[1] as $seminar_id) {
                     $soap->__soapCall("DeleteCourse", array(
                         'CourseId' => $seminar_id,
@@ -235,10 +237,9 @@ class EvasysSeminar extends SimpleORMap
 
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
             $form_id = $profile->getFinalFormId();
-            if ($profile['applied'] && $profile['surveys']['form_id'] && ($profile['surveys']['form_id'] != $form_id)) {
-                //We need to update the surveys manually via SOAP before updating the rest of the course-info
-                //Otherwise we would have two or more surveys, because Evasys ignores the SurveyId in
-                //the InsertCourses-method and identifies the survey just by course_id, semester and form_id.
+            if ($profile['applied'] && $profile['surveys']['form_id']) {
+                //We have transferred the course before and want to update it. Unfortunately in order to update the
+                //participants and/or the form_id  of a survey, we need to delete the survey. Sad but true.
 
                 //UpdateSurvey
                 if (!$profile['split']) {
@@ -248,27 +249,27 @@ class EvasysSeminar extends SimpleORMap
                     $seminar_ids = array_keys($seminar_ids);
                 }
 
-                foreach ($seminar_ids as $seminar_id) {
-                    if ($seminar_id !== "form_id") {
-                        //Check if we are allowed to change the survey?
-                        //And what happens if the check fails and we are not allowed?
-                        $survey = array(
-                            'm_sTitle' => "bla", //necessary but useless ... ?
-                            'm_nSurveyId' => $profile['surveys'] && $profile['surveys'][$seminar_id]
+                $eval_begin = $profile->getFinalBegin();
+                if (time() < $eval_begin) {
+                    //The survey didn't start yet (as far as we know), so we can go on:
+                    foreach ($seminar_ids as $seminar_id) {
+                        if ($seminar_id !== "form_id") {
+                            $survey_id = $profile['surveys'] && $profile['surveys'][$seminar_id]
                                 ? $profile['surveys'][$seminar_id]
-                                : "", //experimental
-                            'm_cType' => "",
-                            'm_nFrmid' => $form_id,
-                            'm_sLastDataCollectionDate' => "",
-                            'm_sMaskTan' => ""
-                        );
-                        $soap = EvasysSoap::get();
-                        $data = array(
-                            'oSurvey' => $survey
-                        );
-                        $soap->__soapCall("UpdateSurvey", $data);
+                                : false;
+                            if ($survey_id) {
+                                $soap = EvasysSoap::get();
+                                $soap->__soapCall("DeleteSurvey", array(
+                                    'SurveyId' => (int) $survey_id
+                                ));
+                            }
+                        }
                     }
+                } else {
+                    PageLayout::postError(sprintf(_("Evaluation für die Veranstaltung '%s' ist schon gestartet und konnte nicht mehr verändert werden."), $seminar->getName()));
                 }
+
+
             }
 
             $surveys[] = array(
@@ -339,7 +340,7 @@ class EvasysSeminar extends SimpleORMap
                     $parts[] = array(
                         'CourseUid' => $this['Seminar_id'] . $dozent_id,
                         'CourseName' => $seminar->getName(),
-                        'CourseCode' => $this['Seminar_id'],
+                        'CourseCode' => $this['Seminar_id'] . $dozent_id,
                         'CourseType' => EvasysMatching::semtypeName($seminar->status),
                         'CourseProgramOfStudy' => implode('|', $studienbereiche),
                         'CourseEnrollment' => 0, // ?
@@ -447,9 +448,6 @@ class EvasysSeminar extends SimpleORMap
         $user_id || $user_id = $GLOBALS['user']->id;
         $user = new User($user_id);
 
-        var_dump($user->email);
-        var_dump($this['Seminar_id']);
-
         $surveys = $soap->__soapCall("GetPswdsByParticipant", array(
             'UserMailAddress' => $user->email,
             'CourseCode' => $this['Seminar_id']
@@ -484,14 +482,13 @@ class EvasysSeminar extends SimpleORMap
         $soap = EvasysSoap::get();
         $course = $soap->__soapCall("GetCourse", array(
             'CourseId' => $this['Seminar_id'],
-            'IdType' => "PUBLIC",
-            //'IncludeParticipants' => 1,
+            'IdType' => "EXTERNAL", //the CourseUid from the export
             'IncludeSurveys' => 1
         ));
-        //var_dump($course);
+        //var_dump($course); die();
         if (is_a($course, "SoapFault")) {
             return null;
-        } else {
+        } elseif(strlen($this['Seminar_id']) <= 32) {
             $this['evasys_id'] = $course->m_nCourseId; //kann nie schaden
             $this->store();
         }
@@ -544,11 +541,8 @@ class EvasysSeminar extends SimpleORMap
         if (!$GLOBALS['perm']->have_studip_perm("dozent", $this['Seminar_id'])) {
             return false;
         }
-        $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
-        if ($profile && $profile['split']) {
-            $this->publishing_allowed_by_dozent[$GLOBALS['user_id']] = (bool) $vote;
-        }
-        $this->publishing_allowed = (int) $vote;
+        $this->publishing_allowed_by_dozent[$GLOBALS['user']->id] = $vote ? 1 : 0;
+        $this->publishing_allowed = $vote ? 1 : 0;
         return $this->store();
     }
 

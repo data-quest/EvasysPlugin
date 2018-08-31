@@ -64,10 +64,12 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         if (Config::get()->EVASYS_ENABLE_PROFILES
                 && ((stripos($_SERVER['REQUEST_URI'], "dispatch.php/admin/courses") !== false) || (stripos($_SERVER['REQUEST_URI'], "plugins.php/evasysplugin/profile/bulkedit") !== false))
-                && ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")) {
+                ) {
             $this->addStylesheet("assets/evasys.less");
-            if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)) {
-                PageLayout::addScript($this->getPluginURL() . "/assets/insert_button.js");
+            if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin") {
+                if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)) {
+                    PageLayout::addScript($this->getPluginURL() . "/assets/insert_button.js");
+                }
             }
             PageLayout::addScript($this->getPluginURL() . "/assets/admin_area.js");
             NotificationCenter::addObserver($this, "addTransferredFilterToSidebar", "SidebarWillRender");
@@ -85,34 +87,40 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function addTransferredFilterToSidebar()
     {
-        $widget = new SelectWidget(_("Transfer-Filter"), PluginEngine::getURL($this, array(), "change_transferred_filter"), "transferstatus", "post");
-        $widget->addElement(new SelectElement(
-            '',
-            ""
-        ));
-        $widget->addElement(new SelectElement(
-            'transferred',
-            _("Nach Evasys übertragen"),
-            $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
-        ));
-        $widget->addElement(new SelectElement(
-            'nottransferred',
-            _("Nach Evasys nicht übertragen"),
-            $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred"
-        ));
-        Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
+        if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin"
+                || $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
+            $widget = new SelectWidget(_("Transfer-Filter"), PluginEngine::getURL($this, array(), "change_transferred_filter"), "transferstatus", "post");
+            $widget->addElement(new SelectElement(
+                '',
+                ""
+            ));
+            $widget->addElement(new SelectElement(
+                'transferred',
+                _("Nach Evasys übertragen"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
+            ));
+            $widget->addElement(new SelectElement(
+                'nottransferred',
+                _("Nach Evasys nicht übertragen"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred"
+            ));
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
+        }
     }
 
     public function addNonfittingDatesFilterToSidebar()
     {
-        $widget = new OptionsWidget();
-        $widget->setTitle(_("Zeiten im Evaluationszeitraum"));
-        $widget->addCheckbox(
-            _("Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"),
-            $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
-            PluginEngine::getURL($this, array(), "toggle_nonfittingdates_filter")
-        );
-        Sidebar::Get()->insertWidget($widget, "editmode", "filter_nonfittingdates");
+        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
+                || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"))) {
+            $widget = new OptionsWidget();
+            $widget->setTitle(_("Zeiten im Evaluationszeitraum"));
+            $widget->addCheckbox(
+                _("Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
+                PluginEngine::getURL($this, array(), "toggle_nonfittingdates_filter")
+            );
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_nonfittingdates");
+        }
     }
 
     /**
@@ -352,26 +360,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         parent::perform($unconsumed_path);
     }
 
-    public static function logFormat(LogEvent $event)
-    {
-        $tmpl = $event->action->info_template;
-
-        if (strpos($event->action->name, 'EVASYS') !== false) {
-            $course = Course::find($event->coaffected_range_id);
-            $semester = Semester::find($event->info);
-            if ($course) {
-                $url = PluginEngine::getURL('EvasysPlugin', array(), '/profile/edit/'
-                    . $event->coaffected_range_id, true);
-                $name = sprintf('<a data-dialog href="%s">%s - %s (%s)</a>',
-                    $url, $course->veranstaltungsnummer,
-                    $course->name, $semester->name);
-                $tmpl = str_replace('%coaffected(%info)', $name, $tmpl);
-            }
-        }
-
-        return $tmpl;
-    }
-
     public function adminAvailableContents() {
         return array(
             'form' => _("Fragebogen"),
@@ -405,6 +393,26 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $end = $profile->getFinalEnd();
                 return date("d.m.Y H:i", $begin)." - ".date("d.m.Y H:i", $end);
         }
+    }
+
+    public static function logFormat(LogEvent $event)
+    {
+        $tmpl = $event->action->info_template;
+
+        if (strpos($event->action->name, 'EVASYS') !== false) {
+            $course = Course::find($event->coaffected_range_id);
+            $semester = Semester::find($event->info);
+            if ($course) {
+                $url = PluginEngine::getURL('EvasysPlugin', array(), '/profile/edit/'
+                    . $event->coaffected_range_id, true);
+                $name = sprintf('<a data-dialog href="%s">%s - %s (%s)</a>',
+                    $url, $course->veranstaltungsnummer,
+                    $course->name, $semester->name);
+                $tmpl = str_replace('%coaffected(%info)', $name, $tmpl);
+            }
+        }
+
+        return $tmpl;
     }
 
     public static function logSearch($needle, $action_name = null)

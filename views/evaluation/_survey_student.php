@@ -11,13 +11,19 @@
             </iframe>
         <? else : ?>
             <?= MessageBox::success(_("Sie haben schon an der aktuellen Evaluation teilgenommen. Besten Dank.")) ?>
+            <? if ($evasys_seminar->publishingAllowed($dozent_id)) : ?>
+                <?= $this->render_partial("evaluation/_survey_dozent.php", array(
+                    'surveys' => $surveys,
+                    'evasys_seminar' => $evasys_seminar
+                )) ?>
+            <? endif ?>
         <? endif ?>
     <? endforeach ?>
 <? else : ?>
     <? if ($evasys_seminar->publishingAllowed($dozent_id)) : ?>
         <?= $this->render_partial("evaluation/_survey_dozent.php", array(
             'surveys' => $surveys,
-            'evasys_seminar' => $evasys_seminars
+            'evasys_seminar' => $evasys_seminar
         )) ?>
     <? else : ?>
         <?= MessageBox::info(_("Es gibt für Sie keine aktuellen, ausstehenden Evaluationen zu dieser Veranstaltung.")) ?>

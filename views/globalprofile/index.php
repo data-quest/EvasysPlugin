@@ -2,7 +2,7 @@
 
 <form action="<?= PluginEngine::getLink($plugin, array(), $con."/edit") ?>"
       method="post"
-      class="default">
+      class="default evasys_presets">
 
     <div style="text-align: center;">
         <?= \Studip\Button::create(_("Speichern")) ?>
@@ -20,11 +20,21 @@
             <?= _("Beginn") ?>
             <input type="text" name="data[begin]" value="<?= $profile['begin'] ? date("d.m.Y H:i", $profile['begin']) : "" ?>" class="datepicker">
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("begin") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? date("d.m.Y H:i", $default_value) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
         <label>
             <?= _("Ende") ?>
             <input type="text" name="data[end]" value="<?= $profile['end'] ? date("d.m.Y H:i", $profile['end']) : "" ?>" class="datepicker">
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("end") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? date("d.m.Y H:i", $default_value) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
         <? if (is_a($profile, "EvasysGlobalProfile")) : ?>
             <label>
@@ -142,11 +152,21 @@
             <?= _("Beginn der Antragsfrist") ?>
             <input type="text" name="data[antrag_begin]" value="<?= $profile['antrag_begin'] ? date("d.m.Y H:i", $profile['antrag_begin']) : "" ?>" class="datepicker">
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("antrag_begin") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? date("d.m.Y H:i", $default_value) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
         <label>
             <?= _("Ende der Antragsfrist") ?>
             <input type="text" name="data[antrag_end]" value="<?= $profile['antrag_end'] ? date("d.m.Y H:i", $profile['antrag_end']) : "" ?>" class="datepicker">
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("antrag_end") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? date("d.m.Y H:i", $default_value) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
         <label>
             <?= _("Informationstext") ?>

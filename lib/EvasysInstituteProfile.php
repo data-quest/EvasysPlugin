@@ -6,7 +6,7 @@ class EvasysInstituteProfile extends SimpleORMap {
     {
         $config['db_table'] = 'evasys_institute_profiles';
         $config['belongs_to']['institute'] = array(
-            'class_name' => 'Institute',
+            'class_name'  => 'Institute',
             'foreign_key' => 'institut_id'
         );
         $config['belongs_to']['semester'] = array(
@@ -29,5 +29,16 @@ class EvasysInstituteProfile extends SimpleORMap {
             $profile['semester_id'] = $semester->getId();
         }
         return $profile;
+    }
+
+    public function getParentsDefaultValue($field)
+    {
+        if ($this->institute && !$this->institute->isFaculty()) {
+            $profile = self::findByInstitute($this->institute['fakultaets_id']);
+            return $profile[$field] ?: $profile->getParentsDefaultValue($field);
+        } else {
+            $profile = EvasysGlobalProfile::findCurrent();
+            return $profile[$field];
+        }
     }
 }

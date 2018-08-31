@@ -20,59 +20,16 @@ class EvaluationController extends PluginController
             return;
         }
 
-
         $this->evasys_seminars = EvasysSeminar::findBySeminar(Context::get()->id);
         $this->surveys = array();
         foreach ($this->evasys_seminars as $evasys_seminar) {
             $survey_information = $evasys_seminar->getSurveyInformation();
-            $publish = $publish || $evasys_seminar->publishingAllowed();
             if (is_array($survey_information)) {
                 foreach ($survey_information as $info) {
                     $this->surveys[] = $info;
                 }
             }
         }
-
-        /*$active = false;
-        foreach ($this->surveys as $survey) {
-            if ($survey->m_nState > 0) {
-                $active = true;
-                break;
-            }
-        }
-
-
-
-        $user_can_participate = array();
-        $publish = false;
-
-
-
-        if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)
-            || ($active && $publish && !count($this->open_surveys))) {
-            $this->evasys_seminar = $evasys_seminar;
-            $this->render_template("evaluation/survey_dozent", $GLOBALS['template_factory']->open("layouts/base"));
-        } else {
-            $this->open_surveys = array();
-
-            if (count($this->evasys_seminars)
-                && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
-                $this->open_surveys = $this->evasys_seminars[0]->getSurveys($GLOBALS['user']->id);
-                if (is_array($this->open_surveys)) {
-                    foreach ($this->open_surveys as $one) {
-                        if (is_object($one)) {
-                            $user_can_participate[] = count($this->open_surveys) - 1;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if ($user_can_participate) {
-                unset($_SESSION['EVASYS_SEMINAR_SURVEYS'][Context::get()->id]);
-            }
-            $this->render_template("evaluation/survey_student", $GLOBALS['template_factory']->open("layouts/base"));
-        }*/
     }
 
     public function split_action()
@@ -104,7 +61,6 @@ class EvaluationController extends PluginController
         $this->surveys = array();
         foreach ($this->evasys_seminars as $dozent_id => $evasys_seminar) {
             $survey_information = $evasys_seminar->getSurveyInformation();
-            $publish = $publish || $evasys_seminar->publishingAllowed();
             if (is_array($survey_information)) {
                 foreach ($survey_information as $info) {
                     $this->surveys[$dozent_id][] = $info;

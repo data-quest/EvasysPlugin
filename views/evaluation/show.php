@@ -57,14 +57,15 @@ if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
     Sidebar::Get()->addWidget($actions);
 
     if (Config::get()->EVASYS_PUBLISH_RESULTS) {
-        $publish = $evasys_seminar->publishingAllowed();
+        $publish = $evasys_seminars[0]->publishingAllowed();
         $option = new OptionsWidget();
         $option->addCheckbox(
             _("Veröffentlichung der Ergebnisse an Studenten erlauben."),
             $publish,
-            PluginEngine::getURL($plugin, array('dozent_vote' => "n"), "evaluation/toggle_publishing"),
-            PluginEngine::getURL($plugin, array('dozent_vote' => "y"), "evaluation/toggle_publishing")
+            PluginEngine::getURL($plugin, array('dozent_vote' => "y"), "evaluation/toggle_publishing"),
+            PluginEngine::getURL($plugin, array('dozent_vote' => "n"), "evaluation/toggle_publishing")
         );
+        Sidebar::Get()->addWidget($option);
     }
 }
 

@@ -91,3 +91,40 @@ ul.sortforms {
 #qr_code_evasys:fullscreen {
     display: flex;
 }
+
+
+.evasys_presets .default_value {
+    color: grey;
+}
+
+#evasys_tabs {
+    &.ui-widget.ui-widget-content {
+        border: 1px solid @base-color-20;
+    }
+    &.ui-tabs {
+        padding: 0px;
+    }
+    .ui-widget-header {
+        background-color: @content-color-20;
+    }
+    .ui-button, .ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, html .ui-button.ui-state-disabled:active, html .ui-button.ui-state-disabled:hover {
+        background-color: transparent;
+        border: none;
+        color: @origin-base-color;
+        font-weight: 700;
+    }
+    .ui-autocomplete .ui-state-hover, .ui-state-active, .ui-state-focus, .ui-state-hover, .ui-state-hover:hover, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {
+        background-color: white;
+        border: none;
+        color: @origin-base-color;
+    }
+    .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited {
+        color: @origin-base-color;
+        font-weight: 700;
+    }
+    .ui-button, .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited, a.ui-button, a:link.ui-button, a:visited.ui-button {
+        color: @origin-base-color;
+        font-size: 1.1em;
+        font-weight: 700;
+    }
+}
