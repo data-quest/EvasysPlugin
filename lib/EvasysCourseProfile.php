@@ -513,12 +513,14 @@ class EvasysCourseProfile extends SimpleORMap {
 
     public function isEditable()
     {
-        if ($GLOBALS['perm']->have_studip_perm("dozent", $this['seminar_id']) && !(EvasysPlugin::isAdmin($this['seminar_id']) || EvasysPlugin::isRoot())) {
+        if ($GLOBALS['perm']->have_studip_perm("dozent", $this['seminar_id'])
+                && !(EvasysPlugin::isAdmin($this['seminar_id']) || EvasysPlugin::isRoot())) {
             if ($this['applied'] && !$this['by_dozent']) {
                 return false;
             }
             $begin = $this->getPresetAttribute("antrag_begin");
             $end = $this->getPresetAttribute("antrag_end");
+
             if ($begin && (time() >= $begin) && ((time() <= $end) || !$end)) {
                 return true;
             } else {

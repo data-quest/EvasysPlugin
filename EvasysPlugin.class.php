@@ -83,6 +83,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addTransferredFilter", "AdminCourseFilterWillQuery");
+        NotificationCenter::addObserver($this, "removeEvasysCourse", "CourseDidDelete");
     }
 
     public function addTransferredFilterToSidebar()
@@ -243,18 +244,21 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $activated = false;
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
-            $profile = EvasysCourseProfile::findBySemester($course_id);
-            if ($profile['applied']
+            $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", array($course_id));
+            foreach ($profiles as $profile) {
+                if ($profile['applied']
                     && $profile['transferred']
-                    && ($profile->getFinalBegin() <= time())
-                    && ($profile->getFinalEnd() > time())) {
-                $activated = true;
+                    && ($profile->getFinalBegin() <= time())) {
+                    $activated = true;
+                    break;
+                }
             }
         } else {
             $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
             foreach ($evasys_seminars as $evasys_seminar) {
                 if ($evasys_seminar['activated']) {
                     $activated = true;
+                    break;
                 }
             }
         }
@@ -449,5 +453,33 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
 
         return $result;
+    }
+
+    public function removeEvasysCourse($event, $course)
+    {
+        if (Config::get()->EVASYS_ENABLE_PROFILES) {
+            $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", array($course->getId()));
+            $seminar_ids = array();
+            foreach ($profiles as $profile) {
+                if ($profile['transferred']) {
+                    if ($profile['split']) {
+                        $seminar_ids = array_unique(array_merge($seminar_ids, array_keys($profile['surveys']->getArrayCopy())));
+                    } else {
+                        if (!in_array($course->getId(), $seminar_ids)) {
+                            $seminar_ids[] = $course->getId();
+                        }
+                    }
+                }
+            }
+        } else {
+            $seminar_ids = array($course->getId());
+        }
+        foreach ($seminar_ids as $seminar_id) {
+            $soap = EvasysSoap::get();
+            $soap->__soapCall("DeleteCourse", array(
+                'CourseId' => $seminar_id,
+                'IdType' => "PUBLIC"
+            ));
+        }
     }
 }

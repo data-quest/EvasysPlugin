@@ -178,8 +178,10 @@
     <script>
         jQuery(function () {
             jQuery("input.datepicker").datetimepicker();
-            jQuery(".forms_for_types .select2").select2();
-            jQuery(".forms_for_types .select2").select2();
+            jQuery(".forms_for_types .select2").select2({
+                "closeOnSelect": false,
+                "width": 'resolve'
+            });
         });
     </script>
     <style>

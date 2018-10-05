@@ -45,7 +45,7 @@ class EvasysSeminar extends SimpleORMap
             $seminar_ids = array($seminar['Seminar_id']);
         }
         if (isset($_SESSION['EVASYS_SEMINARS_STATUS'])
-            && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE) {
+                && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE) {
             $new = 0;
             foreach ($seminar_ids as $seminar_id) {
                 $new += $_SESSION['EVASYS_SEMINARS_STATUS'][$seminar_id];

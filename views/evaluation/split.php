@@ -18,7 +18,6 @@
                     'dozent_id' => $user_id
                 )) ?>
             <? else : ?>
-
                 <?= $this->render_partial("evaluation/_survey_student.php", array(
                     'surveys' => $surveys[$user_id],
                     'evasys_seminar' => $evasys_seminars[$user_id],
@@ -85,8 +84,8 @@ if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
     );
     Sidebar::Get()->addWidget($actions);
 
-    if (Config::get()->EVASYS_PUBLISH_RESULTS) {
-        $publish = $evasys_seminar->publishingAllowed($GLOBALS['user']->id);
+    if (Config::get()->EVASYS_PUBLISH_RESULTS && !$GLOBALS['perm']->have_perm("admin")) {
+        $publish = $evasys_seminars[$GLOBALS['user']->id]->publishingAllowed($GLOBALS['user']->id);
         $option = new OptionsWidget();
         $option->addCheckbox(
             _("Veröffentlichung der Ergebnisse an Studenten erlauben."),
