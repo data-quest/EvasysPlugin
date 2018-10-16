@@ -38,7 +38,7 @@
 
         <? if (is_a($profile, "EvasysGlobalProfile")) : ?>
             <label>
-                <?= _("Beginn Berabeitungszeitraum der Admins") ?>
+                <?= _("Beginn Bearbeitungszeitraum der Admins") ?>
                 <input type="text" name="data[adminedit_begin]" value="<?= $profile['adminedit_begin'] ? date("d.m.Y H:i", $profile['adminedit_begin']) : "" ?>" class="datepicker">
             </label>
 
@@ -73,11 +73,21 @@
                 </option>
             </select>
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("mode") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
         <label>
             <?= _("Adresse für den Versand der Fragebögen") ?>
             <textarea name="data[address]"><?= htmlReady($profile['address']) ?></textarea>
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("address") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? nl2br(htmlReady($default_value)) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
         <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
         <label>
@@ -93,19 +103,31 @@
             <?= _("Standardfragebögen nach Veranstaltungstypen") ?>
         </legend>
 
-        <table class="default">
+        <table class="default semtype_matching">
             <tbody>
                 <? foreach (SemType::getTypes() as $sem_type) : ?>
                 <tr>
                     <td>
                         <?= htmlReady($GLOBALS['SEM_CLASS'][$sem_type['class']]['name']) ?>: <?= htmlReady($sem_type['name']) ?>
+
+                        <div class="copypaste">
+                            <a href="#" class="copy" title="<?= _("Werte kopieren") ?>">
+                                <?= Icon::create("topic+export", "clickable")->asImg(20) ?>
+                            </a>
+                            <a href="#" class="paste" title="<?= _("Werte hier einfügen") ?>">
+                                <?= Icon::create("arr_eol-down", "status-green")->asImg(20) ?>
+                            </a>
+                            <a href="#" class="from" title="<?= _("Doch nicht kopieren") ?>">
+                                <?= Icon::create("topic+decline", "status-yellow")->asImg(20) ?>
+                            </a>
+                        </div>
                     </td>
                     <td>
                         <label>
                             <div>
                                 <?= _("Standardfragebogen") ?>
                             </div>
-                            <select name="forms_by_type[<?= htmlReady($sem_type['id']) ?>]" class="select2">
+                            <select name="forms_by_type[<?= htmlReady($sem_type['id']) ?>]" class="select2 standard">
                                 <option value=""></option>
                                 <? foreach (EvasysForm::findBySQL("active = '1' ORDER BY name ASC") as $form) : ?>
                                     <option value="<?= htmlReady($form->getId()) ?>"<?= $forms_by_type[$sem_type['id']][0] == $form->getId() ? " selected" : "" ?>  title="<?= htmlReady($form['description']) ?>">
@@ -120,7 +142,7 @@
                             <div>
                                 <?= _("Verfügbar") ?>
                             </div>
-                            <select name="available_forms_by_type[<?= htmlReady($sem_type['id']) ?>][]" multiple class="select2">
+                            <select name="available_forms_by_type[<?= htmlReady($sem_type['id']) ?>][]" multiple class="select2 available">
                                 <option value=""></option>
                                 <? foreach (EvasysForm::findBySQL("active = '1' ORDER BY name ASC") as $form) : ?>
                                     <option value="<?= htmlReady($form->getId()) ?>"<?= in_array($form->getId(), (array) $available_forms_by_type[$sem_type['id']]) ? " selected" : "" ?>  title="<?= htmlReady($form['name'].": ".$form['description']) ?>">
@@ -129,6 +151,12 @@
                                 <? endforeach ?>
                             </select>
                         </label>
+
+                        <? if ($this->controller->profile_type === "institute") : ?>
+                            <? $default_value = $profile->getParentsDefaultValue("mode") ?>
+                            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                                  class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
+                        <? endif ?>
                     </td>
                     <td>
                         <? if (count($available_forms_by_type[$sem_type['id']])) : ?>

@@ -26,6 +26,11 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
             $widget->title = _("Lehrevaluationen");
             return $widget;
         } else {
+
+
+
+
+
             $statement = DBManager::get()->prepare("
                 SELECT seminare.*
                 FROM seminar_user
@@ -46,6 +51,18 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
             ));
             $seminar_data = $statement->fetchAll(PDO::FETCH_ASSOC);
             $courses = array_map("Course::buildExisting", $seminar_data);
+
+            //user GetCoursesByUserId soap method? Need integer user_id of evasys for dozent
+            if (false && count($courses)) {
+
+
+
+                //fetch user_id for dozent GetUser
+
+                //GetSurveyIDsByParams
+
+                //iterate through courses and filter for active surveys
+            }
 
             $surveys = array();
             foreach ($courses as $course) {

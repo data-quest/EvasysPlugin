@@ -76,10 +76,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");
         }
         if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin")) {
-            $nav = new Navigation(_("Lehrveranstaltungsevaluation"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
+            if (Navigation::hasItem("/course/admin/evaluation")) {
+                $nav = Navigation::getItem("/course/admin/evaluation");
+                $nav->setTitle(_("Eigene Evaluationen"));
+            }
+
+            $nav = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
             $nav->setImage(Icon::create("checkbox-checked", "clickable"));
             $nav->setDescription(_("Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."));
-            Navigation::addItem("/course/admin/evasys", $nav);
+            if (true) {
+                Navigation::addItem("/course/admin/evasys", $nav);
+            } else {
+                Navigation::insertItem("/course/admin/evasys", $nav, "admission");
+            }
         }
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addTransferredFilter", "AdminCourseFilterWillQuery");

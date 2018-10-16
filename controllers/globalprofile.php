@@ -29,6 +29,7 @@ class GlobalprofileController extends PluginController
                 Navigation::activateItem("/admin/institute/instituteprofile");
             }
         }
+        PageLayout::addScript($this->plugin->getPluginURL()."/assets/evasys.js");
     }
 
 

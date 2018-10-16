@@ -41,4 +41,29 @@ class EvasysInstituteProfile extends SimpleORMap {
             return $profile[$field];
         }
     }
+
+    public function copyToNewSemester($semester_id)
+    {
+        $new_profile = new EvasysInstituteProfile();
+        $new_profile->setData($this->toArray());
+        $new_profile->setId($new_profile->getNewId());
+        $new_profile['semester_id'] = $semester_id;
+        $new_profile['user_id'] = $GLOBALS['user']->id;
+        $new_profile['mkdate'] = time();
+        $new_profile['chdate'] = time();
+        $new_profile->store();
+
+        $semtypeforms = EvasysProfileSemtypeForm::findBySQL("profile_id = ? profile_type = 'institute'", array($this->getId()));
+        foreach ($semtypeforms as $semtypeform) {
+            $new_semtypeform = new EvasysProfileSemtypeForm();
+            $new_semtypeform->setData($semtypeform->toArray());
+            $new_semtypeform->setId($new_semtypeform->getNewId());
+            $new_semtypeform['profile_id'] = $new_profile->getId();
+            $new_semtypeform['mkdate'] = time();
+            $new_semtypeform['chdate'] = time();
+            $new_semtypeform->store();
+        }
+
+        return $new_profile;
+    }
 }

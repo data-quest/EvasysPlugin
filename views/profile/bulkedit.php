@@ -111,13 +111,16 @@
                             <?= _("Unterschiedliche Werte") ?>
                         <? endif ?>
                     </option>
-                    <? foreach ($available_form_ids as $available_form_id) : ?>
-                        <? $form = EvasysForm::find($available_form_id) ?>
-                        <? if ($form) : ?>
-                            <option value="<?= htmlReady($available_form_id) ?>"<?= $values['form_id'] == $available_form_id ? " selected" : "" ?>>
-                                <?= htmlReady($form['name'].": ".$form['description']) ?>
-                            </option>
-                        <? endif ?>
+                    <?
+                    $forms = EvasysForm::findMany($all_form_ids);
+                    usort($forms, function ($a, $b) {
+                        return strcasecmp($a['name'], $b['name']);
+                    });
+                    ?>
+                    <? foreach ($forms as $form) : ?>
+                        <option value="<?= htmlReady($form->getId()) ?>"<?= $values['form_id'] == $form->getId() ? " selected" : "" ?><?= !in_array($form->getId(), $available_form_ids) ? " disabled title='"._("Fragebogen darf nicht allen ausgewählten Veranstaltungstypen zugewiesen werden.")."'" : "" ?>>
+                            <?= htmlReady($form['name'].": ".$form['description']) ?>
+                        </option>
                     <? endforeach ?>
                 </select>
                 <? else : ?>

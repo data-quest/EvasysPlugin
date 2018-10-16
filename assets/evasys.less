@@ -128,3 +128,21 @@ ul.sortforms {
         font-weight: 700;
     }
 }
+
+.semtype_matching {
+    .copypaste .paste, .copypaste .from {
+        display: none;
+    }
+    .copypaste.fromhere .from {
+        display: inline-block;
+    }
+    &.copying .copypaste .paste {
+        display: inline-block;
+    }
+    &.copying .copypaste .copy {
+        display: none;
+    }
+    .copypaste.fromhere .copy, .copypaste.fromhere .paste {
+        display: none;
+    }
+}

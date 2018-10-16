@@ -158,6 +158,7 @@ class ProfileController extends PluginController {
         }
 
         $this->values = array();
+        $this->all_form_ids = null;
         $this->available_form_ids = null;
         foreach ($this->profiles as $profile) {
 
@@ -189,6 +190,12 @@ class ProfileController extends PluginController {
             }
             $available = array($profile->getPresetFormId());
             $available = array_unique(array_merge($available, $profile->getAvailableFormIds()));
+            if ($this->all_form_ids === null) {
+                $this->all_form_ids = $available;
+            } else {
+                $this->all_form_ids = array_merge($this->all_form_ids, $available);
+            }
+            $this->all_form_ids = array_unique($this->all_form_ids);
             if ($this->available_form_ids === null) {
                 $this->available_form_ids = $available;
             } else {

@@ -53,14 +53,20 @@ class EvasysGlobalProfile extends SimpleORMap {
                 SELECT MD5(CONCAT(profile_form_id, :new_semester, standard)), :new_semester, profile_type, sem_type, form_id, standard, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
                 FROM evasys_profiles_semtype_forms
                 WHERE profile_id = :old_semester
+                    AND profile_type = 'global'
             ");
             $statement->execute(array(
                 'new_semester' => $semester->getId(),
                 'old_semester' => $last_semester->getId()
             ));
 
+            $institute_profiles = EvasysInstituteProfiles::findBySQL("semester_id = ?", array($last_semester->getId()));
+            foreach ($institute_profiles as $institute_profile) {
+                $institute_profile->copyToNewSemester($semester->getId());
+            }
+
             //We should also take over the old institute_profiles:
-            $statement = DBManager::get()->prepare("
+            /*$statement = DBManager::get()->prepare("
                 INSERT INTO evasys_institute_profiles (institute_profile_id, institut_id, semester, form_id, `mode`, address, antrag_info, chdate, mkdate)
                 SELECT MD5(CONCAT(institute_profile_id, :new_semester)), institut_id, :new_semester, form_id, `mode`, address, antrag_info, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
                 FROM evasys_institute_profiles
@@ -69,7 +75,9 @@ class EvasysGlobalProfile extends SimpleORMap {
             $statement->execute(array(
                 'new_semester' => $semester->getId(),
                 'old_semester' => $last_semester->getId()
-            ));
+            ));*/
+
+            //and also the available forms of the institute-profiles
         }
         self::$singleton = $profile;
         return $profile;

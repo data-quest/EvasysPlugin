@@ -380,7 +380,10 @@ class EvasysCourseProfile extends SimpleORMap {
                 'sem_type' => $sem_type,
                 'profile_id' => $inst_profile->getId()
             ));
-            return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (count($form_ids)) {
+                return $form_ids;
+            }
         }
         $fakultaet_id = $this->course->home_institut->fakultaets_id;
         if ($fakultaet_id !== $institut_id) {
@@ -400,7 +403,10 @@ class EvasysCourseProfile extends SimpleORMap {
                     'sem_type' => $sem_type,
                     'profile_id' => $inst_profile->getId()
                 ));
-                return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+                $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+                if (count($form_ids)) {
+                    return $form_ids;
+                }
             }
         }
         $global_profile = EvasysGlobalProfile::findCurrent();
@@ -420,7 +426,10 @@ class EvasysCourseProfile extends SimpleORMap {
                 'sem_type' => $sem_type,
                 'profile_id' => $global_profile->getId()
             ));
-            return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (count($form_ids)) {
+                return $form_ids;
+            }
         }
 
         $statement = DBManager::get()->prepare("

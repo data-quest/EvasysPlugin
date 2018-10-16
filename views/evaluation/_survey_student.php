@@ -4,7 +4,7 @@
     && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
 
     <? foreach ($evasys_seminar->getSurveys() as $survey_data) : ?>
-        <? var_dump($survey_data) ?>
+        <? /* var_dump($survey_data) */ ?>
         <? if ($survey_data->TransactionNumber && ($survey_data->TransactionNumber !== "null")) : ?>
             <iframe
                 id="survey_<?= htmlReady($survey_data->TransactionNumber) ?>"

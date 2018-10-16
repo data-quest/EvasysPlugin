@@ -139,6 +139,7 @@ class EvasysSeminar extends SimpleORMap
                 return "SoapPort der WSDL-Datei antwortet nicht.";
             } else {
                 var_dump($evasys_sem_object);
+                //var_dump("Größe: ".strlen($soap->__getLastRequest()));
                 var_dump($soap->__getLastResponse());die();
                 return "SOAP-error: " . $evasys_sem_object->getMessage().($evasys_sem_object->detail ? " (".$evasys_sem_object->detail.")" : "");
             }
@@ -284,6 +285,7 @@ class EvasysSeminar extends SimpleORMap
                     'm_chSurveyType' => ($profile['mode'] === "paper" && !Config::get()->EVASYS_FORCE_ONLINE)
                         ? "d"  // d = Deckblatt, s = Selbstdruck
                         : "o", // o = online+TAN
+                               // was für Losungsbasiert?
                     'm_sDescription' => ""
                 ),
                 'Verification' => false,

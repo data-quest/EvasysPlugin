@@ -285,7 +285,7 @@
 
                     <div class="evasys_paper" style="<?= $profile->getFinalMode() !== "paper" ? "display: none;" : "" ?>">
                         <label>
-                            <?= _("Adresse für den Versand der Fragebögen") ?>
+                            <?= _("Dienstliche Anschrift für Versand der Papierfragebögen") ?>
                             <textarea name="data[address]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($profile['address']) ?></textarea>
                         </label>
 
