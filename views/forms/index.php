@@ -24,7 +24,7 @@
                     <td>
                         <? if ($form['link']) : ?>
                             <a href="<?= htmlReady($form['link']) ?>" target="_blank">
-                                <?= Icon::create("info-circle", "clickable")->asImg(20) ?>
+                                <?= Icon::create("info-circle", "clickable")->asImg(20, array('class' => "text-middle")) ?>
                             </a>
                         <? endif ?>
                     </td>
