@@ -41,7 +41,6 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
                     AND evasys_course_profiles.semester_id = :semester_id
                     AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.transferred = '1'
-                    AND evasys_course_profiles.begin <= UNIX_TIMESTAMP()
                 GROUP BY seminare.Seminar_id
                 ORDER BY seminare.name ASC
             ");
@@ -49,40 +48,84 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
                 'user_id' => $GLOBALS['user']->id,
                 'semester_id' => Semester::findCurrent()->id
             ));
-            $seminar_data = $statement->fetchAll(PDO::FETCH_ASSOC);
-            $courses = array_map("Course::buildExisting", $seminar_data);
+            $seminar_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            $active_seminar_ids = array();
+            foreach ($seminar_ids as $seminar_id) {
+                $profile = EvasysCourseProfile::findBySemester($seminar_id);
+                if ($profile['applied'] && $profile['transferred'] && ($profile->getFinalBegin() < time()) && ($profile->getFinalEnd() >= time() + (86400 * 14))) {
+                    if ($profile['split']) {
+                        $active_seminar_ids[$seminar_id.$GLOBALS['user']->id] = $seminar_id;
+                    } else {
+                        $active_seminar_ids[$seminar_id] = $seminar_id;
+                    }
+                }
+            }
+
+            $user = User::findCurrent();
+
+            $courses = array();
 
             //user GetCoursesByUserId soap method? Need integer user_id of evasys for dozent
-            if (false && count($courses)) {
+            if (count($active_seminar_ids)) {
+                $soap = EvasysSoap::get();
 
+                if (!$_SESSION['EVASYS_MY_IDS']) {
+                    //fetch user_id for dozent GetUser
+                    $evasys_user_object = $soap->__soapCall("GetUserIdsByParams", array(
+                        'Params' => array('Email' => $user['email'])
+                    ));
+                    if (is_a($evasys_user_object, "SoapFault")) {
+                        PageLayout::postError("SOAP-error: " . $evasys_user_object->detail);
+                        return;
+                    } else {
+                        $ids = array_values((array)$evasys_user_object->Strings);
+                        $_SESSION['EVASYS_MY_IDS'] = $ids;
+                    }
+                } else {
+                    $ids = $_SESSION['EVASYS_MY_IDS'];
+                }
 
+                $evasys_surveys_object = $soap->__soapCall("GetSurveyIDsByParams", array(
+                    'Params' => array(
+                        'Instructors' => array("Strings" => $ids),
+                        'Name' => "%",
+                        'ExtendedResponseAsJSON' => true
+                    ))
+                );
+                if (is_a($evasys_user_object, "SoapFault")) {
+                    PageLayout::postError("SOAP-error: " . $evasys_user_object->detail);
+                    return;
+                }
+                foreach ($evasys_surveys_object->Strings as $json) {
+                    $json = json_decode($json, true);
+                    if ($active_seminar_ids[$json['CourseCode']]
+                            && (!$courses[$active_seminar_ids[$json['CourseCode']]] || $json['OpenState'])) {
+                        $course = Course::find($active_seminar_ids[$json['CourseCode']]);
+                        $courses[$active_seminar_ids[$json['CourseCode']]] = array(
+                            'Nummer' => $course['veranstaltungsnummer'],
+                            'Name' => $course['name'],
+                            'Seminar_id' => $active_seminar_ids[$json['CourseCode']],
+                            'split' => (strlen($json['CourseCode']) > 32),
+                            'ResponseCount' => $json['ResponseCount'],
+                            'ParticipantCount' => $json['ParticipantCount'],
+                            'open' => $json['OpenState']
+                        );
+                    }
+                }
 
-                //fetch user_id for dozent GetUser
-
-                //GetSurveyIDsByParams
 
                 //iterate through courses and filter for active surveys
             }
 
-            $surveys = array();
-            foreach ($courses as $course) {
-                $evasys_seminars = EvasysSeminar::findBySeminar($course->getId());
-
-                foreach ($evasys_seminars as $evasys_seminar) {
-                    $survey_information = $evasys_seminar->getSurveyInformation();
-                    if (is_array($survey_information)) {
-                        foreach ($survey_information as $info) {
-                            $surveys[$course->getId()][] = $info;
-                        }
-                    }
-                }
-            }
+            uasort($courses, function ($a, $b) {
+                return strcasecmp($a['Name'], $b['Name']);
+            });
 
             $tf = new Flexi_TemplateFactory(__DIR__ . "/views");
             $widget = $tf->open("widget/widget");
             $widget->title = _("Lehrevaluationen");
             $widget->courses = $courses;
-            $widget->surveys = $surveys;
+            //$widget->surveys = $surveys;
             $widget->plugin = $this;
             return $widget;
         }

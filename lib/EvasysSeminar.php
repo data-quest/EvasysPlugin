@@ -35,14 +35,14 @@ class EvasysSeminar extends SimpleORMap
         if ($GLOBALS['perm']->have_perm("admin", $user->getId())) {
             return 0;
         }
-        $profile = EvasysCourseProfile::findBySemester($seminar['Seminar_id']);
+        $profile = EvasysCourseProfile::findBySemester($this->getId());
         if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES && $profile['split']) {
             $seminar_ids = array();
             foreach ($profile['teachers'] as $dozent_id) {
-                $seminar_ids[] = $seminar['Seminar_id'] . $dozent_id;
+                $seminar_ids[] = $this->getId() . $dozent_id;
             }
         } else {
-            $seminar_ids = array($seminar['Seminar_id']);
+            $seminar_ids = array($this->getId());
         }
         if (isset($_SESSION['EVASYS_SEMINARS_STATUS'])
                 && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE) {
@@ -52,6 +52,7 @@ class EvasysSeminar extends SimpleORMap
             }
             return $new;
         }
+        $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
         $soap = EvasysSoap::get();
         $evasys_sem_object = $soap->__soapCall("GetEvaluationSummaryByParticipant", array($user['email']));
         if (is_a($evasys_sem_object, "SoapFault")) {
