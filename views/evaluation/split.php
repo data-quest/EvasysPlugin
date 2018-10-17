@@ -1,4 +1,4 @@
-<? $active = false ?>
+<? $tabs = array() ?>
 <div id="evasys_tabs">
     <ul>
         <? foreach ($profile['teachers'] as $user_id) : ?>
@@ -25,16 +25,17 @@
                 )) ?>
             <? endif ?>
         </div>
-        <? if ($user_id === $GLOBALS['user']->id) {
-            $active = $i; //open the tab of the teacher
-        } ?>
+        <? $tabs['#tab-'.$user_id] = $i ?>
     <? endforeach ?>
 </div>
 
 <script>
     jQuery(function () {
+        var tabs = <?= json_encode($tabs) ?>;
         jQuery("#evasys_tabs").tabs({
-            "active": <?= $active === false ? 0 : (int) $active ?>
+            "active": typeof tabs[window.location.hash] !== "undefined"
+                ? tabs[window.location.hash]
+                : 0
         });
     });
 </script>
@@ -49,7 +50,7 @@
     <script>
         jQuery(function () {
             <? URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']) ?>
-            var qrcode = new QRCode("<?= PluginEngine::getLink($plugin, array(), "show") ?>");
+            var qrcode = new QRCode("<?= PluginEngine::getLink($plugin, array(), "show#tab-".$GLOBALS['user']->id) ?>");
             var svg = qrcode.svg();
             jQuery("#qr_code_evasys img").attr("src", "data:image/svg+xml;base64," + btoa(svg));
         });
@@ -78,7 +79,7 @@ if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
     $actions = new ActionsWidget();
     $actions->addLink(
         _("QR-Code für Studierende anzeigen"),
-        "#",
+        PluginEngine::getLink($plugin, array(), "show#tab-".$GLOBALS['user']->id),
         Icon::create("code-qr", "clickable"),
         array('onClick' => "STUDIP.EvaSys.showQR(); return false;")
     );

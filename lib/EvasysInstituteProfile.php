@@ -42,6 +42,29 @@ class EvasysInstituteProfile extends SimpleORMap {
         }
     }
 
+    public function getParentsAvailableForms($sem_type_id)
+    {
+        if ($this->institute && !$this->institute->isFaculty()) {
+            $profile = self::findByInstitute($this->institute['fakultaets_id']);
+
+            $forms = EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'institute' ORDER BY `standard` DESC, position ASC", array(
+                'profile_id' => $profile->getId(),
+                'sem_type_id' => $sem_type_id
+            ));
+            if (count($forms)) {
+                return $forms;
+            } else {
+                return $profile->getParentsAvailableForms($sem_type_id);
+            }
+        } else {
+            $profile = EvasysGlobalProfile::findCurrent();
+            return EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'global' ORDER BY `standard` DESC, position ASC", array(
+                'profile_id' => $profile->getId(),
+                'sem_type_id' => $sem_type_id
+            ));
+        }
+    }
+
     public function copyToNewSemester($semester_id)
     {
         $new_profile = new EvasysInstituteProfile();
@@ -53,7 +76,7 @@ class EvasysInstituteProfile extends SimpleORMap {
         $new_profile['chdate'] = time();
         $new_profile->store();
 
-        $semtypeforms = EvasysProfileSemtypeForm::findBySQL("profile_id = ? profile_type = 'institute'", array($this->getId()));
+        $semtypeforms = EvasysProfileSemtypeForm::findBySQL("profile_id = ? AND profile_type = 'institute'", array($this->getId()));
         foreach ($semtypeforms as $semtypeform) {
             $new_semtypeform = new EvasysProfileSemtypeForm();
             $new_semtypeform->setData($semtypeform->toArray());

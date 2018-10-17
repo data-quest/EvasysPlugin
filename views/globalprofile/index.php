@@ -153,9 +153,21 @@
                         </label>
 
                         <? if ($this->controller->profile_type === "institute") : ?>
-                            <? $default_value = $profile->getParentsDefaultValue("mode") ?>
+                            <? $semtypeforms = $profile->getParentsAvailableForms($sem_type['id']) ?>
                             <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
-                                  class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
+                                  class="default_value">(<? if (count($semtypeforms)) {
+                                    foreach ($semtypeforms as $key => $semtypeform) {
+                                        if ($key > 0) {
+                                            echo ", ";
+                                            echo htmlReady($semtypeform->form->name);
+                                        } else {
+                                            echo "<u>".htmlReady($semtypeform->form->name)."</u>";
+                                        }
+                                    }
+                                } else {
+                                    echo _("Keine Standardwerte");
+                                } ?>)
+                            </span>
                         <? endif ?>
                     </td>
                     <td>
@@ -200,6 +212,11 @@
             <?= _("Informationstext") ?>
             <textarea name="data[antrag_info]"><?= htmlReady($profile['antrag_info']) ?></textarea>
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("antrag_info") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? nl2br(htmlReady($default_value)) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
     </fieldset>
 
