@@ -115,7 +115,7 @@
                                 <?= Icon::create("topic+export", "clickable")->asImg(20) ?>
                             </a>
                             <a href="#" class="paste" title="<?= _("Werte hier einfügen") ?>">
-                                <?= Icon::create("arr_eol-down", "status-green")->asImg(20) ?>
+                                <?= Icon::create("topic+move_down", "status-green")->asImg(20) ?>
                             </a>
                             <a href="#" class="from" title="<?= _("Doch nicht kopieren") ?>">
                                 <?= Icon::create("topic+decline", "status-yellow")->asImg(20) ?>

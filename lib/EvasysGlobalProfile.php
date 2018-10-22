@@ -60,24 +60,10 @@ class EvasysGlobalProfile extends SimpleORMap {
                 'old_semester' => $last_semester->getId()
             ));
 
-            $institute_profiles = EvasysInstituteProfiles::findBySQL("semester_id = ?", array($last_semester->getId()));
+            $institute_profiles = EvasysInstituteProfile::findBySQL("semester_id = ?", array($last_semester->getId()));
             foreach ($institute_profiles as $institute_profile) {
                 $institute_profile->copyToNewSemester($semester->getId());
             }
-
-            //We should also take over the old institute_profiles:
-            /*$statement = DBManager::get()->prepare("
-                INSERT INTO evasys_institute_profiles (institute_profile_id, institut_id, semester, form_id, `mode`, address, antrag_info, chdate, mkdate)
-                SELECT MD5(CONCAT(institute_profile_id, :new_semester)), institut_id, :new_semester, form_id, `mode`, address, antrag_info, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
-                FROM evasys_institute_profiles
-                WHERE semester_id = :old_semester
-            ");
-            $statement->execute(array(
-                'new_semester' => $semester->getId(),
-                'old_semester' => $last_semester->getId()
-            ));*/
-
-            //and also the available forms of the institute-profiles
         }
         self::$singleton = $profile;
         return $profile;
