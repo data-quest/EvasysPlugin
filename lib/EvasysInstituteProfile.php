@@ -19,6 +19,9 @@ class EvasysInstituteProfile extends SimpleORMap {
     static public function findByInstitute($institut_id)
     {
         $semester = Semester::findCurrent(); //findNext ?
+        if (!$semester) {
+            return null;
+        }
         $profile = self::findOneBySQL("institut_id = ? AND semester_id = ?", array(
             $institut_id,
             $semester->getId()
