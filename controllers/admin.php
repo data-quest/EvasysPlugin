@@ -29,6 +29,17 @@ class AdminController extends PluginController
         $this->semid = $course_id;
         $this->selected_action = $GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA;
         $this->values = $courses[$course_id];
+
+
+        $tf = new Flexi_TemplateFactory(__DIR__."/../../../../../app/views");
+        $template = $tf->open("admin/courses/_course.php");
+        $template->view_filter = $this->getFilterConfig();
+        $template->values = $courses[$course_id];
+        $template->selected_action = $GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA;
+        $template->semid = $course_id;
+        $template->controller = $this;
+
+        $this->render_text($template->render());
     }
 
     public function upload_courses_action()
@@ -123,10 +134,12 @@ class AdminController extends PluginController
     {
         // Init
         if ($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === "all") {
-            $inst = new SimpleCollection($this->insts);
+            $inst = new SimpleCollection(Institute::getMyInstitutes($GLOBALS['user']->id));
+
             $inst->filter(function ($a) use (&$inst_ids) {
                 $inst_ids[] = $a->Institut_id;
             });
+
         } else {
             //We must check, if the institute ID belongs to a faculty
             //and has the string _i appended to it.
