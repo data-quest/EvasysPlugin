@@ -92,11 +92,11 @@ class EvasysSeminar extends SimpleORMap
                 if ($part['CourseName']) {
                     //singe course with data
                     $courses[] = $part;
-                    $profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
+                    /*$profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
                     if (!$profile->isNew()) {
                         $profile['transferred'] = 1;
                         $profile->store();
-                    }
+                    }*/
                 } else {
                     //we have split courses for each teacher
                     foreach ($part as $subcourse) {
@@ -107,11 +107,11 @@ class EvasysSeminar extends SimpleORMap
                         'CourseId' => $seminar['seminar_id'],
                         'IdType' => "PUBLIC"
                     ));
-                    $profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
+                    /*$profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
                     if (!$profile->isNew()) {
                         $profile['transferred'] = 1;
                         $profile->store();
-                    }
+                    }*/
                 }
 
             } elseif($part[0] === "delete") {
@@ -128,6 +128,10 @@ class EvasysSeminar extends SimpleORMap
                     }
                 }
             }
+        }
+        if (!count($courses)) {
+            //nothing to insert, we probably have only deleted something
+            return true;
         }
         $sessionlist = array(
             array('CourseCreators' => $courses),
@@ -154,7 +158,17 @@ class EvasysSeminar extends SimpleORMap
                 } else {
                     $course_id = $course_uid;
                 }
+                //$status->StatusMessage;
                 $profile = EvasysCourseProfile::findBySemester($course_id);
+                if ($status->StatusId === "ERR_108") {
+                    PageLayout::postError(sprintf(
+                        _("Die 'Veranstaltung '%s' konnte nicht korrekt übertragen werden."),
+                        Course::find($course_id)->name
+                    ), array($status->StatusMessage));
+                    $profile['transferred'] = 0;
+                } else {
+                    $profile['transferred'] = 1;
+                }
                 if (!$profile->isNew()) {
                     foreach ($status->SurveyStatusList->SurveyStatusArray as $survey_status) {
                         if ($survey_status->SurveyId) {
@@ -166,8 +180,8 @@ class EvasysSeminar extends SimpleORMap
                         }
                     }
                     $profile['surveys']['form_id'] = $profile->getFinalFormId();
-                    $profile->store();
                 }
+                $profile->store();
             }
             return true;
         }
@@ -268,7 +282,10 @@ class EvasysSeminar extends SimpleORMap
                         }
                     }
                 } else {
-                    PageLayout::postError(sprintf(_("Evaluation für die Veranstaltung '%s' ist schon gestartet und konnte nicht mehr verändert werden."), $seminar->getName()));
+                    PageLayout::postError(sprintf(
+                        _("Evaluation für die Veranstaltung '%s' ist schon gestartet und konnte nicht mehr verändert werden."),
+                        $seminar->getName()
+                    ));
                 }
 
 
