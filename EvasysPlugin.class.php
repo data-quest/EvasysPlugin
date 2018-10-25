@@ -233,11 +233,11 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
 
         if ($activated) {
-            $tab = new Navigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            $tab = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
             if ($profile && $profile['split']) {
                 $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
             }
-            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Evaluationen")));
+            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Lehrveranstaltungsevaluationen")));
             $number = 0;
             foreach ($evasys_seminars as $evasys_seminar) {
                 $number += $evasys_seminar->getEvaluationStatus();
@@ -245,6 +245,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             if ($number > 0) {
                 $tab->setImage(Icon::create("evaluation", "new"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
             }
+            return $tab;
+        } elseif($profile && $profile['applied']) {
+            $tab = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".$course_id));
+            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Evaluationen")));
             return $tab;
         }
     }
@@ -272,7 +276,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             }
         }
         if ($activated) {
-            $tab = new Navigation(_("Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            $tab = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
             if ($profile && $profile['split']) {
                 $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
             }
