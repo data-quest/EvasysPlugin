@@ -359,7 +359,7 @@ class EvasysSeminar extends SimpleORMap
 
                     $parts[] = array(
                         'CourseUid' => $this['Seminar_id'] . $dozent_id,
-                        'CourseName' => $seminar->getName(),
+                        'CourseName' => mb_substr($seminar->getName(), 0, 199),
                         'CourseCode' => $this['Seminar_id'] . $dozent_id,
                         'CourseType' => EvasysMatching::semtypeName($seminar->status),
                         'CourseProgramOfStudy' => implode('|', $studienbereiche),
@@ -410,7 +410,7 @@ class EvasysSeminar extends SimpleORMap
 
             return array(
                 'CourseUid' => $this['Seminar_id'],
-                'CourseName' => $seminar->getName(),
+                'CourseName' => mb_substr($seminar->getName(), 0, 199),
                 'CourseCode' => $this['Seminar_id'],
                 'CourseType' => EvasysMatching::semtypeName($seminar->status),
                 'CourseProgramOfStudy' => implode('|', $studienbereiche),
