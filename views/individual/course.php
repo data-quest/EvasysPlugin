@@ -29,6 +29,10 @@
         <td><?= $profile['mode'] === "paper" ? _("Papier") : _("Online")  ?></td>
     <? endif ?>
     <td class="actions">
-        <?= $this->render_partial("admin/_admin_checkbox", array("profile" => $profile, 'checkbox' => false)) ?>
+        <?= $this->render_partial("admin/_admin_checkbox", array(
+                "profile" => $profile,
+                'course_id' => $profile['seminar_id'],
+                'checkbox' => false
+        )) ?>
     </td>
 </tr>

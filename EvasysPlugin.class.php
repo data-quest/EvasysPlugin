@@ -74,6 +74,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             PageLayout::addScript($this->getPluginURL() . "/assets/admin_area.js");
             NotificationCenter::addObserver($this, "addTransferredFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");
+            NotificationCenter::addObserver($this, "addRecentEvalCoursesFilterToSidebar", "SidebarWillRender");
         }
         if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin")) {
             if (Navigation::hasItem("/course/admin/evaluation")) {
@@ -91,6 +92,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             }
         }
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
+        NotificationCenter::addObserver($this, "addRecentEvalCoursesFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addTransferredFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "removeEvasysCourse", "CourseDidDelete");
     }
@@ -133,6 +135,21 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
     }
 
+    public function addRecentEvalCoursesFilterToSidebar()
+    {
+        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
+            || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"))) {
+            $widget = new OptionsWidget();
+            $widget->setTitle(_("Ausreißer-Filter"));
+            $widget->addCheckbox(
+                _("Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen."),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"),
+                PluginEngine::getURL($this, array(), "toggle_recentevalcourses_filter")
+            );
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_recentevalcourses");
+        }
+    }
+
     /**
      * Toggle the filter in the sidebar of the admin-page and redirect there
      */
@@ -140,6 +157,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $oldvalue = (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES");
         $GLOBALS['user']->cfg->store("EVASYS_FILTER_NONFITTING_DATES", $oldvalue ? 0 : 1);
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
+    public function toggle_recentevalcourses_filter_action()
+    {
+        $oldvalue = (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES");
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_RECENT_EVAL_COURSES", $oldvalue ? 0 : 1);
         header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
     }
 
@@ -207,6 +231,22 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 "
             );
             $filter->settings['query']['where']['date_not_in_timespan'] = "termine.termin_id IS NULL AND evasys_course_profiles.applied = '1'";
+            $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
+        }
+    }
+
+    public function addRecentEvalCoursesFilter($event, $filter)
+    {
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES")) {
+            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "
+                seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                    AND evasys_course_profiles.semester_id = :evasys_semester_id
+                "
+            );
+            $filter->settings['query']['where']['eval_starts_next_days'] = "evasys_course_profiles.applied = '1' AND evasys_course_profiles.begin IS NOT NULL AND evasys_course_profiles.begin > UNIX_TIMESTAMP() AND evasys_course_profiles.begin < UNIX_TIMESTAMP() + 86400 * 7 ";
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
         }
     }

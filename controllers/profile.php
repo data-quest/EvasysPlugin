@@ -154,7 +154,12 @@ class ProfileController extends PluginController {
                 $profile->store();
             }
             PageLayout::postSuccess(_("Evaluationsdaten wurden gespeichert"));
-            $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
+            if (Request::get("individual")) {
+                $this->redirect(PluginEngine::getURL($this->plugin, array(), "individual/list"));
+            } else {
+                $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
+            }
+            return;
         }
 
         $this->values = array();

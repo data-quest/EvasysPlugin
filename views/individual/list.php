@@ -1,38 +1,50 @@
-<table class="default evasys_individuelle_liste">
-    <thead>
+<form action="<?= PluginEngine::getURL($plugin, array('individual' => 1), "profile/bulkedit") ?>" method="post" data-dialog>
+    <table class="default evasys_individuelle_liste">
         <caption><?= htmlReady(ucfirst(EvasysMatching::wording("freiwillige Evaluationen"))) ?></caption>
-        <tr>
-            <th><?= _("Nummer") ?></th>
-            <th><?= _("Veranstaltung") ?></th>
-            <th><?= _("Dozenten") ?></th>
-            <th><?= _("Evaluationszeitraum") ?></th>
-            <? if (!Config::get()->EVASYS_FORCE_ONLINE) : ?>
-                <th><?= _("Art") ?></th>
-            <? endif ?>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <? if (count($profiles)) : ?>
-        <? foreach ($profiles as $profile) : ?>
-            <?= $this->render_partial("individual/course", compact("profile")) ?>
-        <? endforeach ?>
-        <? else : ?>
-        <tr>
-            <td colspan="100" style="text-align: center;">
-                <?= sprintf(_("Noch keine %s in diesem Semester."), EvasysMatching::wording("freiwillige Evaluationen")) ?>
-            </td>
-        </tr>
-        <? endif ?>
-        <? if ($more) : ?>
-            <tr class="more" data-offset="<?= count($profiles) ?>">
-                <td style="text-align: center;" colspan="100">
-                    <?= Assets::img("ajax-indicator-black.svg") ?>
+        <thead>
+            <tr>
+                <th><?= _("Nummer") ?></th>
+                <th><?= _("Veranstaltung") ?></th>
+                <th><?= _("Dozenten") ?></th>
+                <th><?= _("Evaluationszeitraum") ?></th>
+                <? if (!Config::get()->EVASYS_FORCE_ONLINE) : ?>
+                    <th><?= _("Art") ?></th>
+                <? endif ?>
+                <th class="actions">
+                    <?= _("Aktion") ?>
+                    <input type="checkbox" data-proxyfor=".evasys_individuelle_liste > tbody :checkbox">
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <? if (count($profiles)) : ?>
+            <? foreach ($profiles as $profile) : ?>
+                <?= $this->render_partial("individual/course", compact("profile")) ?>
+            <? endforeach ?>
+            <? else : ?>
+            <tr>
+                <td colspan="100" style="text-align: center;">
+                    <?= sprintf(_("Noch keine %s in diesem Semester."), EvasysMatching::wording("freiwillige Evaluationen")) ?>
                 </td>
             </tr>
-        <? endif ?>
-    </tbody>
-</table>
+            <? endif ?>
+            <? if ($more) : ?>
+                <tr class="more" data-offset="<?= count($profiles) ?>">
+                    <td style="text-align: center;" colspan="100">
+                        <?= Assets::img("ajax-indicator-black.svg") ?>
+                    </td>
+                </tr>
+            <? endif ?>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="100" style="text-align: right;">
+                    <?= \Studip\Button::create(_("Bearbeiten")) ?>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+</form>
 <input type="hidden" id="semester_id" value="<?= htmlReady($semester_id) ?>">
 
 <script>

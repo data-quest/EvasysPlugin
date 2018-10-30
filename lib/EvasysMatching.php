@@ -25,7 +25,7 @@ class EvasysMatching extends SimpleORMap {
     static public function wording($text)
     {
         $matching = self::findOneBySQL("item_id = ? AND item_type = 'wording' ", array(md5($text)));
-        if ($matching) {
+        if ($matching && trim($matching['name'])) {
             return $matching['name'];
         } else {
             return gettext($text);

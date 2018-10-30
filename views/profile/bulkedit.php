@@ -1,5 +1,5 @@
 <form class="default bulkedit"
-      action="<?= PluginEngine::getLink($plugin, array(), "profile/bulkedit") ?>"
+      action="<?= PluginEngine::getLink($plugin, Request::get("individual") ? array('individual' => Request::get("individual")) : array(), "profile/bulkedit") ?>"
       method="post">
     <? foreach ($course_ids as $course_id) : ?>
         <input type="hidden" name="c[<?= htmlReady($course_id) ?>]" value="1">
