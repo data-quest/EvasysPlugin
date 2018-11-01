@@ -107,14 +107,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 ""
             ));
             $widget->addElement(new SelectElement(
-                'transferred',
-                _("Nach Evasys übertragen"),
-                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
+                'applied',
+                _("Beantragt"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "applied"
             ));
             $widget->addElement(new SelectElement(
                 'nottransferred',
-                _("Nach Evasys nicht übertragen"),
+                _("Beantragt und noch nicht übertragen"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred"
+            ));
+            $widget->addElement(new SelectElement(
+                'transferred',
+                _("Nach Evasys übertragen"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
         }
@@ -178,18 +183,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = array(
-                'join' => "LEFT JOIN",
+                'join' => "INNER JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
             );
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred") {
-                $filter->settings['query']['where']['evasys_transferred'] = "evasys_course_profiles.transferred = '1'";
-            } else {
-                $filter->settings['query']['where']['evasys_transferred'] = "(evasys_course_profiles.applied = '1' && evasys_course_profiles.transferred = '0')";
+                $filter->settings['query']['where']['evasys_transferred'] = "evasys_course_profiles.transferred = '1' ";
+            } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred") {
+                $filter->settings['query']['where']['evasys_transferred'] = "(evasys_course_profiles.applied = '1' AND evasys_course_profiles.transferred = '0')";
             }
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
+
         }
     }
 
@@ -198,7 +204,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = array(
-                'join' => "LEFT JOIN",
+                'join' => "INNER JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id

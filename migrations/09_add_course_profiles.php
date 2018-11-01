@@ -27,7 +27,10 @@ class AddCourseProfiles extends Migration
                 `user_id` varchar(32) DEFAULT NULL,
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
-                PRIMARY KEY (`course_profile_id`)
+                PRIMARY KEY (`course_profile_id`),
+                KEY `seminar_id` (`seminar_id`),
+                KEY `semester_id` (`semester_id`),
+                KEY `form_id` (`form_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
         DBManager::get()->exec("
@@ -61,7 +64,9 @@ class AddCourseProfiles extends Migration
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
                 PRIMARY KEY (`institute_profile_id`),
-                UNIQUE KEY `institute_id` (`institut_id`,`semester_id`)
+                UNIQUE KEY `institute_id` (`institut_id`,`semester_id`),
+                KEY `semester_id` (`semester_id`),
+                KEY `form_id` (`form_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
         DBManager::get()->exec("
@@ -81,7 +86,8 @@ class AddCourseProfiles extends Migration
                 `user_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
-                PRIMARY KEY (`semester_id`)
+                PRIMARY KEY (`semester_id`),
+                KEY `form_id` (`form_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
 
@@ -96,7 +102,9 @@ class AddCourseProfiles extends Migration
                 `standard` tinyint(4) NOT NULL DEFAULT '0',
                 `chdate` int(11) DEFAULT NULL,
                 `mkdate` int(11) DEFAULT NULL,
-                PRIMARY KEY (`profile_form_id`)
+                PRIMARY KEY (`profile_form_id`),
+                KEY `profile_id` (`profile_id`),
+                KEY `form_id` (`form_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
 
