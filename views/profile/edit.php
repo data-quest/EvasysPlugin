@@ -323,7 +323,8 @@
         <fieldset>
             <legend><?= _("Log") ?></legend>
 
-            <?= MessageBox::info(sprintf(_("Letzte Bearbeitung von %s am %s Uhr"), get_fullname($profile['user_id']), date("d.m.Y H:i", $profile['chdate'])) ) ?>
+            <? $last_author = $profile['user_id'] ? User::find($profile['user_id']) : null ?>
+            <?= MessageBox::info(sprintf(_("Letzte Bearbeitung von %s am %s Uhr"), ($last_author ? $last_author->getFullName() : ($profile['user_id'] ?: _("unbekannt"))), date("d.m.Y H:i", $profile['chdate'])) ) ?>
 
             <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id']))) : ?>
                 <?= MessageBox::info(sprintf(_("Diese Veranstaltung ist eine %s."), EvasysMatching::wording("freiwillige Evaluation"))) ?>

@@ -150,6 +150,7 @@ class ProfileController extends PluginController {
                         $profile['language'] = Request::get("language");
                     }
                 }
+                $profile['user_id'] = $GLOBALS['user']->id;
 
                 $profile->store();
             }
