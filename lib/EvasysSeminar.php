@@ -90,13 +90,8 @@ class EvasysSeminar extends SimpleORMap
             $part = $seminar->getCoursePart();
             if ($part && $part[0] !== "delete") {
                 if ($part['CourseName']) {
-                    //singe course with data
+                    //single course with data
                     $courses[] = $part;
-                    /*$profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
-                    if (!$profile->isNew()) {
-                        $profile['transferred'] = 1;
-                        $profile->store();
-                    }*/
                 } else {
                     //we have split courses for each teacher
                     foreach ($part as $subcourse) {
@@ -107,11 +102,6 @@ class EvasysSeminar extends SimpleORMap
                         'CourseId' => $seminar['seminar_id'],
                         'IdType' => "PUBLIC"
                     ));
-                    /*$profile = EvasysCourseProfile::findBySemester($seminar['seminar_id']);
-                    if (!$profile->isNew()) {
-                        $profile['transferred'] = 1;
-                        $profile->store();
-                    }*/
                 }
 
             } elseif($part[0] === "delete") {
@@ -144,7 +134,6 @@ class EvasysSeminar extends SimpleORMap
                 return "SoapPort der WSDL-Datei antwortet nicht.";
             } else {
                 var_dump($evasys_sem_object);
-                //var_dump("Größe: ".strlen($soap->__getLastRequest()));
                 var_dump($soap->__getLastResponse());die();
                 return "SOAP-error: " . $evasys_sem_object->getMessage().($evasys_sem_object->detail ? " (".$evasys_sem_object->detail.")" : "");
             }

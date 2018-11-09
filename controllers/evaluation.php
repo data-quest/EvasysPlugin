@@ -68,36 +68,12 @@ class EvaluationController extends PluginController
             }
         }
 
-
-
-
-
-        /*$active = false;
-        foreach ($this->surveys as $dozent_id => $surveys) {
-            foreach ($surveys as $survey) {
-                if ($survey->m_nState > 0) {
-                    $active = true;
-                    break;
-                }
-            }
-        }*/
-
         $this->open_surveys = array();
-
-        //$user_can_participate = array();
 
         if (count($this->evasys_seminars)
             && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
             foreach ($this->evasys_seminars as $dozent_id => $seminar) {
                 $this->open_surveys[$dozent_id] = $seminar->getSurveys($GLOBALS['user']->id);
-                /*if (is_array($this->open_surveys)) {
-                    foreach ($this->open_surveys as $one) {
-                        if (is_object($one)) {
-                            $user_can_participate[] = count($this->open_surveys) - 1;
-                            break;
-                        }
-                    }
-                }*/
             }
         }
 

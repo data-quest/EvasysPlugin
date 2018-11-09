@@ -427,18 +427,21 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         return array(
             'form' => _("Fragebogen"),
             'mode' => _("Evaluationsart"),
-            'timespan' => _("Eval-Zeitraum")
+            'timespan' => _("Eval-Zeitraum"),
+            'applied' => _("Evaluation beantragt"),
+            'lehrende_emails' => 'Eval: Beantragte Lehrende (Emails)'
         );
     }
 
     public function adminAreaGetCourseContent($course, $index)
     {
         $profile = EvasysCourseProfile::findBySemester($course->getId());
-        if (!$profile || !$profile['applied']) {
-            return "";
-        }
+
         switch ($index) {
             case "form":
+                if (!$profile || !$profile['applied']) {
+                    return "";
+                }
                 $form_id = $profile->getFinalFormId();
                 if ($form_id) {
                     $form = EvasysForm::find($form_id);
@@ -447,14 +450,34 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     return "";
                 }
             case "mode":
+                if (!$profile || !$profile['applied']) {
+                    return "";
+                }
                 if (Config::get()->EVASYS_FORCE_ONLINE) {
                     return _("Online");
                 }
                 return $profile->getFinalMode() === "online" ? _("Online") : _("Papier");
             case "timespan":
+                if (!$profile || !$profile['applied']) {
+                    return "";
+                }
                 $begin = $profile->getFinalBegin();
                 $end = $profile->getFinalEnd();
                 return date("d.m.Y H:i", $begin)." - ".date("d.m.Y H:i", $end);
+            case "applied":
+                return $profile && $profile['applied'] ? 1 : 0;
+            case "lehrende_emails":
+                if (!$profile || !$profile['applied']) {
+                    return "";
+                }
+                $emails = array();
+                foreach ((array) $profile['teachers']->getArrayCopy() as $teacher_id) {
+                    $teacher = User::find($teacher_id);
+                    if ($teacher) {
+                        $emails[] = $teacher->email;
+                    }
+                }
+                return implode(";", $emails);
         }
     }
 
