@@ -47,7 +47,11 @@ class AdminController extends PluginController
         if (Request::isPost() && $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)) {
             $activate = Request::getArray("c");
             $evasys_seminar = array();
-            foreach (Request::getArray("course") as $course_id) {
+
+            $courses = Config::get()->EVASYS_ENABLE_PROFILES
+                ? array_keys(Request::getArray("c"))
+                : Request::getArray("course");
+            foreach ($courses as $course_id) {
                 $evasys_evaluations = EvasysSeminar::findBySeminar($course_id);
                 if (count($evasys_evaluations)) {
                     foreach ($evasys_evaluations as $evaluation) {
@@ -64,6 +68,7 @@ class AdminController extends PluginController
                     $evasys_seminar[$course_id]['activated'] = $activate[$course_id] ? 1 : 0;
                 }
             }
+
             if (count($evasys_seminar) > 0) {
                 $success = EvasysSeminar::UploadSessions($evasys_seminar);
                 if ($success === true) {
