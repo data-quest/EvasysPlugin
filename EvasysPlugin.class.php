@@ -118,7 +118,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             ));
             $widget->addElement(new SelectElement(
                 'transferred',
-                _("Nach Evasys übertragen"),
+                _("Beantragt und nach Evasys übetragen"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
@@ -292,7 +292,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $tab->setImage(Icon::create("evaluation", "new"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
             }
             return $tab;
-        } elseif($profile && $profile['applied']) {
+        } elseif($profile && $profile['applied'] && $GLOBALS['perm']->have_studip_perm("dozent", $course_id)) {
             $tab = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".$course_id));
             $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Evaluationen")));
             return $tab;

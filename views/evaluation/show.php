@@ -21,7 +21,7 @@
     <script>
         jQuery(function () {
             <? URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']) ?>
-            var qrcode = new QRCode("<?= PluginEngine::getLink($plugin, array(), "show") ?>");
+            var qrcode = new QRCode("<?= PluginEngine::getLink($plugin, array(), "evaluation/show") ?>");
             var svg = qrcode.svg();
             jQuery("#qr_code_evasys img").attr("src", "data:image/svg+xml;base64," + btoa(svg));
         });

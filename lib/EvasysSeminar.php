@@ -457,7 +457,8 @@ class EvasysSeminar extends SimpleORMap
         $user_id || $user_id = $GLOBALS['user']->id;
         $user = new User($user_id);
 
-        $surveys = $soap->__soapCall("GetPswdGetPswdsByParticipantsByParticipant", array(
+
+        $surveys = $soap->__soapCall("GetPswdsByParticipant", array(
             'UserMailAddress' => $user->email,
             'CourseCode' => $this['Seminar_id']
         ));
