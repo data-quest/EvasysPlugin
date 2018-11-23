@@ -1,6 +1,7 @@
 <?php
 
-class EvasysGlobalProfile extends SimpleORMap {
+class EvasysGlobalProfile extends SimpleORMap
+{
 
     static protected $singleton = null;
 

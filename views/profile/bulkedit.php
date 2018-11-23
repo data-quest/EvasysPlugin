@@ -153,39 +153,45 @@
             </td>
         </tr>
 
+        <? foreach (EvasysAdditionalField::findBySQL("1=1 ORDER BY position ASC, name ASC") as $field) : ?>
+            <tr>
+                <td>
+                    <label>
+                        <input type="checkbox" name="change[]" value="<?= htmlReady($field->getId()) ?>" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                        <?= htmlReady($field['name']) ?>
+                    </label>
+                </td>
+                <td>
+                    <? if ($field['type'] === "TEXTAREA") : ?>
+                        <textarea
+                               name="<?= htmlReady($field->getId()) ?>"
+                               onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');"><?= htmlReady($values[$field->getId()]) ?></textarea>
+                    <? else : ?>
+                        <input
+                                name="<?= htmlReady($field->getId()) ?>"
+                                onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');"
+                                value="<?= htmlReady($values[$field->getId()]) ?>">
+                    <? endif ?>
+                </td>
+            </tr>
+        <? endforeach ?>
+
+        <? if ($values['by_dozent'] == 1) : ?>
         <tr>
             <td>
                 <label>
-                    <input type="checkbox" name="change[]" value="language" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= _("Sprache") ?>
+                    <input type="checkbox" name="change[]" value="by_dozent" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                    <?= ucfirst(EvasysMatching::wording("freiwillige Evaluation")) ?>
                 </label>
             </td>
             <td>
-                <? if (!trim(Config::get()->EVASYS_LANGUAGE_OPTIONS)) : ?>
-                    <textarea name="language"
-                              onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');"
-                              placeholder="<?= $values['language'] === "EVASYS_UNEINDEUTIGER_WERT" ? _("Unterschiedliche Werte") : "" ?>"><?
-                         if ($values['language'] !== "EVASYS_UNEINDEUTIGER_WERT") {
-                             echo htmlReady($values['language']);
-                         }
-                    ?></textarea>
-                <? else : ?>
-                    <select name="language"
-                            onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
-                        <option value="">
-                            <? if ($values['language'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
-                                <?= _("Unterschiedliche Werte") ?>
-                            <? endif ?>
-                        </option>
-                        <? foreach (explode("\n", Config::get()->EVASYS_LANGUAGE_OPTIONS) as $language) : ?>
-                            <option value="<?= htmlReady($language) ?>"<?= $values['language'] == $language ? " selected" : "" ?>>
-                                <?= htmlReady($language) ?>
-                            </option>
-                        <? endforeach ?>
-                    </select>
-                <? endif ?>
+                <input type="checkbox"
+                       name="by_dozent"
+                       value="1"
+                       onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
             </td>
         </tr>
+        <? endif ?>
 
         </tbody>
 

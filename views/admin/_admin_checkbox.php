@@ -7,6 +7,10 @@
         <input type="hidden" name="course[]" value="<?= htmlReady($course_id) ?>">
     <? endif ?>
 <? else : ?>
+    <? if ($profile && $profile['applied'] && $profile['by_dozent']) : ?>
+        <?= Icon::create($plugin->getPluginURL()."/assets/f-circle_grey.svg")->asImg(20, array('title' => sprintf(_("Dies ist eine %s"), EvasysMatching::wording("freiwillige Evaluation")))) ?>
+    <? endif ?>
+
     <? if ($profile && $profile['applied'] && !$profile->hasDatesInEvalTimespan()) : ?>
         <?= Icon::create("exclaim-circle", "status-red")->asImg(20, array('title' => _("Es gibt keinen Termin dieser Veranstaltung im gewünschten Evaluationszeitraum"))) ?>
     <? endif ?>

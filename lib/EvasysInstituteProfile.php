@@ -1,6 +1,7 @@
 <?php
 
-class EvasysInstituteProfile extends SimpleORMap {
+class EvasysInstituteProfile extends SimpleORMap
+{
 
     protected static function configure($config = array())
     {

@@ -79,22 +79,17 @@
                   class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
         <? endif ?>
 
-        <label>
-            <?= _("Adresse für den Versand der Fragebögen") ?>
-            <textarea name="data[address]"><?= htmlReady($profile['address']) ?></textarea>
-        </label>
-        <? if ($this->controller->profile_type === "institute") : ?>
-            <? $default_value = $profile->getParentsDefaultValue("address") ?>
-            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
-                  class="default_value">(<?= $default_value ? nl2br(htmlReady($default_value)) : _("Kein Standardwert") ?>)</span>
-        <? endif ?>
-
         <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
         <label>
             <?= _("Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>
             <input type="text" name="data[results_email]" value="<?= htmlReady($profile['results_email']) ?>">
         </label>
         <? endif ?>
+
+        <label>
+            <?= _("Informationen für Lehrende zu den Evaluationsdaten") ?>
+            <textarea name="data[teacher_info]"><?= htmlReady($profile['teacher_info']) ?></textarea>
+        </label>
 
     </fieldset>
 

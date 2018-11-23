@@ -60,6 +60,7 @@ class AddCourseProfiles extends Migration
                 `antrag_end` int(11) DEFAULT NULL,
                 `antrag_info` text,
                 `language` text DEFAULT NULL,
+                `teacher_info` text DEFAULT NULL,
                 `user_id` varchar(32) DEFAULT NULL,
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
@@ -83,6 +84,7 @@ class AddCourseProfiles extends Migration
                 `antrag_end` int(11) DEFAULT NULL,
                 `antrag_info` text COLLATE utf8mb4_unicode_ci,
                 `language` text DEFAULT NULL,
+                `teacher_info` text DEFAULT NULL,
                 `user_id` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
                 `chdate` int(11) NOT NULL,
                 `mkdate` int(11) NOT NULL,
@@ -90,6 +92,18 @@ class AddCourseProfiles extends Migration
                 KEY `form_id` (`form_id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
+
+        /*
+        ALTER TABLE `evasys_global_profiles`
+        ADD COLUMN `teacher_info` text DEFAULT NULL AFTER `antrag_info`;
+        ALTER TABLE `evasys_institute_profiles`
+        ADD COLUMN `teacher_info` text DEFAULT NULL AFTER `antrag_info`;
+        ALTER TABLE `evasys_course_profiles`
+        DROP COLUMN `address`,
+        DROP COLUMN `language`,
+        DROP COLUMN `number_of_sheets`,
+        DROP COLUMN `hinweis`;
+        */
 
         DBManager::get()->exec("
             CREATE TABLE `evasys_profiles_semtype_forms` (
@@ -120,6 +134,30 @@ class AddCourseProfiles extends Migration
                 KEY `item_id` (`item_id`),
                 KEY `item_type` (`item_type`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        ");
+
+        DBManager::get()->exec("
+            CREATE TABLE `evasys_additional_fields` (
+                `field_id` varchar(32) NOT NULL DEFAULT '',
+                `name` varchar(128) DEFAULT NULL,
+                `paper` tinyint(1) NOT NULL DEFAULT '0',
+                `type` enum('TEXT','TEXTAREA') NOT NULL DEFAULT 'TEXT',
+                `position` int(11) DEFAULT NULL,
+                `chdate` int(11) DEFAULT NULL,
+                `mkdate` int(11) DEFAULT NULL,
+                PRIMARY KEY (`field_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+        DBManager::get()->exec("
+            CREATE TABLE `evasys_additional_fields_values` (
+                `field_id` varchar(32) NOT NULL DEFAULT '',
+                `profile_id` varchar(32) NOT NULL,
+                `profile_type` enum('GLOBAL','INSTITUTE','COURSE') NOT NULL DEFAULT 'COURSE',
+                `value` text,
+                `chdate` int(11) DEFAULT NULL,
+                `mkdate` int(11) DEFAULT NULL,
+                PRIMARY KEY (`field_id`,`profile_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
 
         Config::get()->create("EVASYS_ENABLE_PROFILES", array(
@@ -167,13 +205,6 @@ class AddCourseProfiles extends Migration
             SET rolename = 'Evasys-Dozent-Admin',
             system = 'n'
         ");
-        Config::get()->create("EVASYS_LANGUAGE_OPTIONS", array(
-            'value' => "",
-            'type' => "string",
-            'range' => "global",
-            'section' => "EVASYS_PLUGIN",
-            'description' => "Name the languages (Deutsch English), which are selectable for paper-evaluations. Separate them with newlines. Leave empty for free text."
-        ));
         Config::get()->create("EVASYS_TRANSFER_PERMISSION", array(
             'value' => "root",
             'type' => "string",

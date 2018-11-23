@@ -498,7 +498,7 @@ class EvasysCourseProfile extends SimpleORMap {
         }
     }
 
-    protected function getPresetAttribute($attribute)
+    public function getPresetAttribute($attribute)
     {
         $institut_id = $this->course['institut_id'];
         $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);

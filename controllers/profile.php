@@ -50,16 +50,6 @@ class ProfileController extends PluginController {
             } else {
                 $this->profile['mode'] = null;
             }
-            if ($data['address']) {
-                $this->profile['address'] = $data['address'];
-                if ($this->profile['address'] == $this->profile->getPresetAddress()) {
-                    $this->profile['address'] = null;
-                }
-            } else {
-                $this->profile['address'] = null;
-            }
-            $this->profile['number_of_sheets'] = $data['number_of_sheets'] ?: null;
-            $this->profile['language'] = $data['language'] ?: null;
 
             $this->profile['user_id'] = $GLOBALS['user']->id;
 
@@ -68,6 +58,13 @@ class ProfileController extends PluginController {
             }
 
             $this->profile->store();
+
+            foreach (Request::getArray("field") as $field_id => $value) {
+                $field = new EvasysAdditionalField($field_id);
+                if (!$field->isNew()) {
+                    $field->valueFor("course", $this->profile->getId(), $value);
+                }
+            }
 
             PageLayout::postSuccess(_("Daten wurden gespeichert."));
             $this->response->add_header("X-Dialog-Execute", json_encode(array(
@@ -91,6 +88,7 @@ class ProfileController extends PluginController {
         $this->profiles = EvasysCourseProfile::findManyBySemester($this->course_ids);
 
         if (Request::isPost() && Request::submitted("submit")) {
+            $fields = EvasysAdditionalField::findBySQL("1=1 ORDER BY position ASC, name ASC");
             foreach ($this->profiles as $profile) {
                 if (!$profile->isEditable()) {
                     continue;
@@ -145,14 +143,15 @@ class ProfileController extends PluginController {
                             : null;
                     }
                 }
-                if (in_array("language", Request::getArray("change"))) {
-                    if (Request::option("language") !== "") {
-                        $profile['language'] = Request::get("language");
-                    }
-                }
                 $profile['user_id'] = $GLOBALS['user']->id;
 
                 $profile->store();
+
+                foreach ($fields as $field) {
+                    if (in_array($field->getId(), Request::getArray("change"))) {
+                        $field->valueFor("course", $profile->getId(), Request::get($field->getId()));
+                    }
+                }
             }
             PageLayout::postSuccess(_("Evaluationsdaten wurden gespeichert"));
             if (Request::get("individual")) {
@@ -215,11 +214,21 @@ class ProfileController extends PluginController {
                 $this->values['mode'] = "EVASYS_UNEINDEUTIGER_WERT";
             }
 
-            $language = $profile['language'];
-            if ($this->values['language'] === null) {
-                $this->values['language'] = $language;
-            } elseif ($this->values['language'] !== $language) {
-                $this->values['language'] = "EVASYS_UNEINDEUTIGER_WERT";
+            foreach (EvasysAdditionalField::findBySQL("1=1 ORDER BY position ASC, name ASC") as $field) {
+                $value = $field->valueFor("course", $profile->getId());
+                if ($this->values[$field->getId()] === null) {
+                    $this->values[$field->getId()] = $value;
+                } elseif ($this->values[$field->getId()] !== $value) {
+                    $this->values[$field->getId()] = "EVASYS_UNEINDEUTIGER_WERT";
+                }
+            }
+
+
+            $by_dozent = $profile['by_dozent'];
+            if ($this->values['by_dozent'] === null) {
+                $this->values['by_dozent'] = $by_dozent;
+            } elseif ($this->values['by_dozent'] !== $by_dozent) {
+                $this->values['by_dozent'] = "EVASYS_UNEINDEUTIGER_WERT";
             }
 
         }

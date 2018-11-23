@@ -284,37 +284,31 @@
                     </label>
 
                     <div class="evasys_paper" style="<?= $profile->getFinalMode() !== "paper" ? "display: none;" : "" ?>">
-                        <label>
-                            <?= _("Dienstliche Anschrift für Versand der Papierfragebögen") ?>
-                            <textarea name="data[address]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($profile['address']) ?></textarea>
-                        </label>
-
-                        <label>
-                            <?= _("Sprache") ?>
-                            <? if (!trim(Config::get()->EVASYS_LANGUAGE_OPTIONS)) : ?>
-                                <textarea name="data[language]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($profile['language']) ?></textarea>
-                            <? else : ?>
-                                <select name="data[language]"<?= !$editable ? " readonly" : "" ?>>
-                                    <? foreach (explode("\n", Config::get()->EVASYS_LANGUAGE_OPTIONS) as $language) : ?>
-                                    <option value="<?= htmlReady($language) ?>"<?= $profile['language'] === $language  ? " selected" : "" ?>>
-                                        <?= htmlReady($language) ?>
-                                    </option>
-                                    <? endforeach ?>
-                                </select>
-                            <? endif ?>
-                        </label>
-
-                        <label>
-                            <?= _("Anzahl gedruckter Fragebögen") ?>
-                            <input type="text" name="data[number_of_sheets]" value="<?= htmlReady($profile['number_of_sheets']) ?>" <?= !$editable ? " readonly" : "" ?>>
-                        </label>
-
-                        <label>
-                            <?= _("Sonstige Hinweise") ?>
-                            <textarea name="data[hinweis]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($profile['hinweis']) ?></textarea>
-                        </label>
+                        <? foreach (EvasysAdditionalField::findBySQL("`paper` = '1' ORDER BY position ASC, name ASC") as $field) : ?>
+                            <label>
+                                <? $value = $field->valueFor("course", $profile->getId()) ?>
+                                <?= htmlReady($field['name']) ?>
+                                <? if ($field['type'] === "TEXT") : ?>
+                                    <input type="text" name="field[<?= $field->getId() ?>]" value="<?= htmlReady($value) ?>"<?= !$editable ? " readonly" : "" ?>>
+                                <? else : ?>
+                                    <textarea name="field[<?= $field->getId() ?>]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($value) ?></textarea>
+                                <? endif ?>
+                            </label>
+                        <? endforeach ?>
                     </div>
                 <? endif ?>
+
+                <? foreach (EvasysAdditionalField::findBySQL("`paper` = '0' ORDER BY position ASC, name ASC") as $field) : ?>
+                    <label>
+                        <? $value = $field->valueFor("course", $profile->getId()) ?>
+                        <?= htmlReady($field['name']) ?>
+                        <? if ($field['type'] === "TEXT") : ?>
+                            <input type="text" name="field[<?= $field->getId() ?>]" value="<?= htmlReady($value) ?>"<?= !$editable ? " readonly" : "" ?>>
+                        <? else : ?>
+                            <textarea name="field[<?= $field->getId() ?>]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($value) ?></textarea>
+                        <? endif ?>
+                    </label>
+                <? endforeach ?>
             </div>
 
         </fieldset>
@@ -357,6 +351,13 @@
 
                 <?= \Studip\Button::create(_("Speichern")) ?>
             </div>
+        <? else : ?>
+            <? $info = $profile->getPresetAttribute("teacher_info") ?>
+            <? if (trim($info)) : ?>
+                <fieldset style="padding-top: 10px;">
+                    <?= formatReady($info) ?>
+                </fieldset>
+            <? endif ?>
         <? endif ?>
     </form>
 <? endif ?>

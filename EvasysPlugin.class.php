@@ -15,6 +15,7 @@ require_once __DIR__."/lib/EvasysInstituteProfile.php";
 require_once __DIR__."/lib/EvasysGlobalProfile.php";
 require_once __DIR__."/lib/EvasysProfileSemtypeForm.php";
 require_once __DIR__."/lib/EvasysMatching.php";
+require_once __DIR__."/lib/EvasysAdditionalField.php";
 
 if (!interface_exists("AdminCourseContents")) {
     interface AdminCourseContents
@@ -45,6 +46,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 Navigation::addItem("/admin/evasys/globalprofile", clone $nav);
                 $nav = new Navigation(sprintf(_("Standardwerte der %s"), EvasysMatching::wording("Einrichtungen")), PluginEngine::getURL($this, array(), "instituteprofile"));
                 Navigation::addItem("/admin/evasys/instituteprofile", clone $nav);
+                $nav = new Navigation(_("Freie Felder"), PluginEngine::getURL($this, array(), "config/additionalfields"));
+                Navigation::addItem("/admin/evasys/additionalfields", clone $nav);
                 $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
                 Navigation::addItem("/admin/evasys/forms", clone $nav);
 
@@ -180,22 +183,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function addTransferredFilter($event, $filter)
     {
-        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
-            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
-                'join' => "INNER JOIN",
-                'on' => "
+            if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                    'join' => "INNER JOIN",
+                    'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
-                    AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
-            );
+                );
+            } else {
+                $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                    'join' => "INNER JOIN",
+                    'on' => "
+                    seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                        AND evasys_course_profiles.semester_id = :evasys_semester_id
+                "
+                );
+                $filter->settings['parameter']['evasys_semester_id'] = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
+            }
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred") {
                 $filter->settings['query']['where']['evasys_transferred'] = "evasys_course_profiles.transferred = '1' ";
             } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred") {
                 $filter->settings['query']['where']['evasys_transferred'] = "(evasys_course_profiles.applied = '1' AND evasys_course_profiles.transferred = '0')";
             }
-            $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
-
         }
     }
 
@@ -424,13 +434,17 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     }
 
     public function adminAvailableContents() {
-        return array(
+        $array = array(
             'form' => _("Fragebogen"),
             'mode' => _("Evaluationsart"),
             'timespan' => _("Eval-Zeitraum"),
             'applied' => _("Evaluation beantragt"),
-            'lehrende_emails' => 'Eval: Beantragte Lehrende (Emails)'
+            'lehrende_emails' => _('Eval: Beantragte Lehrende (Emails)')
         );
+        if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES) {
+            $array['split'] = _("Teilevaluation");
+        }
+        return $array;
     }
 
     public function adminAreaGetCourseContent($course, $index)
@@ -478,6 +492,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     }
                 }
                 return implode(";", $emails);
+            case "split":
+                return $profile && $profile['split'] ? 1 : 0;
         }
     }
 
