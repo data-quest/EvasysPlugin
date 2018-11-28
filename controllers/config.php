@@ -28,6 +28,7 @@ class ConfigController extends PluginController
         $this->field = new EvasysAdditionalField($field_id);
         if (Request::isPost()) {
             $this->field->setData(Request::getArray("data"));
+            $this->field['name'] = Request::i18n("name");
             $this->field->store();
             PageLayout::postSuccess(_("Angaben des Feldes wurden gespeichert."));
             $this->redirect("config/additionalfields");

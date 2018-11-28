@@ -226,10 +226,10 @@ class AddCourseProfiles extends Migration
         "); //remove possible double entries, which could possibly have occured in the past
         DBManager::get()->exec("ALTER TABLE evasys_seminar ADD PRIMARY KEY (`Seminar_id`), ADD KEY `evasys_id` (`evasys_id`)");
 
-        StudipLog::registerActionPlugin('EVASYS_EVAL_APPLIED', 'Evasys: Lehrevaluation wurde beantragt', '%user beantragt neue Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
-        StudipLog::registerActionPlugin('EVASYS_EVAL_UPDATE', 'Evasys: Lehrevaluationsdaten geändert', '%user ändert Lehrevaluationsdaten %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
-        StudipLog::registerActionPlugin('EVASYS_EVAL_DELETE', 'Evasys: Lehrevaluation gelöscht', '%user löscht Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
-        StudipLog::registerActionPlugin('EVASYS_EVAL_TRANSFER', 'Evasys: Lehrevaluation nach Evasys übertragen', '%user überträgt Lehrevaluation %coaffected(%info) für %user(%affected) nach Evasys.', 'EvasysPlugin');
+        StudipLog::registerActionPlugin('EVASYS_EVAL_APPLIED', 'EvaSys: Lehrevaluation wurde beantragt', '%user beantragt neue Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
+        StudipLog::registerActionPlugin('EVASYS_EVAL_UPDATE', 'EvaSys: Lehrevaluationsdaten geändert', '%user ändert Lehrevaluationsdaten %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
+        StudipLog::registerActionPlugin('EVASYS_EVAL_DELETE', 'EvaSys: Lehrevaluation gelöscht', '%user löscht Lehrevaluation %coaffected(%info) für %user(%affected).', 'EvasysPlugin');
+        StudipLog::registerActionPlugin('EVASYS_EVAL_TRANSFER', 'EvaSys: Lehrevaluation nach Evasys übertragen', '%user überträgt Lehrevaluation %coaffected(%info) für %user(%affected) nach Evasys.', 'EvasysPlugin');
         SimpleORMap::expireTableScheme();
     }
     

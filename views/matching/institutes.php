@@ -9,7 +9,7 @@
         <thead>
             <tr>
                 <th><?= _("Name") ?></th>
-                <th><?= _("Name in Evasys") ?></th>
+                <th><?= _("Name in EvaSys") ?></th>
             </tr>
         </thead>
         <tbody>

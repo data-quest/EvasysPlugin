@@ -123,7 +123,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
 
             $tf = new Flexi_TemplateFactory(__DIR__ . "/views");
             $widget = $tf->open("widget/widget");
-            $widget->title = _("Lehrevaluationen");
+            $widget->title = _("Lehrveranstaltungsevaluationen");
             $widget->courses = $courses;
             //$widget->surveys = $surveys;
             $widget->plugin = $this;

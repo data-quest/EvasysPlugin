@@ -121,7 +121,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             ));
             $widget->addElement(new SelectElement(
                 'transferred',
-                _("Beantragt und nach Evasys übetragen"),
+                _("Beantragt und nach EvaSys übetragen"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
@@ -353,7 +353,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (Navigation::hasItem("/course") && Navigation::getItem("/course")->isActive()) {
             return Context::get()->getHeaderLine().": "._("Evaluation");
         } else {
-            return _("Evasys");
+            return _("EvaSys");
         }
     }
 

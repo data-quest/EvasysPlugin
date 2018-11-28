@@ -15,6 +15,7 @@ class MatchingController extends PluginController
     public function institutes_action()
     {
         Navigation::activateItem("/admin/evasys/matchinginstitutes");
+        PageLayout::setTitle(_("Matching Einrichtungen"));
         $this->action = "institutes";
 
         if (Request::isPost()) {
@@ -53,6 +54,7 @@ class MatchingController extends PluginController
     public function seminartypes_action()
     {
         Navigation::activateItem("/admin/evasys/matchingtypes");
+        PageLayout::setTitle(_("Matching Veranstaltungstypen"));
         $this->action = "seminartypes";
 
         if (Request::isPost()) {
@@ -93,6 +95,7 @@ class MatchingController extends PluginController
     public function wording_action()
     {
         Navigation::activateItem("/admin/evasys/wording");
+        PageLayout::setTitle(_("Begrifflichkeiten"));
         $this->action = "wording";
         $this->i18n = true;
 

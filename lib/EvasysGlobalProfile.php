@@ -26,7 +26,7 @@ class EvasysGlobalProfile extends SimpleORMap
         }
         $semester = Semester::findCurrent(); //findNext ?
         if (!$semester) {
-            trigger_error("Kein aktuelles Semester, kann kein globales EvasysProfil erstellen.", E_USER_WARNING);
+            trigger_error("Kein aktuelles Semester, kann kein globales EvaSysProfil erstellen.", E_USER_WARNING);
             return false;
         }
         $profile = self::find($semester->getId());

@@ -7,7 +7,7 @@
 
         <label>
             <?= _("Name") ?>
-            <input type="text" name="data[name]" value="<?= htmlReady($field['name']) ?>">
+            <?= I18N::input("name", $field['name']) ?>
         </label>
 
         <label>

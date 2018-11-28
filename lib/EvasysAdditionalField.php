@@ -6,6 +6,7 @@ class EvasysAdditionalField extends SimpleORMap
     protected static function configure($config = array())
     {
         $config['db_table'] = 'evasys_additional_fields';
+        $config['i18n_fields']['name'] = true;
         parent::configure($config);
     }
 
