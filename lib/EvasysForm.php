@@ -13,13 +13,16 @@ class EvasysForm extends SimpleORMap
 
     static public function findAll()
     {
-        self::GetAllForms();
+        $message = self::GetAllForms();
+        if ($message !== true) {
+            PageLayout::postError($message);
+        }
         return self::findBySQL("1=1 ORDER BY name ASC");
     }
 
     static public function GetAllForms()
     {
-        if ((time() - $_SESSION['EVASYS_ALL_FORMS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE) {
+        if (Config::get()->EVASYS_CACHE && ((time() - $_SESSION['EVASYS_ALL_FORMS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE)) {
             return true;
         }
         $soap = EvasysSoap::get();
@@ -39,11 +42,11 @@ class EvasysForm extends SimpleORMap
             )
         ));
         if (is_a($forms, "SoapFault")) {
-            if ($forms->getMessage() == "Not Found") {
+            if ($forms->getMessage() === "Not Found") {
                 return "SoapPort der WSDL-Datei antwortet nicht.";
             } else {
-                var_dump($forms);
-                var_dump($soap->__getLastResponse());die();
+                //var_dump($forms);
+                //var_dump($soap->__getLastResponse());die();
                 return "SOAP-error: " . $forms->getMessage() . ($forms->detail ? " (" . $forms->detail . ")" : "");
             }
         } else {

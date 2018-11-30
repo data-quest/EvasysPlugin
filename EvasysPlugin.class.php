@@ -88,11 +88,11 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $nav = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
             $nav->setImage(Icon::create("checkbox-checked", "clickable"));
             $nav->setDescription(_("Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."));
-            if (true) {
-                Navigation::addItem("/course/admin/evasys", $nav);
-            } else {
-                Navigation::insertItem("/course/admin/evasys", $nav, "admission");
-            }
+            Navigation::addItem("/course/admin/evasys", $nav);
+        }
+        if (Config::get()->EVASYS_ENABLE_PASSIVE_ACCOUNT && $GLOBALS['perm']->get_perm() === "dozent") {
+            $tab = new Navigation(_("EvaSys"), PluginEngine::getURL($this, array(), "passiveaccount/index"));
+            Navigation::addItem("/profile/evasyspassiveaccount", $tab);
         }
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addRecentEvalCoursesFilter", "AdminCourseFilterWillQuery");
