@@ -10,7 +10,7 @@ class PassiveaccountController extends PluginController
 
         $soap = EvasysSoap::get();
 
-        if (!$GLOBALS['user']->cfg->ADMIN_COURSES_SEARCHTEXT) {
+        if (!$GLOBALS['user']->cfg->EVASYS_INTERNAL_USER_ID) {
 
             $user_info = $soap->__soapCall("GetUserIdsByParams", array(
                 'Params' => array(
@@ -29,7 +29,7 @@ class PassiveaccountController extends PluginController
             'IdType' => "INTERNAL"
         ));
         if (is_a($this->link, "SoapFault")) {
-            if ($GLOBALS['user']->cfg->ADMIN_COURSES_SEARCHTEXT) {
+            if ($GLOBALS['user']->cfg->EVASYS_INTERNAL_USER_ID) {
                 $GLOBALS['user']->cfg->delete("EVASYS_INTERNAL_USER_ID");
                 $this->redirect("passiveaccount/index");
             }

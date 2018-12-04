@@ -17,9 +17,9 @@ class EvasysInstituteProfile extends SimpleORMap
         parent::configure($config);
     }
 
-    static public function findByInstitute($institut_id)
+    static public function findByInstitute($institut_id, $semester_id = null)
     {
-        $semester = Semester::findCurrent(); //findNext ?
+        $semester = $semester_id ? Semester::find($semester_id) : Semester::findCurrent(); //findNext ?
         if (!$semester) {
             return null;
         }

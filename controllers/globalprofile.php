@@ -37,9 +37,16 @@ class GlobalprofileController extends PluginController
     {
         PageLayout::setTitle($this->plugin->getDisplayName());
         if ($this->profile_type === "global") {
-            $this->profile = EvasysGlobalProfile::findCurrent();
+            if (Request::option("semester_id")) {
+                $this->profile = new EvasysGlobalProfile(Request::option("semester_id"));
+            } else {
+                $this->profile = EvasysGlobalProfile::findCurrent();
+            }
         } elseif($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT && $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT !== "all") {
-            $this->profile = EvasysInstituteProfile::findByInstitute($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT);
+            $this->profile = EvasysInstituteProfile::findByInstitute(
+                $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT,
+                Request::option("semester_id")
+            );
         }
         $this->con = $this->profile_type."profile";
 
@@ -78,13 +85,20 @@ class GlobalprofileController extends PluginController
     public function edit_action()
     {
         if ($this->profile_type === "global") {
-            $this->profile = EvasysGlobalProfile::findCurrent();
+            if (Request::option("semester_id")) {
+                $this->profile = new EvasysGlobalProfile(Request::option("semester_id"));
+            } else {
+                $this->profile = EvasysGlobalProfile::findCurrent();
+            }
         } elseif($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT && $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT !== "all") {
-            $this->profile = EvasysInstituteProfile::findByInstitute($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT);
+            $this->profile = EvasysInstituteProfile::findByInstitute(
+                $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT,
+                Request::option("semester_id")
+            );
             if (!$this->profile) {
                 $this->profile = new EvasysInstituteProfile();
                 $this->profile['institut_id'] = $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT;
-                $this->profile['semester_id'] = Semester::findCurrent()->id;
+                $this->profile['semester_id'] = Request::option("semester_id", Semester::findCurrent()->id);
             }
         }
         if (Request::isPost()) {
@@ -104,8 +118,8 @@ class GlobalprofileController extends PluginController
 
             //now edit all the form-relations for the global profile:
             foreach (Request::getArray("forms_by_type") as $sem_type => $form_id) {
-                $entry = EvasysProfileSemtypeForm::findOneBySQL("profile_id = :semester_id AND profile_type = :profile_type AND sem_type = :sem_type AND standard = '1' ", array(
-                    'semester_id' => $this->profile->getId(),
+                $entry = EvasysProfileSemtypeForm::findOneBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND standard = '1' ", array(
+                    'profile_id' => $this->profile->getId(),
                     'sem_type' => $sem_type,
                     'profile_type' => $this->profile_type
                 ));

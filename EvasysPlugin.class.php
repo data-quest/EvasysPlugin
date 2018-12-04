@@ -214,7 +214,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = array(
-                'join' => "INNER JOIN",
+                'join' => "LEFT JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
@@ -246,7 +246,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     )
                 "
             );
-            $filter->settings['query']['where']['date_not_in_timespan'] = "termine.termin_id IS NULL AND evasys_course_profiles.applied = '1'";
+            $filter->settings['query']['where']['date_not_in_timespan'] = "termine.termin_id IS NULL";
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
         }
     }

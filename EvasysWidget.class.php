@@ -75,7 +75,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
                         'Params' => array('Email' => $user['email'])
                     ));
                     if (is_a($evasys_user_object, "SoapFault")) {
-                        PageLayout::postError("SOAP-error: " . $evasys_user_object->detail);
+                        PageLayout::postError("SOAP-error: " . $evasys_user_object->getMessage());
                         return;
                     } else {
                         $ids = array_values((array)$evasys_user_object->Strings);
@@ -93,7 +93,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
                     ))
                 );
                 if (is_a($evasys_user_object, "SoapFault")) {
-                    PageLayout::postError("SOAP-error: " . $evasys_user_object->detail);
+                    PageLayout::postError("SOAP-error: " . $evasys_user_object->getMessage());
                     return;
                 }
                 foreach ($evasys_surveys_object->Strings as $json) {

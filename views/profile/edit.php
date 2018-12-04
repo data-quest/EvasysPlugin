@@ -1,6 +1,6 @@
 <? $editable = $profile->isEditable() ?>
 <? if (!$editable && !$profile['applied']) : ?>
-    <?= MessageBox::info(_("Diese Veranstaltung ist aktuell nicht für eine Lehrevaluation vorgesehen.")) ?>
+    <?= MessageBox::info(_("Diese Veranstaltung ist aktuell nicht für eine Lehrveranstaltungsevaluation vorgesehen. Rückfragen richten Sie bitte an Ihr zuständiges Studiendekanat.")) ?>
 <? else : ?>
 
 
@@ -132,14 +132,20 @@
                         <?= _("Anderen Termin auswählen") ?>
                         <?
                             $default_date = null;
+                            $last_date = null;
                             foreach ($profile->course->dates as $date) {
+                                $default_date = $last_date;
                                 if (($date['end_time'] > time()) && ($date['date'] < Semester::findCurrent()->ende)) {
-                                    $default_date = $date;
+                                    $last_date = $date;
                                 }
                                 if ($date['date'] >= Semester::findCurrent()->ende) {
                                     break;
                                 }
                             }
+                            if (!$default_date) {
+                                $default_date = $last_date;
+                            }
+                            //Es wurde der vorletzte Termin gesucht. Falls es nur einen Termin gibt, ist es eben der letzte Termin.
                         ?>
                         <? if ($default_date) : ?>
                             <div>

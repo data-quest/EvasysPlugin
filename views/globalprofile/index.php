@@ -4,6 +4,10 @@
       method="post"
       class="default evasys_presets">
 
+    <? if (Request::option("semester_id")) : ?>
+        <input type="hidden" value="<?= htmlReady(Request::option("semester_id")) ?>" name="semester_id">
+    <? endif ?>
+
     <div style="text-align: center;">
         <?= \Studip\Button::create(_("Speichern")) ?>
     </div>
@@ -270,3 +274,18 @@ if ($this->controller->profile_type === "institute") {
     }
     Sidebar::Get()->addWidget($list, 'filter_institute');
 }
+
+$list = new SelectWidget(
+    _('Semester'),
+    PluginEngine::getURL($plugin, array(), $this->controller->profile_type."profile/index"),
+    'semester_id'
+);
+foreach (EvasysGlobalProfile::findBySQL("1=1 ORDER BY begin DESC ") as $profile) {
+    $list->addElement(new SelectElement(
+        $profile->getId(),
+        $profile->semester['name'],
+        Request::option("semester_id") ? ($profile->getId() === Request::option("semester_id")) : $profile->getId() === Semester::findCurrent()->id),
+        'select-'.$profile->getId()
+    );
+}
+//Sidebar::Get()->addWidget($list, 'set_semester_id');
