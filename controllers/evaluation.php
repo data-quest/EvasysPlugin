@@ -11,6 +11,7 @@ class EvaluationController extends PluginController
         Navigation::activateItem("/course/evasys");
         $this->profile = EvasysCourseProfile::findBySemester(Context::get()->id);
         PageLayout::addScript($this->plugin->getPluginURL()."/assets/qrcode.js");
+        PageLayout::setTitle(_("Lehrveranstaltungsevaluation mit EvaSys"));
     }
 
     public function show_action()

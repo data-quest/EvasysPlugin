@@ -180,7 +180,13 @@ class EvasysSeminar extends SimpleORMap
     {
         $db = DBManager::get();
         $seminar = new Seminar($this['Seminar_id']);
-        $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
+        $profile = EvasysCourseProfile::findBySemester(
+            $this['Seminar_id'],
+            ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
+                ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+                : Semester::findCurrent()->id)
+        );
+        //TODO: multiple $profiles ?
         if (Config::get()->EVASYS_ENABLE_PROFILES && !$profile['applied'] && !$profile['split']) {
             return $profile['transferred'] ? array("delete", array($this['Seminar_id'])) : null; //course should be deleted from evasys database
         }

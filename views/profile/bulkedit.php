@@ -1,13 +1,13 @@
 <form class="default bulkedit"
       action="<?= PluginEngine::getLink($plugin, Request::get("individual") ? array('individual' => Request::get("individual")) : array(), "profile/bulkedit") ?>"
       method="post">
-    <? foreach ($course_ids as $course_id) : ?>
-        <input type="hidden" name="c[<?= htmlReady($course_id) ?>]" value="1">
+    <? foreach ($ids as $seminar_and_semester_id) : ?>
+        <input type="hidden" name="c[<?= htmlReady($seminar_and_semester_id) ?>]" value="1">
     <? endforeach ?>
 
 
     <table class="default nohover">
-        <caption><?= sprintf(_("Bearbeiten von %s Veranstaltungen"), count($course_ids)) ?></caption>
+        <caption><?= sprintf(_("Bearbeiten von %s Veranstaltungen"), count($ids)) ?></caption>
         <thead>
             <tr>
                 <th width="50%"><?= _("Zu verändernde Eigenschaft auswählen") ?></th>

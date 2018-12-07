@@ -288,4 +288,15 @@ foreach (EvasysGlobalProfile::findBySQL("1=1 ORDER BY begin DESC ") as $profile)
         'select-'.$profile->getId()
     );
 }
-//Sidebar::Get()->addWidget($list, 'set_semester_id');
+Sidebar::Get()->addWidget($list, 'set_semester_id');
+
+if ($this->controller->profile_type === "global" && $addSemester) {
+    $actions = new ActionsWidget();
+    $actions->addLink(
+        _("Neues Semester anlegen"),
+        PluginEngine::getURL($plugin, array(), "globalprofile/add"),
+        Icon::create("add", "clickable"),
+        array('data-dialog' => 1)
+    );
+    Sidebar::Get()->addWidget($actions);
+}

@@ -8,7 +8,31 @@ class ProfileController extends PluginController {
             Navigation::activateItem("/course/admin/evasys");
         }
         PageLayout::setTitle(_("Evaluationsdaten bearbeiten"));
-        $this->profile = EvasysCourseProfile::findBySemester($course_id);
+        if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
+            $this->profile = EvasysCourseProfile::findBySemester(
+                $course_id,
+                $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+            );
+        } elseif(Request::option("semester_id")) {
+            $this->profile = EvasysCourseProfile::findBySemester(
+                $course_id,
+                Request::option("semester_id")
+            );
+        } else {
+            $course = Course::find($course_id);
+            $current_semester = Semester::findCurrent();
+            if (($course['start_time'] <= $current_semester['beginn'])
+                    && (($course['duration_time'] == -1) || ($course['start_time'] + $course['duration_time'] >= $current_semester['beginn']))) {
+                $this->profile = EvasysCourseProfile::findBySemester($course_id);
+            } else {
+                $this->profile = EvasysCourseProfile::findBySemester(
+                    $course_id,
+                    $course->start_semester->getId()
+                );
+            }
+        }
+
+
         if (!$this->profile) {
             $this->profile = new EvasysCourseProfile();
             $this->profile['seminar_id'] = $course_id;
@@ -80,12 +104,19 @@ class ProfileController extends PluginController {
     {
         Navigation::activateItem("/browse/my_courses/list");
         PageLayout::setTitle(_("Evaluationsdaten"));
-        $this->course_ids = array_keys(Request::getArray("c"));
-        if (!count($this->course_ids)) {
+        $this->ids = array_keys(Request::getArray("c"));
+        if (!count($this->ids)) {
             PageLayout::postError(_("Es wurden keine Veranstaltungen zum Bearbeiten ausgewählt."));
             $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
         }
-        $this->profiles = EvasysCourseProfile::findManyBySemester($this->course_ids);
+        $this->profiles = array();
+        foreach ($this->ids as $id) {
+            $id = explode("_", $id);
+            $this->profiles[] = EvasysCourseProfile::findBySemester(
+                $id[0],
+                $id[1]
+            );
+        }
 
         if (Request::isPost() && Request::submitted("submit")) {
             $fields = EvasysAdditionalField::findBySQL("1=1 ORDER BY position ASC, name ASC");

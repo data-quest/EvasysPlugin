@@ -4,7 +4,7 @@
 <? else : ?>
 
 
-    <form action="<?= PluginEngine::getLink($plugin, array(), "profile/edit/".$profile['seminar_id']) ?>"
+    <form action="<?= PluginEngine::getLink($plugin, array('semester_id' => Request::option("semester_id")), "profile/edit/".$profile['seminar_id']) ?>"
           method="post"
           <?= Request::isDialog() ? "data-dialog" : "" ?>
           class="default">

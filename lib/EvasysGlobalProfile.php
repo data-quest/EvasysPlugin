@@ -32,22 +32,30 @@ class EvasysGlobalProfile extends SimpleORMap
         $profile = self::find($semester->getId());
         if (!$profile) {
             $last_semester = Semester::findByTimestamp($semester['beginn'] - 1);
-            $profile = new EvasysGlobalProfile();
-            if ($last_semester) {
-                $last_profile = self::find($last_semester->getId());
-                if ($last_profile) {
-                    $profile = new EvasysGlobalProfile();
-                    $data = $last_profile->toRawArray();
-                    unset($profile['begin']);
-                    unset($profile['end']);
-                    unset($profile['mkdate']);
-                    unset($profile['chdate']);
-                    $profile->setData($data);
-                }
-            }
-            $profile->setId($semester->getId());
-            $profile->store();
+            $last_profile = self::find($last_semester->getId());
+            $profile = self::copy($semester->getId(), $last_profile ?: null);
+        }
+        self::$singleton = $profile;
+        return $profile;
+    }
 
+    static public function copy($new_semester_id, $old_profile = null)
+    {
+        $profile = new EvasysGlobalProfile();
+
+        if ($old_profile) {
+            $data = $old_profile->toRawArray();
+            unset($data['begin']);
+            unset($data['end']);
+            unset($data['mkdate']);
+            unset($data['chdate']);
+            $profile->setData($data);
+        }
+
+        $profile->setId($new_semester_id);
+        $profile->store();
+
+        if ($old_profile) {
             //Taking over standard and available forms:
             $statement = DBManager::get()->prepare("
                 INSERT INTO evasys_profiles_semtype_forms (profile_form_id, profile_id, profile_type, sem_type, form_id, standard, chdate, mkdate)
@@ -57,16 +65,17 @@ class EvasysGlobalProfile extends SimpleORMap
                     AND profile_type = 'global'
             ");
             $statement->execute(array(
-                'new_semester' => $semester->getId(),
-                'old_semester' => $last_semester->getId()
+                'new_semester' => $new_semester_id,
+                'old_semester' => $old_profile['semester_id']
             ));
 
-            $institute_profiles = EvasysInstituteProfile::findBySQL("semester_id = ?", array($last_semester->getId()));
+            $institute_profiles = EvasysInstituteProfile::findBySQL("semester_id = ?", array(
+                $old_profile['semester_id']
+            ));
             foreach ($institute_profiles as $institute_profile) {
-                $institute_profile->copyToNewSemester($semester->getId());
+                $institute_profile->copyToNewSemester($new_semester_id);
             }
         }
-        self::$singleton = $profile;
         return $profile;
     }
 }

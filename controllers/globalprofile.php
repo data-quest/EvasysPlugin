@@ -42,9 +42,9 @@ class GlobalprofileController extends PluginController
             } else {
                 $this->profile = EvasysGlobalProfile::findCurrent();
             }
-        } elseif($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT && $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT !== "all") {
+        } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
             $this->profile = EvasysInstituteProfile::findByInstitute(
-                $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT,
+                $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE,
                 Request::option("semester_id")
             );
         }
@@ -78,6 +78,14 @@ class GlobalprofileController extends PluginController
             ));
             $this->available_forms_by_type = $statement->fetchAll(PDO::FETCH_COLUMN | PDO::FETCH_GROUP);
         }
+        $statement = DBManager::get()->prepare("
+            SELECT 1
+            FROM semester_data 
+                LEFT JOIN evasys_global_profiles ON (evasys_global_profiles.semester_id = semester_data.semester_id)
+            WHERE evasys_global_profiles.semester_id IS NULL
+        ");
+        $statement->execute();
+        $this->addSemester = $statement->fetch();
 
         $this->render_template("globalprofile/index", $this->layout);
     }
@@ -90,9 +98,9 @@ class GlobalprofileController extends PluginController
             } else {
                 $this->profile = EvasysGlobalProfile::findCurrent();
             }
-        } elseif($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT && $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT !== "all") {
+        } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
             $this->profile = EvasysInstituteProfile::findByInstitute(
-                $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT,
+                $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE,
                 Request::option("semester_id")
             );
             if (!$this->profile) {
@@ -183,6 +191,22 @@ class GlobalprofileController extends PluginController
         }
         $this->redirect($this->profile_type."profile/index");
     }
+
+    public function add_action()
+    {
+        if ($this->profile_type === "institute") {
+            throw new Exception("Not available.");
+        }
+        if (Request::isPost()) {
+            $old_profile = Request::option("copy_from") ? EvasysGlobalProfile::find(Request::option("copy_from")) : null;
+            EvasysGlobalProfile::copy(Request::option("semester_id"), $old_profile);
+            PageLayout::postSuccess(_("Neues Semester angelegt"));
+            $this->redirect(PluginEngine::getURL($this->plugin, array('semester_id' => Request::option("semester_id")), $this->profile_type."profile/index"));
+        }
+        $this->semesters = Semester::getAll();
+    }
+
+
 
 
 }

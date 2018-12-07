@@ -70,7 +70,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 ) {
             $this->addStylesheet("assets/evasys.less");
             if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin") {
-                if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)) {
+                if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")) {
                     PageLayout::addScript($this->getPluginURL() . "/assets/insert_button.js");
                 }
             }
@@ -275,9 +275,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
             $profile = EvasysCourseProfile::findBySemester($course_id);
             if ($profile['applied']
-                    && $profile['transferred']
-                    && ($profile['begin'] <= time())
-                    && ($profile['end'] > time())) {
+                && $profile['transferred']
+                && ($profile->getFinalBegin() <= time())
+                && ($profile->getFinalEnd() > time())) {
                 $activated = true;
             }
         } else {
@@ -359,14 +359,14 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getAdminActionURL()
     {
-        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)
+        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
             ? PluginEngine::getURL($this, array(), "admin/upload_courses")
             : PluginEngine::getURL($this, array(), "profile/bulkedit");
     }
 
     public function useMultimode()
     {
-        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)
+        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
             ? _("Übertragen")
             : _("Bearbeiten");
     }
@@ -375,8 +375,43 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $factory = new Flexi_TemplateFactory(__DIR__."/views");
         $template = $factory->open("admin/_admin_checkbox.php");
-        $profile = EvasysCourseProfile::findBySemester($course_id, Semester::findCurrent()->id);
-        $template->set_attribute("profile", $profile);
+        if (Request::option("semester_id")) {
+            $semester_id = Request::option("semester_id");
+        } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
+            $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
+        }
+        if ($semester_id) {
+            $profiles = array(EvasysCourseProfile::findBySemester(
+                $course_id,
+                $semester_id
+            ));
+        } else {
+            $profiles = EvasysCourseProfile::findBySQL("seminar_id = :course_id", array(
+                'course_id' => $course_id
+            ));
+            //sort
+            usort($profiles, function ($a, $b) {
+                return $a->semester->beginn > $a->semester->beginn ? -1 : 1;
+            });
+        }
+        $get_semesters = DBManager::get()->prepare("
+            SELECT semester_data.*
+            FROM semester_data
+            INNER JOIN seminare ON (semester_data.beginn >= seminare.start_time AND (
+                              seminare.duration_time = -1 
+                              OR (seminare.duration_time = 0 AND semester_data.beginn = seminare.start_time)
+                              OR (seminare.start_time + seminare.duration_time >= semester_data.beginn)
+                  ))
+            WHERE seminare.Seminar_id = :seminar_id
+            ORDER BY semester_data.beginn ASC
+        ");
+        $get_semesters->execute(array('seminar_id' => $course_id));
+        $semesters = array();
+        foreach ($get_semesters->fetchAll(PDO::FETCH_ASSOC) as $semester_data) {
+            $semesters[] = Semester::buildExisting($semester_data);
+        }
+        $template->set_attribute("semesters", $semesters);
+        $template->set_attribute("profiles", $profiles);
         $template->set_attribute("course_id", $course_id);
         $template->set_attribute("plugin", $this);
         return $template;

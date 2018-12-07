@@ -50,9 +50,6 @@ class EvasysCourseProfile extends SimpleORMap {
         $config['additional_fields']['final_mode'] = array(
             'get' => 'getFinalmode'
         );
-        $config['additional_fields']['final_address'] = array(
-            'get' => 'getFinalAddress'
-        );
         $config['serialized_fields']['teachers'] = "JSONArrayObject";
         $config['serialized_fields']['surveys'] = "JSONArrayObject";
 
@@ -65,7 +62,19 @@ class EvasysCourseProfile extends SimpleORMap {
     {
         $old_values = $this->content_db;
         $applied = !$old_values['applied'] && $this['applied'];
-        if ($applied && !EvasysPlugin::isAdmin($this['seminar_id']) && !EvasysPlugin::isRoot()) {
+        $is_dozent = DBManager::get()->prepare("
+            SELECT 1 
+            FROM seminar_user
+            WHERE seminar_user.Seminar_id = :seminar_id
+                AND user_id = :user_id
+                AND status = 'dozent'
+        ");
+        $is_dozent->execute(array(
+            'user_id' => $GLOBALS['user']->id,
+            'seminar_id' => $this['seminar_id']
+        ));
+        $is_dozent = (bool) $is_dozent->fetch(PDO::FETCH_COLUMN, 0);
+        if ($applied && $is_dozent) {
             //Nachricht an zentrale QM und an Mitdozenten:
             $statement = DBManager::get()->prepare("
                 SELECT roles_user.userid
@@ -87,7 +96,7 @@ class EvasysCourseProfile extends SimpleORMap {
             $messaging = new messaging();
             foreach ($user_ids as $user_id) {
                 if ($user_id !== $GLOBALS['user']->id) {
-                    $link = URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this->getId(), array('cid' => $this['seminar_id']));
+                    $link = URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], array('cid' => $this['seminar_id']));
                     $message = sprintf(
                             _("%s hat eine Lehrevaluation für die Veranstaltung %s beantragt. Sie können die Evaluationsdaten hier einsehen:"),
                             get_fullname($GLOBALS['user']->id),
@@ -136,83 +145,53 @@ class EvasysCourseProfile extends SimpleORMap {
                 'new' => $new_values
             ])
         );
-
         if ($this['by_dozent'] || $old_values['by_dozent']) {
-            //Nachricht an Dozenten:
+            //Nachricht an Dozenten, wenn ihre Evaluation verändert wird vom Admin:
             if (EvasysPlugin::isRoot()
                 || EvasysPlugin::isAdmin($this['seminar_id'])
                 || Config::get()->EVASYS_ENABLE_MESSAGE_FOR_ADMINS
-                //|| !$applied
             ) {
-                //Nur Dozenten
+                //Nur Dozenten einsammeln
                 $statement = DBManager::get()->prepare("
-                        SELECT username
-                        FROM auth_user_md5
-                            INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
-                        WHERE seminar_user.status = 'dozent'
-                            AND seminar_user.Seminar_id = :seminar_id
-                    ");
+                    SELECT username
+                    FROM auth_user_md5
+                        INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
+                    WHERE seminar_user.status = 'dozent'
+                        AND seminar_user.Seminar_id = :seminar_id
+                ");
                 $statement->execute(array(
                     'seminar_id' => $this['seminar_id']
                 ));
+                $dozenten = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
-            } else {
-                //Dozenten und Admins:
-                $statement = DBManager::get()->prepare("
-                        SELECT username
-                        FROM auth_user_md5
-                            INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
-                        WHERE seminar_user.status = 'dozent'
-                            AND seminar_user.Seminar_id = :seminar_id
-                        UNION SELECT username
-                        FROM auth_user_md5
-                            INNER JOIN roles_user ON (roles_user.userid = auth_user_md5.user_id)
-                            INNER JOIN roles ON (roles.roleid = roles_user.roleid)
-                        WHERE roles.rolename = 'Evasys-Admin'
-                            AND (roles_user.institut_id = '' OR roles_user.institut_id = :institut_id)
-                    ");
-                $statement->execute(array(
-                    'seminar_id' => $this['seminar_id'],
-                    'institut_id' => $this->course['institut_id']
-                ));
-            }
-            $dozenten = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-
-            foreach ($dozenten as $dozent_username) {
-                if ($dozent_username !== $GLOBALS['user']->username) {
-                    $messaging = new messaging();
-                    $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
-                    if ($applied) {
-                        $message = sprintf(
-                            _("%s hat gerade für die Veranstaltung %s eine Lehrevaluation beantragt. Die eingetragenen Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
-                            get_fullname($GLOBALS['user']->id),
-                            $this->course['name'],
-                            URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], array('cid' => $profile['seminar_id']), true)
-                        );
-                    } else {
+                foreach ($dozenten as $dozent_username) {
+                    if ($dozent_username !== $GLOBALS['user']->username) {
+                        $messaging = new messaging();
+                        $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                         $message = sprintf(
                             _("%s hat gerade die Lehrevaluationsdaten der Veranstaltung %s verändert. Die geänderten Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
                             get_fullname($GLOBALS['user']->id),
                             $this->course['name'],
                             URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], array('cid' => $profile['seminar_id']), true)
                         );
+                        $messaging->insert_message(
+                            $message,
+                            $dozent_username,
+                            "____%system%____",
+                            "",
+                            "",
+                            "",
+                            "",
+                            _("Bearbeitung der Evaluationsdaten"),
+                            true,
+                            "normal",
+                            array("Lehrevaluation")
+                        );
+                        URLHelper::setBaseURL($oldbase);
                     }
-                    $messaging->insert_message(
-                        $message,
-                        $dozent_username,
-                        "____%system%____",
-                        "",
-                        "",
-                        "",
-                        "",
-                        _("Bearbeitung der Evaluationsdaten"),
-                        true,
-                        "normal",
-                        array("Lehrevaluation")
-                    );
-                    URLHelper::setBaseURL($oldbase);
                 }
             }
+
         }
         return true;
     }
@@ -470,16 +449,6 @@ class EvasysCourseProfile extends SimpleORMap {
     public function getPresetMode()
     {
         return $this->getPresetAttribute("mode");
-    }
-
-    public function getFinalAddress()
-    {
-        return $this->getFinalAttribute("address");
-    }
-
-    public function getPresetAddress()
-    {
-        return $this->getPresetAttribute("address");
     }
 
     /**

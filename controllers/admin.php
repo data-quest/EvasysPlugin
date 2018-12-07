@@ -49,8 +49,9 @@ class AdminController extends PluginController
             $evasys_seminar = array();
 
             $courses = Config::get()->EVASYS_ENABLE_PROFILES
-                ? array_keys(Request::getArray("c"))
+                ? array_map(function ($i) { $id = explode("_", $i); return $id[0]; }, array_keys(Request::getArray("c")))
                 : Request::getArray("course");
+            $courses = array_unique($courses);
             foreach ($courses as $course_id) {
                 $evasys_evaluations = EvasysSeminar::findBySeminar($course_id);
                 if (count($evasys_evaluations)) {
