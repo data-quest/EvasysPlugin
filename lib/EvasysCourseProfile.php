@@ -328,17 +328,19 @@ class EvasysCourseProfile extends SimpleORMap {
             ));
             $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
-            if ($form_id && in_array($form_id, $available_form_ids)) {
-                return $form_id;
-            } else {
-                //now the form_id in database is technically illegal, so reset it to null:
-                $form_id = null;
-            }
-            if ($standardform && !$form_id) {
-                return $standardform['form_id'];
-            }
-            if (!$form_id) {
-                $form_id = $global_profile['form_id'];
+            if (count($available_form_ids)) {
+                if ($form_id && in_array($form_id, $available_form_ids)) {
+                    return $form_id;
+                } else {
+                    //now the form_id in database is technically illegal, so reset it to null:
+                    $form_id = null;
+                }
+                if ($standardform && !$form_id) {
+                    return $standardform['form_id'];
+                }
+                if (!$form_id) {
+                    $form_id = $global_profile['form_id'];
+                }
             }
         }
         return $form_id;
