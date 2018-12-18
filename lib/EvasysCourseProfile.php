@@ -222,6 +222,7 @@ class EvasysCourseProfile extends SimpleORMap {
     }
 
     public function getPresetFormId($form_id = null) {
+
         $institut_id = $this->course['institut_id'];
         $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
         $sem_type = $this->course->status;
@@ -248,17 +249,19 @@ class EvasysCourseProfile extends SimpleORMap {
             ));
             $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
-            if ($form_id && in_array($form_id, $available_form_ids)) {
-                return $form_id;
-            } else {
-                //now the form_id in database is technically illegal, so reset it to null:
-                $form_id = null;
-            }
-            if ($standardform && !$form_id) {
-                return $standardform['form_id'];
-            }
-            if (!$form_id) {
-                $form_id = $inst_profile['form_id'];
+            if (count($available_form_ids)) {
+                if ($form_id && in_array($form_id, $available_form_ids)) {
+                    return $form_id;
+                } else {
+                    //now the form_id in database is technically illegal, so reset it to null:
+                    $form_id = null;
+                }
+                if ($standardform && !$form_id) {
+                    return $standardform['form_id'];
+                }
+                if (!$form_id) {
+                    $form_id = $inst_profile['form_id'];
+                }
             }
         }
         $fakultaet_id = $this->course->home_institut->fakultaets_id;
@@ -286,17 +289,19 @@ class EvasysCourseProfile extends SimpleORMap {
                 ));
                 $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
-                if ($form_id && in_array($form_id, $available_form_ids)) {
-                    return $form_id;
-                } else {
-                    //now the form_id in database is technically illegal, so reset it to null:
-                    $form_id = null;
-                }
-                if ($standardform && !$form_id) {
-                    return $standardform['form_id'];
-                }
-                if (!$form_id) {
-                    $form_id = $inst_profile['form_id'];
+                if (count($available_form_ids)) {
+                    if ($form_id && in_array($form_id, $available_form_ids)) {
+                        return $form_id;
+                    } else {
+                        //now the form_id in database is technically illegal, so reset it to null:
+                        $form_id = null;
+                    }
+                    if ($standardform && !$form_id) {
+                        return $standardform['form_id'];
+                    }
+                    if (!$form_id) {
+                        $form_id = $inst_profile['form_id'];
+                    }
                 }
             }
         }

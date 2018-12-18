@@ -202,9 +202,11 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $filter->settings['parameter']['evasys_semester_id'] = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
             }
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred") {
-                $filter->settings['query']['where']['evasys_transferred'] = "evasys_course_profiles.transferred = '1' ";
+                $filter->settings['query']['where']['evasys_transferred']
+                    = "evasys_course_profiles.transferred = '1' ";
             } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred") {
-                $filter->settings['query']['where']['evasys_transferred'] = "(evasys_course_profiles.applied = '1' AND evasys_course_profiles.transferred = '0')";
+                $filter->settings['query']['where']['evasys_transferred']
+                    = "(evasys_course_profiles.applied = '1' AND evasys_course_profiles.transferred = '0')";
             }
         }
     }
@@ -491,6 +493,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 if (!$profile || !$profile['applied']) {
                     return "";
                 }
+
                 $form_id = $profile->getFinalFormId();
                 if ($form_id) {
                     $form = EvasysForm::find($form_id);

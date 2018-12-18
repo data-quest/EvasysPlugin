@@ -186,7 +186,6 @@ class EvasysSeminar extends SimpleORMap
                 ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
                 : Semester::findCurrent()->id)
         );
-        //TODO: multiple $profiles ?
         if (Config::get()->EVASYS_ENABLE_PROFILES && !$profile['applied'] && !$profile['split']) {
             return $profile['transferred'] ? array("delete", array($this['Seminar_id'])) : null; //course should be deleted from evasys database
         }
