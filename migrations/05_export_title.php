@@ -1,7 +1,8 @@
 <?php
 class ExportTitle extends Migration
 {
-	function up() {
+	function up()
+    {
         Config::get()->create("EVASYS_EXPORT_TITLES", array(
             'value' => 0,
             'type' => "boolean",
@@ -10,4 +11,9 @@ class ExportTitle extends Migration
             'description' => "Should the title of teachers be exported to EvaSys or not."
         ));
 	}
+
+    public function down()
+    {
+        Config::get()->delete("EVASYS_EXPORT_TITLES");
+    }
 }

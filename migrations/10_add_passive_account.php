@@ -22,8 +22,7 @@ class AddPassiveAccount extends Migration
     
     public function down()
     {
-        StudipLog::unregisterAction('EVASYS_EVAL_APPLIED');
-        StudipLog::unregisterAction('EVASYS_EVAL_UPDATE');
-        StudipLog::unregisterAction('EVASYS_EVAL_DELETE');
+        Config::get()->delete("EVASYS_ENABLE_PASSIVE_ACCOUNT");
+        Config::get()->delete("EVASYS_INTERNAL_USER_ID");
     }
 }

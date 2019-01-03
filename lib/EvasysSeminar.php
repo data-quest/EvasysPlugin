@@ -439,9 +439,10 @@ class EvasysSeminar extends SimpleORMap
                 'InstructorUid' => $common_id ?: "",
                 //'InstructorLogin' => "",
                 'FirstName' => $user['Vorname'] ?: "",
-                'LastName' => (Config::get()->EVASYS_EXPORT_TITLES ? $user['title_front'] . " " : "") . $user['Nachname'],
+                'LastName' => $user['Nachname'] ?: "",
                 'Gender' => $user['geschlecht'] == 1 ? "m" : "w",
-                'Email' => $user['Email']
+                'Email' => $user['Email'],
+                'Title' => $user['title_front']
             );
         } else {
             return array(
