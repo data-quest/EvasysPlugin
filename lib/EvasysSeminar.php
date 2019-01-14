@@ -86,6 +86,7 @@ class EvasysSeminar extends SimpleORMap
     {
         $soap = EvasysSoap::get();
         $courses = array();
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
         foreach($seminars as $seminar) {
             $part = $seminar->getCoursePart();
             if ($part && $part[0] !== "delete") {
@@ -111,7 +112,10 @@ class EvasysSeminar extends SimpleORMap
                         'CourseId' => $seminar_id,
                         'IdType' => "PUBLIC"
                     ));
-                    $profile = EvasysCourseProfile::findBySemester($seminar['Seminar_id']);
+                    $profile = EvasysCourseProfile::findBySemester(
+                        $seminar['Seminar_id'],
+                        $semester_id
+                    );
                     if (!$profile->isNew()) {
                         $profile['transferred'] = 0;
                         $profile->store();
@@ -148,7 +152,10 @@ class EvasysSeminar extends SimpleORMap
                     $course_id = $course_uid;
                 }
                 //$status->StatusMessage;
-                $profile = EvasysCourseProfile::findBySemester($course_id);
+                $profile = EvasysCourseProfile::findBySemester(
+                    $course_id,
+                    $semester_id
+                );
                 if ($status->StatusId === "ERR_108") {
                     PageLayout::postError(sprintf(
                         _("Die 'Veranstaltung '%s' konnte nicht korrekt übertragen werden."),
@@ -490,21 +497,24 @@ class EvasysSeminar extends SimpleORMap
 
     public function getSurveyInformation()
     {
-        $id = $this['Seminar_id']."-".$this['evasys_id'];
+        $id = $this['Seminar_id'];
+
         if (isset($_SESSION['EVASYS_SURVEY_INFO'][$id])
                 && (time() - $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$id] < 60 * Config::get()->EVASYS_CACHE)) {
             return $_SESSION['EVASYS_SURVEY_INFO'][$id];
         }
+
         $soap = EvasysSoap::get();
         $course = $soap->__soapCall("GetCourse", array(
             'CourseId' => $this['Seminar_id'],
             'IdType' => "EXTERNAL", //the CourseUid from the export
             'IncludeSurveys' => 1
         ));
-        //var_dump($course); die();
+
         if (is_a($course, "SoapFault")) {
             return null;
         } elseif(strlen($this['Seminar_id']) <= 32) {
+            //wenn es keine split-Veranstaltung (Teilevaluation) ist
             $this['evasys_id'] = $course->m_nCourseId; //kann nie schaden
             $this->store();
         }

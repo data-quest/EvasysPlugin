@@ -10,6 +10,12 @@ class EvaluationController extends PluginController
         $tab->setImage(Icon::create("evaluation", "info"));
         Navigation::activateItem("/course/evasys");
         $this->profile = EvasysCourseProfile::findBySemester(Context::get()->id);
+        if ($this->profile->isNew()) {
+            $profile = EvasysCourseProfile::findOneBySQL("seminar_id = ?", array(Context::get()->id));
+            if ($profile) {
+                $this->profile = $profile;
+            }
+        }
         PageLayout::addScript($this->plugin->getPluginURL()."/assets/qrcode.js");
         PageLayout::setTitle(_("Lehrveranstaltungsevaluation mit EvaSys"));
     }
@@ -23,6 +29,23 @@ class EvaluationController extends PluginController
 
         $this->evasys_seminars = EvasysSeminar::findBySeminar(Context::get()->id);
         $this->surveys = array();
+
+        //repair-code
+        if (!count($this->evasys_seminars)) {
+            $activated = false;
+            foreach (EvasysCourseProfile::findBySQL("seminar_id = ?", array(Context::get()->id)) as $profile) {
+                if ($profile['applied'] && $profile['transferred']) {
+                    $activated = true;
+                    break;
+                }
+            }
+            if ($activated) {
+                $this->evasys_seminars[0] = new EvasysSeminar(Context::get()->id);
+                $this->evasys_seminars[0]['activated'] = 1;
+                $this->evasys_seminars[0]->store();
+            }
+        }
+
         foreach ($this->evasys_seminars as $evasys_seminar) {
             $survey_information = $evasys_seminar->getSurveyInformation();
             if (is_array($survey_information)) {
@@ -39,6 +62,24 @@ class EvaluationController extends PluginController
             $this->redirect("evaluation/show");
             return;
         }
+
+        //repair-code
+        $this->evasys_seminar = EvasysSeminar::findOneBySQL("seminar_id = ?", array(Context::get()->id));
+        if (!count($this->evasys_seminar)) {
+            $activated = false;
+            foreach (EvasysCourseProfile::findBySQL("seminar_id = ?", array(Context::get()->id)) as $profile) {
+                if ($profile['applied'] && $profile['transferred']) {
+                    $activated = true;
+                    break;
+                }
+            }
+            if ($activated) {
+                $this->evasys_seminar = new EvasysSeminar(Context::get()->id);
+                $this->evasys_seminar['activated'] = 1;
+                $this->evasys_seminar->store();
+            }
+        }
+
         $this->evasys_seminars = array();
         if ($this->profile['teachers']) {
             $teachers = $this->profile['teachers']->getArrayCopy();
@@ -56,6 +97,7 @@ class EvaluationController extends PluginController
         foreach ($teachers as $dozent_id) {
             $seminar = new EvasysSeminar();
             $seminar['seminar_id'] = Context::get()->id . $dozent_id;
+            $seminar['seminar_id'] = $this->evasys_seminar['publishing_allowed_by_dozent'][$dozent_id];
             $this->evasys_seminars[$dozent_id] = $seminar;
         }
 
@@ -84,6 +126,11 @@ class EvaluationController extends PluginController
     {
         if (Request::get("dozent_vote")) {
             $evasys_seminar = EvasysSeminar::find(Context::get()->id);
+            if (!$evasys_seminar) {
+                $evasys_seminar = new EvasysSeminar(Context::get()->id);
+                $evasys_seminar['activated'] = 1;
+                $evasys_seminar->store();
+            }
             $evasys_seminar->allowPublishing(Request::get("dozent_vote") === "y");
         }
         $this->redirect("evaluation/show");

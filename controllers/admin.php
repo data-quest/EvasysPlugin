@@ -68,6 +68,9 @@ class AdminController extends PluginController
                     $evasys_seminar[$course_id] = new EvasysSeminar($course_id);
                     $evasys_seminar[$course_id]['activated'] = $activate[$course_id] ? 1 : 0;
                 }
+                if ($evasys_seminar[$course_id]) {
+                    $evasys_seminar[$course_id]->store();
+                }
             }
 
             if (count($evasys_seminar) > 0) {
