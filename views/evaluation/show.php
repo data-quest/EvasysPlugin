@@ -1,7 +1,8 @@
 <? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
     <?= $this->render_partial("evaluation/_survey_dozent.php", array(
         'surveys' => $surveys,
-        'evasys_seminar' => $evasys_seminars[0]
+        'evasys_seminar' => $evasys_seminars[0],
+        'dozent_ids' => Config::get()->EVASYS_ENABLE_PROFILES ? $profile->teachers->getArrayCopy() : array()
     )) ?>
 <? else : ?>
     <?= $this->render_partial("evaluation/_survey_student.php", array(

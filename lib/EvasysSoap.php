@@ -20,7 +20,7 @@ class EvasysSoap
                 'connection_timeout' => 60 * 60,
                 'trace' => 1,
                 'exceptions' => 0,
-                'cache_wsdl' => false && ($GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE']))
+                'cache_wsdl' => ($GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE']))
                     ? WSDL_CACHE_BOTH
                     : WSDL_CACHE_NONE,
                 'features' => SOAP_SINGLE_ELEMENT_ARRAYS

@@ -53,17 +53,19 @@
                                 echo _("Verifikation");
                         } ?></td>
                 </tr>
-                <? $pdf_link = $evasys_seminar->getPDFLink($survey->m_nSurveyId) ?>
-                <? if ($pdf_link) : ?>
-                    <tr>
-                        <td><?= _("Auswertung der Evaluation") ?></td>
-                        <td>
-                            <a href="<?= htmlReady($pdf_link) ?>" target="_blank">
-                                <?= Icon::create("file-pdf", "clickable")->asImg(48) ?>
-                                <?= _("Ergebnisse als PDF") ?>
-                            </a>
-                        </td>
-                    </tr>
+                <? if (in_array($GLOBALS['user']->id, $dozent_ids) || $evasys_seminar->publishingAllowed($dozent_id)) : ?>
+                    <? $pdf_link = $evasys_seminar->getPDFLink($survey->m_nSurveyId) ?>
+                    <? if ($pdf_link) : ?>
+                        <tr>
+                            <td><?= _("Auswertung der Evaluation") ?></td>
+                            <td>
+                                <a href="<?= htmlReady($pdf_link) ?>" target="_blank">
+                                    <?= Icon::create("file-pdf", "clickable")->asImg(48) ?>
+                                    <?= _("Ergebnisse als PDF") ?>
+                                </a>
+                            </td>
+                        </tr>
+                    <? endif ?>
                 <? endif ?>
                 </tbody>
             </table>

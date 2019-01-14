@@ -23,7 +23,8 @@
             <? if ($evasys_seminar->publishingAllowed($dozent_id)) : ?>
                 <?= $this->render_partial("evaluation/_survey_dozent.php", array(
                     'surveys' => $surveys,
-                    'evasys_seminar' => $evasys_seminar
+                    'evasys_seminar' => $evasys_seminar,
+                    'dozent_ids' => array($dozent_id)
                 )) ?>
             <? endif ?>
         <? endif ?>
@@ -32,7 +33,8 @@
     <? if ($evasys_seminar->publishingAllowed($dozent_id)) : ?>
         <?= $this->render_partial("evaluation/_survey_dozent.php", array(
             'surveys' => $surveys,
-            'evasys_seminar' => $evasys_seminar
+            'evasys_seminar' => $evasys_seminar,
+            'dozent_ids' => array($dozent_id)
         )) ?>
     <? else : ?>
         <?= MessageBox::info(_("Es gibt für Sie hier keine aktuellen, ausstehenden Evaluationen.")) ?>
