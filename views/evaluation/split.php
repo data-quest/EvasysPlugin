@@ -11,7 +11,7 @@
     </ul>
     <? foreach ($profile['teachers'] as $i => $user_id) : ?>
         <div id="tab-<?= htmlReady($user_id) ?>">
-            <? if ($user_id === $GLOBALS['user']->id) : ?>
+            <? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
                 <?= $this->render_partial("evaluation/_survey_dozent.php", array(
                     'surveys' => $surveys[$user_id],
                     'evasys_seminar' => $evasys_seminars[$user_id],

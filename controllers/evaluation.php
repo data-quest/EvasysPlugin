@@ -65,7 +65,7 @@ class EvaluationController extends PluginController
 
         //repair-code
         $this->evasys_seminar = EvasysSeminar::findOneBySQL("seminar_id = ?", array(Context::get()->id));
-        if (!count($this->evasys_seminar)) {
+        if ($this->evasys_seminar) {
             $activated = false;
             foreach (EvasysCourseProfile::findBySQL("seminar_id = ?", array(Context::get()->id)) as $profile) {
                 if ($profile['applied'] && $profile['transferred']) {
@@ -97,7 +97,7 @@ class EvaluationController extends PluginController
         foreach ($teachers as $dozent_id) {
             $seminar = new EvasysSeminar();
             $seminar['seminar_id'] = Context::get()->id . $dozent_id;
-            $seminar['seminar_id'] = $this->evasys_seminar['publishing_allowed_by_dozent'][$dozent_id];
+            $seminar['publishing_allowed'] = $this->evasys_seminar['publishing_allowed_by_dozent'][$dozent_id];
             $this->evasys_seminars[$dozent_id] = $seminar;
         }
 
