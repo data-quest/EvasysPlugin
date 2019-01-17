@@ -7,6 +7,7 @@
         <input type="hidden" name="course[]" value="<?= htmlReady($course_id) ?>">
     <? endif ?>
 <? else : ?>
+
     <? foreach ($semesters as $i => $semester) : ?>
     <?
     if (($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") && (count($semesters) > 1) && ($semester->getId() !== Semester::findCurrent()->id)) {

@@ -16,10 +16,14 @@
                 </th>
             </tr>
         </thead>
+
         <tbody>
             <? if (count($profiles)) : ?>
             <? foreach ($profiles as $profile) : ?>
-                <?= $this->render_partial("individual/course", compact("profile")) ?>
+                <?= $this->render_partial("individual/course", array(
+                        'profile' => $profile,
+                        'semesters' => array($semester)
+                    )) ?>
             <? endforeach ?>
             <? else : ?>
             <tr>
@@ -45,7 +49,7 @@
         </tfoot>
     </table>
 </form>
-<input type="hidden" id="semester_id" value="<?= htmlReady($semester_id) ?>">
+<input type="hidden" id="semester_id" value="<?= htmlReady($semester->getId()) ?>">
 
 <script>
     jQuery(function () {
@@ -98,7 +102,7 @@
 $actions = new ActionsWidget();
 $actions->addLink(
     _("Export als CSV"),
-    PluginEngine::getURL($plugin, array('semester_id' => $semester_id), "individual/csv"),
+    PluginEngine::getURL($plugin, array('semester_id' => $semester->getId()), "individual/csv"),
     Icon::create("file-excel", "clickable")
 );
 Sidebar::Get()->addWidget($actions);
@@ -108,8 +112,8 @@ $semester_select = new SelectWidget(
     PluginEngine::getURL($plugin, array(), "individual/list"),
     'semester_id'
 );
-foreach (array_reverse(Semester::getAll()) as $semester) {
-    $element = new SelectElement($semester->getId(), $semester['name'], $semester->getId() === $semester_id);
+foreach (array_reverse(Semester::getAll()) as $s) {
+    $element = new SelectElement($s->getId(), $s['name'], $s->getId() === $semester->getId());
     $semester_select->addElement($element);
 }
 Sidebar::Get()->addWidget($semester_select);

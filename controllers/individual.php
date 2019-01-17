@@ -18,14 +18,16 @@ class IndividualController extends PluginController
     {
         PageLayout::setTitle(ucfirst(EvasysMatching::wording("freiwillige Evaluationen")));
         Navigation::activateItem("/admin/evasys/individual");
-        $this->semester_id = Request::option("semester_id", Semester::findCurrent()->id);
+        $this->semester = Request::option("semester_id")
+            ? Semester::find(Request::option("semester_id"))
+            : Semester::findCurrent();
         $this->profiles = EvasysCourseProfile::findBySQL("
             by_dozent = '1'
             AND applied = '1'
             AND semester_id = :semester_id
             ORDER BY mkdate DESC
             LIMIT ".($this->max_list_items + 1)."
-        ", array('semester_id' => $this->semester_id));
+        ", array('semester_id' => $this->semester->getId()));
         if (count($this->profiles) > $this->max_list_items) {
             array_pop($this->profiles);
             $this->more = true;
