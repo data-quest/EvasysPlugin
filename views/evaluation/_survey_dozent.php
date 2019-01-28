@@ -3,7 +3,7 @@
 <? else : ?>
     <div style="padding: 15px; font-size: 1.2em; text-align: center;">
         <? if (count($surveys) < 2) : ?>
-            <h3><?= _("Es gibt eine laufende Evaluation zu dieser Veranstaltung") ?></h3>
+            <h3><?= _("Es gibt eine Evaluation zu dieser Veranstaltung") ?></h3>
         <? elseif(!count($surveys)) : ?>
             <h3><?= _("Keine verfügbaren Evaluationen") ?></h3>
         <? else : ?>
