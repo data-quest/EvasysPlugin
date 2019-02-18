@@ -42,9 +42,9 @@ class GlobalprofileController extends PluginController
             } else {
                 $this->profile = EvasysGlobalProfile::findCurrent();
             }
-        } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
+        } elseif($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT && $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT !== "all") {
             $this->profile = EvasysInstituteProfile::findByInstitute(
-                $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE,
+                $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT,
                 Request::option("semester_id")
             );
         }
@@ -98,9 +98,9 @@ class GlobalprofileController extends PluginController
             } else {
                 $this->profile = EvasysGlobalProfile::findCurrent();
             }
-        } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
+        } elseif($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT && $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT !== "all") {
             $this->profile = EvasysInstituteProfile::findByInstitute(
-                $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE,
+                $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT,
                 Request::option("semester_id")
             );
             if (!$this->profile) {
@@ -110,6 +110,13 @@ class GlobalprofileController extends PluginController
             }
         }
         if (Request::isPost()) {
+            if (Request::submitted("delete")
+                    && ($this->profile->semester['beginn'] > Semester::findCurrent()->beginn)) {
+                $this->profile->delete();
+                PageLayout::postSuccess(_("Einstellungen des Semesters wurden gelöscht."));
+                $this->redirect($this->profile_type."profile/index");
+                return;
+            }
             $data = Request::getArray("data");
             $data['begin'] = $data['begin'] ? strtotime($data['begin']) : null;
             $data['end'] = $data['end'] ? strtotime($data['end']) : null;

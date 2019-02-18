@@ -12,6 +12,22 @@ class EvasysGlobalProfile extends SimpleORMap
             'class_name' => 'Semester',
             'foreign_key' => 'semester_id'
         );
+        $config['has_many']['institute_profiles'] = array(
+            'class_name' => 'EvasysInstituteProfile',
+            'foreign_key' => 'semester_id',
+            'on_delete'  => 'delete',
+            'on_store'  => 'store'
+        );
+        $config['has_many']['semtype_forms'] = array(
+            'class_name' => 'EvasysProfileSemtypeForm',
+            'foreign_key' => 'profile_id',
+            'foreign_key' => function($profile) {
+                return [$profile->getId(), "global"];
+            },
+            'assoc_func' => 'findByProfileAndType',
+            'on_delete'  => 'delete',
+            'on_store'  => 'store'
+        );
         parent::configure($config);
     }
 
@@ -47,6 +63,8 @@ class EvasysGlobalProfile extends SimpleORMap
             $data = $old_profile->toRawArray();
             unset($data['begin']);
             unset($data['end']);
+            unset($data['adminedit_begin']);
+            unset($data['adminedit_end']);
             unset($data['mkdate']);
             unset($data['chdate']);
             $profile->setData($data);

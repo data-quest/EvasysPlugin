@@ -236,6 +236,9 @@
 
     <div style="text-align: center;">
         <?= \Studip\Button::create(_("Speichern")) ?>
+        <? if ($profile->semester['beginn'] > Semester::findCurrent()->beginn) : ?>
+            <?= \Studip\Button::create(_("Löschen"), "delete", array('onClick' => "return window.confirm('"._("Sollen die Einstellungen des gesamten Semesters wirklich gelöscht werden?")."');")) ?>
+        <? endif ?>
     </div>
 
 </form>

@@ -11,4 +11,12 @@ class EvasysProfileSemtypeForm extends SimpleORMap {
         );
         parent::configure($config);
     }
+
+    public static function findByProfileAndType($profile_id, $profile_type = null) {
+        if (!$profile_type && is_array($profile_id)) {
+            $profile_type = $profile_id[1];
+            $profile_id = $profile_id[0];
+        }
+        return self::findBySQL("profile_id = ? AND profile_type = ?", array($profile_id, $profile_type));
+    }
 }

@@ -10,9 +10,23 @@ class EvasysInstituteProfile extends SimpleORMap
             'class_name'  => 'Institute',
             'foreign_key' => 'institut_id'
         );
+        $config['belongs_to']['global_profile'] = array(
+            'class_name' => 'EvasysGlobalProfile',
+            'foreign_key' => 'semester_id'
+        );
         $config['belongs_to']['semester'] = array(
             'class_name' => 'Semester',
             'foreign_key' => 'semester_id'
+        );
+        $config['has_many']['semtype_forms'] = array(
+            'class_name' => 'EvasysProfileSemtypeForm',
+            'foreign_key' => 'profile_id',
+            'foreign_key' => function($profile) {
+                return [$profile->getId(), "institute"];
+            },
+            'assoc_func' => 'findByProfileAndType',
+            'on_delete'  => 'delete',
+            'on_store'  => 'store'
         );
         parent::configure($config);
     }
@@ -72,12 +86,17 @@ class EvasysInstituteProfile extends SimpleORMap
     public function copyToNewSemester($semester_id)
     {
         $new_profile = new EvasysInstituteProfile();
-        $new_profile->setData($this->toArray());
+        $data = $this->toArray();
+        unset($data['begin']);
+        unset($data['end']);
+        unset($data['adminedit_begin']);
+        unset($data['adminedit_end']);
+        unset($data['mkdate']);
+        unset($data['chdate']);
+        $new_profile->setData($data);
         $new_profile->setId($new_profile->getNewId());
         $new_profile['semester_id'] = $semester_id;
         $new_profile['user_id'] = $GLOBALS['user']->id;
-        $new_profile['mkdate'] = time();
-        $new_profile['chdate'] = time();
         $new_profile->store();
 
         $semtypeforms = EvasysProfileSemtypeForm::findBySQL("profile_id = ? AND profile_type = 'institute'", array($this->getId()));
