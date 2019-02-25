@@ -204,6 +204,7 @@ class GlobalprofileController extends PluginController
         if ($this->profile_type === "institute") {
             throw new Exception("Not available.");
         }
+        PageLayout::setTitle(_("Standardwerte für neues Semester erstellen"));
         if (Request::isPost()) {
             $old_profile = Request::option("copy_from") ? EvasysGlobalProfile::find(Request::option("copy_from")) : null;
             EvasysGlobalProfile::copy(Request::option("semester_id"), $old_profile);

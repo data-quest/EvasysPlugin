@@ -52,10 +52,10 @@ class EvasysInstituteProfile extends SimpleORMap
     public function getParentsDefaultValue($field)
     {
         if ($this->institute && !$this->institute->isFaculty()) {
-            $profile = self::findByInstitute($this->institute['fakultaets_id']);
+            $profile = self::findByInstitute($this->institute['fakultaets_id'], $this['semester_id']);
             return $profile[$field] ?: $profile->getParentsDefaultValue($field);
         } else {
-            $profile = EvasysGlobalProfile::findCurrent();
+            $profile = EvasysGlobalProfile::find($this['semester_id']);
             return $profile[$field];
         }
     }
@@ -63,7 +63,7 @@ class EvasysInstituteProfile extends SimpleORMap
     public function getParentsAvailableForms($sem_type_id)
     {
         if ($this->institute && !$this->institute->isFaculty()) {
-            $profile = self::findByInstitute($this->institute['fakultaets_id']);
+            $profile = self::findByInstitute($this->institute['fakultaets_id'], $this['semester_id']);
 
             $forms = EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'institute' ORDER BY `standard` DESC, position ASC", array(
                 'profile_id' => $profile->getId(),
@@ -75,7 +75,7 @@ class EvasysInstituteProfile extends SimpleORMap
                 return $profile->getParentsAvailableForms($sem_type_id);
             }
         } else {
-            $profile = EvasysGlobalProfile::findCurrent();
+            $profile = EvasysGlobalProfile::find($this['semester_id']);
             return EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'global' ORDER BY `standard` DESC, position ASC", array(
                 'profile_id' => $profile->getId(),
                 'sem_type_id' => $sem_type_id

@@ -64,6 +64,11 @@
                 <? endforeach ?>
             </select>
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("form_id") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? htmlReady(EvasysForm::find($default_value)->name) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
         <label>
             <?= _("Art der Evaluation") ?>
@@ -94,6 +99,11 @@
             <?= _("Informationen für Lehrende zu den Evaluationsdaten") ?>
             <textarea name="data[teacher_info]"><?= htmlReady($profile['teacher_info']) ?></textarea>
         </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("teacher_info") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
 
     </fieldset>
 
