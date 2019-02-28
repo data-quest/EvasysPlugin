@@ -60,8 +60,11 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             Navigation::addItem("/admin/evasys/matchinginstitutes", clone $nav);
             $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "matching/wording"));
             Navigation::addItem("/admin/evasys/wording", clone $nav);
-        } elseif (self::isAdmin() && Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS && Navigation::hasItem("/admin/institute")) {
+        } elseif (Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS && Navigation::hasItem("/admin/institute")) {
             $nav = new Navigation(_("Standard-Evaluationsprofil"), PluginEngine::getURL($this, array(), "instituteprofile"));
+            if (!self::isAdmin()) {
+                $nav->setEnabled(false);
+            }
             Navigation::addItem("/admin/institute/instituteprofile", $nav);
         }
 

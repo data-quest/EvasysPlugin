@@ -4,10 +4,6 @@
       method="post"
       class="default evasys_presets">
 
-    <? if (Request::option("semester_id")) : ?>
-        <input type="hidden" value="<?= htmlReady(Request::option("semester_id")) ?>" name="semester_id">
-    <? endif ?>
-
     <div style="text-align: center;">
         <?= \Studip\Button::create(_("Speichern")) ?>
     </div>
@@ -294,10 +290,12 @@ $list = new SelectWidget(
     'semester_id'
 );
 foreach (EvasysGlobalProfile::findBySQL("1=1 ORDER BY begin DESC ") as $profile) {
-    $list->addElement(new SelectElement(
-        $profile->getId(),
-        $profile->semester['name'],
-        Request::option("semester_id") ? ($profile->getId() === Request::option("semester_id")) : $profile->getId() === Semester::findCurrent()->id),
+    $list->addElement(
+        new SelectElement(
+            $profile->getId(),
+            $profile->semester['name'],
+            $profile->getId() === $semester_id
+        ),
         'select-'.$profile->getId()
     );
 }

@@ -36,16 +36,18 @@ class GlobalprofileController extends PluginController
     public function index_action()
     {
         PageLayout::setTitle($this->plugin->getDisplayName());
+        if (Request::option("semester_id")) {
+            $GLOBALS['user']->cfg->store('MY_COURSES_SELECTED_CYCLE', Request::option('semester_id'));
+        }
+        $this->semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
+            ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+            : Semester::findCurrent()->id;
         if ($this->profile_type === "global") {
-            if (Request::option("semester_id")) {
-                $this->profile = new EvasysGlobalProfile(Request::option("semester_id"));
-            } else {
-                $this->profile = EvasysGlobalProfile::findCurrent();
-            }
+            $this->profile = new EvasysGlobalProfile($this->semester_id);
         } elseif($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT && $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT !== "all") {
             $this->profile = EvasysInstituteProfile::findByInstitute(
                 $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT,
-                Request::option("semester_id")
+                $this->semester_id
             );
         }
         $this->con = $this->profile_type."profile";

@@ -498,7 +498,7 @@ class EvasysCourseProfile extends SimpleORMap {
 
     public function isEditable()
     {
-        if ($GLOBALS['perm']->have_studip_perm("dozent", $this['seminar_id'])
+        if (($GLOBALS['perm']->have_studip_perm("dozent", $this['seminar_id']) && !$GLOBALS['perm']->have_studip_perm("admin", $this['seminar_id']))
                 && !(EvasysPlugin::isAdmin($this['seminar_id']) || EvasysPlugin::isRoot())) {
             if ($this['applied'] && !$this['by_dozent']) {
                 return false;
@@ -514,14 +514,14 @@ class EvasysCourseProfile extends SimpleORMap {
         } elseif(EvasysPlugin::isRoot()) {
             return true;
         } elseif(EvasysPlugin::isAdmin($this['seminar_id'])) {
-            $global_profile = EvasysGlobalProfile::findCurrent();
+            $global_profile = ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
+                ? EvasysGlobalProfile::find($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE)
+                : EvasysGlobalProfile::findCurrent();
             return (
                 $global_profile['adminedit_begin']
                 && ($global_profile['adminedit_begin'] <= time())
                 && (($global_profile['adminedit_end'] > time()) || !$global_profile['adminedit_end'])
             );
-        } else {
-            //TODO: check for new role of EVAL_ADMIN
         }
         return false;
     }
