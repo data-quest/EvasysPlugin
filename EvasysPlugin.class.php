@@ -489,7 +489,12 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function adminAreaGetCourseContent($course, $index)
     {
-        $profile = EvasysCourseProfile::findBySemester($course->getId());
+        if (Request::option("semester_id")) {
+            $semester_id = Request::option("semester_id");
+        } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
+            $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
+        }
+        $profile = EvasysCourseProfile::findBySemester($course->getId(), $semester_id);
 
         switch ($index) {
             case "form":
