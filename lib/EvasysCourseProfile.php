@@ -139,7 +139,7 @@ class EvasysCourseProfile extends SimpleORMap {
             $applied ? 'EVASYS_EVAL_APPLIED' : 'EVASYS_EVAL_UPDATE',
             $GLOBALS['user']->id,
             $this['seminar_id'],
-            Semester::findCurrent()->id,
+            $this['semester_id'],
             json_encode([
                 'old' => $old_values,
                 'new' => $new_values
@@ -202,7 +202,7 @@ class EvasysCourseProfile extends SimpleORMap {
             'EVASYS_EVAL_DELETE',
             $this->user_id,
             $this->seminar_id,
-            Semester::findCurrent()->id
+            $this['semester_id']
         );
         return true;
     }
@@ -224,7 +224,7 @@ class EvasysCourseProfile extends SimpleORMap {
     public function getPresetFormId($form_id = null) {
 
         $institut_id = $this->course['institut_id'];
-        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
+        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id, $this['semester_id']);
         $sem_type = $this->course->status;
         if ($inst_profile) {
 
@@ -266,7 +266,7 @@ class EvasysCourseProfile extends SimpleORMap {
         }
         $fakultaet_id = $this->course->home_institut->fakultaets_id;
         if ($fakultaet_id !== $institut_id) {
-            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id);
+            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id, $this['semester_id']);
             if ($inst_profile) { //Do the same thing with this profile:
                 $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
                     'profile_type' => "institute",
@@ -305,7 +305,7 @@ class EvasysCourseProfile extends SimpleORMap {
                 }
             }
         }
-        $global_profile = EvasysGlobalProfile::findCurrent();
+        $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
         if ($global_profile) {
             $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
                 'profile_type' => "global",
@@ -349,7 +349,7 @@ class EvasysCourseProfile extends SimpleORMap {
     public function getAvailableFormIds()
     {
         $institut_id = $this->course['institut_id'];
-        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
+        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id, $this['semester_id']);
         $sem_type = $this->course->status;
         if ($inst_profile) {
             $statement = DBManager::get()->prepare("
@@ -373,7 +373,7 @@ class EvasysCourseProfile extends SimpleORMap {
         }
         $fakultaet_id = $this->course->home_institut->fakultaets_id;
         if ($fakultaet_id !== $institut_id) {
-            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id);
+            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id, $this['semester_id']);
             if ($inst_profile) { //Do the same thing with this profile:
                 $statement = DBManager::get()->prepare("
                     SELECT form_id 
@@ -395,7 +395,7 @@ class EvasysCourseProfile extends SimpleORMap {
                 }
             }
         }
-        $global_profile = EvasysGlobalProfile::findCurrent();
+        $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
         if ($global_profile) {
 
             $statement = DBManager::get()->prepare("
@@ -477,18 +477,18 @@ class EvasysCourseProfile extends SimpleORMap {
     public function getPresetAttribute($attribute)
     {
         $institut_id = $this->course['institut_id'];
-        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id);
+        $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id, $this['semester_id']);
         if ($inst_profile[$attribute]) {
             return $inst_profile[$attribute];
         }
         $fakultaet_id = $this->course->home_institut->fakultaets_id;
         if ($fakultaet_id !== $institut_id) {
-            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id);
+            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id, $this['semester_id']);
             if ($inst_profile[$attribute]) {
                 return $inst_profile[$attribute];
             }
         }
-        $global_profile = EvasysGlobalProfile::findCurrent();
+        $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
         if ($global_profile[$attribute]) {
             return $global_profile[$attribute];
         }
@@ -514,9 +514,7 @@ class EvasysCourseProfile extends SimpleORMap {
         } elseif(EvasysPlugin::isRoot()) {
             return true;
         } elseif(EvasysPlugin::isAdmin($this['seminar_id'])) {
-            $global_profile = ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
-                ? EvasysGlobalProfile::find($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE)
-                : EvasysGlobalProfile::findCurrent();
+            $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
             return (
                 $global_profile['adminedit_begin']
                 && ($global_profile['adminedit_begin'] <= time())
@@ -533,11 +531,10 @@ class EvasysCourseProfile extends SimpleORMap {
 
     public function hasDatesInEvalTimespan()
     {
-        $profile = EvasysCourseProfile::findBySemester($this['seminar_id']);
-        $begin = $profile->getFinalBegin();
-        $end = $profile->getFinalEnd();
+        $begin = $this->getFinalBegin();
+        $end = $this->getFinalEnd();
         if (!$begin || !$end) {
-            $semester = Semester::findCurrent();
+            $semester = $this->semester;
             if (!$begin) {
                 $begin = $semester['beginn'];
             }
@@ -567,14 +564,14 @@ class EvasysCourseProfile extends SimpleORMap {
     {
         $emails = $profile['results_email'];
 
-        $inst_profile = EvasysInstituteProfile::findByInstitute($this->course->home_institut->getId());
+        $inst_profile = EvasysInstituteProfile::findByInstitute($this->course->home_institut->getId(), $this['semester_id']);
         if ($inst_profile) {
             $emails .= " " . $inst_profile['results_email'];
         }
         $fakultaet_id = $this->course->home_institut->fakultaets_id;
 
         if ($fakultaet_id !== $institut_id) {
-            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id);
+            $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id, $this['semester_id']);
 
             if ($inst_profile['results_email']) {
                 $emails .= " ".$inst_profile['results_email'];
