@@ -111,10 +111,16 @@ class ProfileController extends PluginController {
         }
         $this->profiles = array();
         foreach ($this->ids as $id) {
-            $id = explode("_", $id);
+            list($seminar_id, $semester_id) = explode("_", $id);
+            if (!$semester_id) {
+                $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
+                if (!$semester_id || $semester_id === "all") {
+                    Course::find($seminar_id)->start_semester->getId();
+                }
+            }
             $this->profiles[] = EvasysCourseProfile::findBySemester(
-                $id[0],
-                $id[1]
+                $seminar_id,
+                $semester_id
             );
         }
 
@@ -130,8 +136,16 @@ class ProfileController extends PluginController {
                         if ($profile['applied'] && $profile['teachers'] === null) {
                             $seminar = new Seminar($profile['seminar_id']);
                             $teachers = $seminar->getMembers("dozent");
-                            $teacher = array_shift(array_values($teachers));
-                            $profile['teachers'] = array($teacher['user_id']);
+
+
+                            if (Config::get()->EVASYS_SELECT_FIRST_TEACHER) {
+                                $teacher_ids = array_values($teachers);
+                                $teacher = array_shift($teacher_ids);
+                                $teacher_ids = array($teacher['user_id']);
+                            } else {
+                                $teacher_ids = array_keys($teachers);
+                            }
+                            $profile['teachers'] = $teacher_ids;
                         }
                     }
                 }

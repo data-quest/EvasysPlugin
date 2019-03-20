@@ -65,7 +65,7 @@
                                    name="data[teachers][]"
                                    <?= $profile->isEditable() ? "" : "disabled" ?>
                                    value="<?= htmlReady($teacher['user_id']) ?>"
-                                   <?= count($teachers) === 1 || (!$profile['teachers'] && $number == 0) || ($profile['teachers'] && in_array($teacher['user_id'], $profile['teachers']->getArrayCopy())) ? " checked" : "" ?>>
+                                   <?= count($teachers) === 1 || (!$profile['teachers'] && ($number == 0 || !Config::get()->EVASYS_SELECT_FIRST_TEACHER)) || ($profile['teachers'] && in_array($teacher['user_id'], $profile['teachers']->getArrayCopy())) ? " checked" : "" ?>>
                             <span class="note">(<?= _("Wird auf dem Fragebogen genannt.") ?>)</span>
                         <? if ($editable && count($teachers) > 1) : ?>
                         </label>
