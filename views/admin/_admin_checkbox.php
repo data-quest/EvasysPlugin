@@ -34,15 +34,15 @@
             </div>
         <? endif ?>
         <div class="controls">
-            <? if ($profile && $profile['applied'] && $profile['by_dozent']) : ?>
+            <? if ($profile['applied'] && $profile['by_dozent']) : ?>
                 <?= Icon::create($plugin->getPluginURL()."/assets/f-circle_grey.svg")->asImg(20, array('title' => sprintf(_("Dies ist eine %s"), EvasysMatching::wording("freiwillige Evaluation")))) ?>
             <? endif ?>
 
-            <? if ($profile && $profile['applied'] && !$profile->hasDatesInEvalTimespan()) : ?>
+            <? if (!$profile->hasDatesInEvalTimespan()) : ?>
                 <?= Icon::create("exclaim-circle", "status-red")->asImg(20, array('title' => _("Es gibt keinen Termin dieser Veranstaltung im gewünschten Evaluationszeitraum"))) ?>
             <? endif ?>
 
-            <? if ($profile && $profile['transferred']) : ?>
+            <? if ($profile['transferred']) : ?>
                 <?= Icon::create($plugin->getPluginURL()."/assets/evasys-export_grey.svg", "inactive")->asImg(38, array(
                         'title' => _("Veranstaltung wurde bereits übertragen."),
                         'style' => "margin-top: -11px;"
