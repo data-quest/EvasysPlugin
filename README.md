@@ -25,12 +25,16 @@ Die Daten der SOAP-Nutzer müssen noch in Stud.IP eingegeben werden. Das macht m
 * `EVASYS_USER`: Nutzername des SOAP-Nutzers, der die obigen Services abfragen kann.
 * `EVASYS_PASSWORD`: Passwort dieses SOAP-Nutzers im Klartext.
 
+Hat man zumindest diese Einstellungen eingetragen und sollten sie stimmen, so sieht man unter Admin -> EvaSys -> Fragebögen eine aktuelle Liste aller aktiven Fragebögen aus EvaSys. Sieht man diese Liste nicht oder gibt es einen Fehler, stimmt die verbindung zwischen Stud.IP und EvaSys noch nicht. 
+
 
 #### Weitere Dokumentationen des Plugins
 
 Das EvaSys_plugin hat eine ganze Menge Einstellungen und Bedienmöglichkeiten. Das liegt daran, dass jede Hochschule andere Workflows hat und das Plugin für alle Hochschulen einsetzbar sein soll. Eine gute Dokumentation gibt es in diesem Dokument im `/doc` - Ordner:
 
 [Doku ab Stud.IP 4.0.docx](https://github.com/data-quest/EvasysPlugin/raw/master/doc/Doku%20ab%20Stud.IP%204.0.docx)
+
+Diese Doku ist unter Umständen nicht 100%ig aktuell. Für Hinweise auf Fehler oder für Verbesserungsvorschläge bin ich dankbar und werde diese aufnehmen.
 
 ## Support
 
