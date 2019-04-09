@@ -75,7 +75,7 @@ class EvasysInstituteProfile extends SimpleORMap
                 return $profile->getParentsAvailableForms($sem_type_id);
             }
         } else {
-            $profile = EvasysGlobalProfile::find($this['semester_id']);
+            $profile = new EvasysGlobalProfile($this['semester_id']);
             return EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'global' ORDER BY `standard` DESC, position ASC", array(
                 'profile_id' => $profile->getId(),
                 'sem_type_id' => $sem_type_id
