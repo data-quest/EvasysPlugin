@@ -28,6 +28,8 @@ if (!interface_exists("AdminCourseContents")) {
 class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction, Loggable, AdminCourseContents
 {
 
+    static protected $ruecklauf = null;
+
     public function useLowerPermissionLevels()
     {
         return (bool) Config::get()->EVASYS_PLUGIN_USE_LOWER_PERMISSION_LEVELS;
@@ -482,7 +484,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             'mode' => _("Evaluationsart"),
             'timespan' => _("Eval-Zeitraum"),
             'applied' => _("Evaluation beantragt"),
-            'lehrende_emails' => _('Eval: Beantragte Lehrende (Emails)')
+            'lehrende_emails' => _('Eval: Beantragte Lehrende (Emails)'),
+            'ruecklauf' => _("Rückläufer")
         );
         if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES) {
             $array['split'] = _("Teilevaluation");
@@ -545,6 +548,77 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 return implode(";", $emails);
             case "split":
                 return $profile && $profile['split'] ? 1 : 0;
+            case "ruecklauf":
+
+                if (self::$ruecklauf !== null) {
+                    if (isset(self::$ruecklauf[$course->getId()])) {
+                        return self::$ruecklauf[$course->getId()]['ResponseCount'] . " / " . self::$ruecklauf[$course->getId()]['ParticipantCount'];
+                    } else {
+                        return "";
+                    }
+                }
+
+                foreach (AdminCourseFilter::get()->getCourses() as $course_data) {
+                    if (Request::option("semester_id")) {
+                        $semester_id = Request::option("semester_id");
+                    } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
+                        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
+                    } else {
+                        $semester_id = Semester::findByTimestamp($course_data['start_time'])->id;
+                    }
+                    $p = EvasysCourseProfile::findBySemester($course_data['Seminar_id'], $semester_id);
+
+                    if (!$p['applied'] || !$p['transferred'] || $p->getFinalBegin() <= time()) {
+                        return "";
+                    }
+
+                    if ($p['split']) {
+                        $active_seminar_ids = array();
+                        foreach ($p->teachers as $teacher_id) {
+                            $active_seminar_ids[$p['seminar_id'].$teacher_id] = $p['seminar_id'];
+                        }
+                    } else {
+                        $active_seminar_ids = array($p['seminar_id'] => $p['seminar_id']);
+                    }
+
+                    $soap = EvasysSoap::get();
+                    $evasys_surveys_object = $soap->__soapCall("GetSurveyIDsByParams", array(
+                        'Params' => array(
+                            //'Instructors' => array("Strings" => $ids),
+                            'Name' => "%",
+                            'Courses' => array("Strings" => array_keys($active_seminar_ids)),
+                            'ExtendedResponseAsJSON' => true
+                        ))
+                    );
+                    if (is_a($evasys_surveys_object, "SoapFault")) {
+                        PageLayout::postError("SOAP-error: " . $evasys_surveys_object->getMessage());
+                        return;
+                    }
+                    foreach ($evasys_surveys_object->Strings as $json) {
+                        $json = json_decode($json, true);
+                        if ($active_seminar_ids[$json['CourseCode']]
+                            && (!$courses[$active_seminar_ids[$json['CourseCode']]] || $json['OpenState'])) {
+                            $course = Course::find($active_seminar_ids[$json['CourseCode']]);
+                            $courses[$active_seminar_ids[$json['CourseCode']]] = array(
+                                'Nummer' => $course['veranstaltungsnummer'],
+                                'Name' => $course['name'],
+                                'Seminar_id' => $active_seminar_ids[$json['CourseCode']],
+                                'split' => (strlen($json['CourseCode']) > 32),
+                                'ResponseCount' => $json['ResponseCount'],
+                                'ParticipantCount' => $json['ParticipantCount'],
+                                'open' => $json['OpenState']
+                            );
+                        }
+                    }
+                }
+
+
+                self::$ruecklauf = $courses;
+                if (isset(self::$ruecklauf[$course->getId()])) {
+                    return self::$ruecklauf[$course->getId()]['ResponseCount'] . " / " . self::$ruecklauf[$course->getId()]['ParticipantCount'];
+                } else {
+                    return "";
+                }
         }
     }
 

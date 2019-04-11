@@ -92,8 +92,8 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
                         'ExtendedResponseAsJSON' => true
                     ))
                 );
-                if (is_a($evasys_user_object, "SoapFault")) {
-                    PageLayout::postError("SOAP-error: " . $evasys_user_object->getMessage());
+                if (is_a($evasys_surveys_object, "SoapFault")) {
+                    PageLayout::postError("SOAP-error: " . $evasys_surveys_object->getMessage());
                     return;
                 }
                 foreach ($evasys_surveys_object->Strings as $json) {
