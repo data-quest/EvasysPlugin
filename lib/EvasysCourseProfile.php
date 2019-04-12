@@ -75,12 +75,20 @@ class EvasysCourseProfile extends SimpleORMap {
         ));
         $is_dozent = (bool) $is_dozent->fetch(PDO::FETCH_COLUMN, 0);
         if ($applied && $is_dozent) {
+            $institut_ids = array($this->course['institut_id']);
+            $fakultaet_id = $this->course->home_institut['fakultaet_id'];
+            if (!in_array($fakultaet_id, $institut_ids)) {
+                $institut_ids[] = $fakultaet_id;
+            }
+
             //Nachricht an zentrale QM und an Mitdozenten:
             $statement = DBManager::get()->prepare("
                 SELECT roles_user.userid
                 FROM roles_user
                     INNER JOIN roles ON (roles_user.roleid = roles.roleid)
-                WHERE roles.rolename = :role
+                WHERE (roles.rolename = :role
+                    AND institut_id = '')
+                    OR (roles.rolename = :role AND institut_id IN (:institut_ids))
                 UNION DISTINCT SELECT auth_user_md5.user_id
                 FROM auth_user_md5
                     INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
@@ -89,7 +97,8 @@ class EvasysCourseProfile extends SimpleORMap {
             ");
             $statement->execute(array(
                 "role" => "Evasys-Admin",
-                'seminar_id' => $this['seminar_id']
+                'seminar_id' => $this['seminar_id'],
+                'institut_ids' => $institut_ids
             ));
             $user_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
             $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);

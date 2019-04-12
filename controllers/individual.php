@@ -7,7 +7,8 @@ class IndividualController extends PluginController
     function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        if (!EvasysPlugin::isRoot() || !Config::get()->EVASYS_ENABLE_PROFILES) {
+        if ((!EvasysPlugin::isRoot() && RolePersistence::isAssignedRole($GLOBALS['user']->id, "Evasys-Admin"))
+                || !Config::get()->EVASYS_ENABLE_PROFILES) {
             throw new AccessDeniedException();
         }
     }

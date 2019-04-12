@@ -93,18 +93,6 @@ class AddCourseProfiles extends Migration
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
 
-        /*
-        ALTER TABLE `evasys_global_profiles`
-        ADD COLUMN `teacher_info` text DEFAULT NULL AFTER `antrag_info`;
-        ALTER TABLE `evasys_institute_profiles`
-        ADD COLUMN `teacher_info` text DEFAULT NULL AFTER `antrag_info`;
-        ALTER TABLE `evasys_course_profiles`
-        DROP COLUMN `address`,
-        DROP COLUMN `language`,
-        DROP COLUMN `number_of_sheets`,
-        DROP COLUMN `hinweis`;
-        */
-
         DBManager::get()->exec("
             CREATE TABLE `evasys_profiles_semtype_forms` (
                 `profile_form_id` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
