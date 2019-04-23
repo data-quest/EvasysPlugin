@@ -21,7 +21,7 @@ class EvasysSoap
                 'trace' => 1,
                 'exceptions' => 0,
                 'cache_wsdl' => ($GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE']))
-                    ? WSDL_CACHE_BOTH
+                    ? WSDL_CACHE_DISK
                     : WSDL_CACHE_NONE,
                 'features' => SOAP_SINGLE_ELEMENT_ARRAYS
             ));
