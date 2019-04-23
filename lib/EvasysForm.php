@@ -47,7 +47,10 @@ class EvasysForm extends SimpleORMap
             } else {
                 //var_dump($forms);
                 //var_dump($soap->__getLastResponse());die();
-                return "SOAP-error: " . $forms->getMessage() . ($forms->detail ? " (" . $forms->detail . ")" : "");
+                return "SOAP-error: " . $forms->getMessage()
+                    . ((is_string($forms->detail) || (is_object($forms->detail) && method_exists($forms->detail, "__toString")))
+                        ? " (" . $forms->detail . ")"
+                        : "");
             }
         } else {
             $form_ids = array();
