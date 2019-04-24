@@ -547,10 +547,12 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     return "";
                 }
                 $emails = array();
-                foreach ((array) $profile['teachers']->getArrayCopy() as $teacher_id) {
-                    $teacher = User::find($teacher_id);
-                    if ($teacher) {
-                        $emails[] = $teacher->email;
+                if ($profile['teachers']) {
+                    foreach ((array) $profile['teachers']->getArrayCopy() as $teacher_id) {
+                        $teacher = User::find($teacher_id);
+                        if ($teacher) {
+                            $emails[] = $teacher->email;
+                        }
                     }
                 }
                 return implode(";", $emails);
