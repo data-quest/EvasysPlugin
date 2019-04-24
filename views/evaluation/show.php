@@ -1,3 +1,10 @@
+<? $student_infotext = trim($profile->getParentsDefaultValue("student_infotext")) ?>
+<? if ($student_infotext) : ?>
+    <div class="messagebox">
+        <?= formatReady($student_infotext) ?>
+    </div>
+<? endif ?>
+
 <? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
     <?= $this->render_partial("evaluation/_survey_dozent.php", array(
         'surveys' => $surveys,

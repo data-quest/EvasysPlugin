@@ -564,46 +564,46 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     if (isset(self::$ruecklauf[$course->getId()])) {
                         return self::$ruecklauf[$course->getId()]['ResponseCount'] . " / " . self::$ruecklauf[$course->getId()]['ParticipantCount'];
                     } else {
-                        return "";
+                        return "x";
                     }
                 }
+                $courses = array();
+                $active_seminar_ids = array();
 
-                foreach (AdminCourseFilter::get()->getCourses() as $course_data) {
-                    if (Request::option("semester_id")) {
-                        $semester_id = Request::option("semester_id");
-                    } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
-                        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
-                    } else {
-                        $semester_id = Semester::findByTimestamp($course_data['start_time'])->id;
-                    }
+                foreach (AdminCourseFilter::get()->getCourses(false) as $course_data) {
                     $p = EvasysCourseProfile::findBySemester($course_data['Seminar_id'], $semester_id);
 
-                    if (!$p['applied'] || !$p['transferred'] || $p->getFinalBegin() <= time()) {
-                        return "";
+                    if (!$p['applied'] || !$p['transferred'] || $p->getFinalBegin() >= time()) {
+                        continue; //nothing to show for this course
                     }
 
                     if ($p['split']) {
-                        $active_seminar_ids = array();
                         foreach ($p->teachers as $teacher_id) {
                             $active_seminar_ids[$p['seminar_id'].$teacher_id] = $p['seminar_id'];
                         }
                     } else {
-                        $active_seminar_ids = array($p['seminar_id'] => $p['seminar_id']);
+                        $active_seminar_ids[$p['seminar_id']] = $p['seminar_id'];
                     }
 
+
+                }
+
+                if (count($active_seminar_ids)) {
                     $soap = EvasysSoap::get();
                     $evasys_surveys_object = $soap->__soapCall("GetSurveyIDsByParams", array(
-                        'Params' => array(
-                            //'Instructors' => array("Strings" => $ids),
-                            'Name' => "%",
-                            'Courses' => array("Strings" => array_keys($active_seminar_ids)),
-                            'ExtendedResponseAsJSON' => true
-                        ))
+                            'Params' => array(
+                                //'Instructors' => array("Strings" => $ids),
+                                'Name' => "%",
+                                'Courses' => array("Strings" => array_keys($active_seminar_ids)),
+                                'ExtendedResponseAsJSON' => true
+                            )
+                        )
                     );
                     if (is_a($evasys_surveys_object, "SoapFault")) {
                         PageLayout::postError("SOAP-error: " . $evasys_surveys_object->getMessage());
                         return;
                     }
+                    var_dump($evasys_surveys_object);
                     foreach ($evasys_surveys_object->Strings as $json) {
                         $json = json_decode($json, true);
                         if ($active_seminar_ids[$json['CourseCode']]
@@ -627,7 +627,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 if (isset(self::$ruecklauf[$course->getId()])) {
                     return self::$ruecklauf[$course->getId()]['ResponseCount'] . " / " . self::$ruecklauf[$course->getId()]['ParticipantCount'];
                 } else {
-                    return "";
+                    return "z";
                 }
         }
     }

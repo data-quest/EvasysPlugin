@@ -1,3 +1,7 @@
+<div class="messagebox">
+    <?= formatReady("Hi!") ?>
+</div>
+
 <? if ($profile) : ?>
 
 <form action="<?= PluginEngine::getLink($plugin, array(), $con."/edit") ?>"
@@ -97,6 +101,16 @@
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("teacher_info") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
+
+        <label>
+            <?= _("Infotext für Studierende über der Evaluation") ?>
+            <textarea name="data[student_infotext]"><?= htmlReady($profile['student_infotext']) ?></textarea>
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("student_infotext") ?>
             <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
                   class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
         <? endif ?>
@@ -289,11 +303,12 @@ $list = new SelectWidget(
     PluginEngine::getURL($plugin, array(), $this->controller->profile_type."profile/index"),
     'semester_id'
 );
+
 foreach (EvasysGlobalProfile::findBySQL("1=1 ORDER BY begin DESC ") as $profile) {
     $list->addElement(
         new SelectElement(
             $profile->getId(),
-            $profile->semester['name'],
+            $profile->semester ? $profile->semester['name'] : $profile->getId(),
             $profile->getId() === $semester_id
         ),
         'select-'.$profile->getId()

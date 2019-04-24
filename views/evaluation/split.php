@@ -1,3 +1,10 @@
+<? $student_infotext = trim($profile->getParentsDefaultValue("student_infotext")) ?>
+<? if ($student_infotext) : ?>
+    <div class="messagebox">
+        <?= formatReady($student_infotext) ?>
+    </div>
+<? endif ?>
+
 <? $tabs = array() ?>
 <div id="evasys_tabs">
     <ul>
