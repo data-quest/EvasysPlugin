@@ -1,7 +1,3 @@
-<div class="messagebox">
-    <?= formatReady("Hi!") ?>
-</div>
-
 <? if ($profile) : ?>
 
 <form action="<?= PluginEngine::getLink($plugin, array(), $con."/edit") ?>"
