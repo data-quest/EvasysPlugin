@@ -560,75 +560,50 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 return $profile && $profile['split'] ? 1 : 0;
             case "ruecklauf":
 
-                if (self::$ruecklauf !== null) {
-                    if (isset(self::$ruecklauf[$course->getId()])) {
-                        return self::$ruecklauf[$course->getId()]['ResponseCount'] . " / " . self::$ruecklauf[$course->getId()]['ParticipantCount'];
-                    } else {
-                        return "x";
-                    }
-                }
-                $courses = array();
                 $active_seminar_ids = array();
 
-                foreach (AdminCourseFilter::get()->getCourses(false) as $course_data) {
-                    $p = EvasysCourseProfile::findBySemester($course_data['Seminar_id'], $semester_id);
-
-                    if (!$p['applied'] || !$p['transferred'] || $p->getFinalBegin() >= time()) {
-                        continue; //nothing to show for this course
-                    }
-
-                    if ($p['split']) {
-                        foreach ($p->teachers as $teacher_id) {
-                            $active_seminar_ids[$p['seminar_id'].$teacher_id] = $p['seminar_id'];
-                        }
-                    } else {
-                        $active_seminar_ids[$p['seminar_id']] = $p['seminar_id'];
-                    }
-
-
+                $profile;
+                if (!$profile['applied'] || !$profile['transferred'] || $profile->getFinalBegin() >= time()) {
+                    return ""; //nothing to show for this course
                 }
 
-                if (count($active_seminar_ids)) {
-                    $soap = EvasysSoap::get();
-                    $evasys_surveys_object = $soap->__soapCall("GetSurveyIDsByParams", array(
-                            'Params' => array(
-                                //'Instructors' => array("Strings" => $ids),
-                                'Name' => "%",
-                                'Courses' => array("Strings" => array_keys($active_seminar_ids)),
-                                'ExtendedResponseAsJSON' => true
-                            )
+                if ($profile['split']) {
+                    foreach ($profile->teachers as $teacher_id) {
+                        $active_seminar_ids[$profile['seminar_id'].$teacher_id] = $profile['seminar_id'];
+                    }
+                } else {
+                    $active_seminar_ids[$profile['seminar_id']] = $profile['seminar_id'];
+                }
+
+                $results = array();
+
+                $soap = EvasysSoap::get();
+
+                foreach (array_keys($active_seminar_ids) as $course_code) {
+                    $evasys_surveys_object = $soap->__soapCall("GetCourse", array(
+                            'CourseId' => $course_code,
+                            'IdType' => "PUBLIC",
+                            'IncludeSurveys' => true,
+                            'IncludeParticipants' => false
                         )
                     );
                     if (is_a($evasys_surveys_object, "SoapFault")) {
                         PageLayout::postError("SOAP-error: " . $evasys_surveys_object->getMessage());
                         return;
                     }
-                    var_dump($evasys_surveys_object);
-                    foreach ($evasys_surveys_object->Strings as $json) {
-                        $json = json_decode($json, true);
-                        if ($active_seminar_ids[$json['CourseCode']]
-                            && (!$courses[$active_seminar_ids[$json['CourseCode']]] || $json['OpenState'])) {
-                            $course = Course::find($active_seminar_ids[$json['CourseCode']]);
-                            $courses[$active_seminar_ids[$json['CourseCode']]] = array(
-                                'Nummer' => $course['veranstaltungsnummer'],
-                                'Name' => $course['name'],
-                                'Seminar_id' => $active_seminar_ids[$json['CourseCode']],
-                                'split' => (strlen($json['CourseCode']) > 32),
-                                'ResponseCount' => $json['ResponseCount'],
-                                'ParticipantCount' => $json['ParticipantCount'],
-                                'open' => $json['OpenState']
-                            );
-                        }
+                    //var_dump($evasys_surveys_object->m_oSurveyHolder->m_aSurveys->Surveys);
+                    foreach ($evasys_surveys_object->m_oSurveyHolder->m_aSurveys->Surveys as $survey_data) {
+                        $count_forms = $survey_data->m_nFormCount;
+                        $tans = $survey_data->m_nPswdCount;
+                        $open = $survey_data->m_nOpenState;
+                        $return = round(100 * $count_forms / ($tans ?: 1));
+                        $color = $return >= 80 ? '#8bbd40' : ($return >= 30 ? '#a1aec7' : '#d60000');
+                        $results[] = '<div style="background-image: linear-gradient(0deg, '. $color .', '. $color . '); background-repeat: no-repeat; background-size: ' . (int) $return .'% 100%;">'.htmlReady($count_forms . " / ". $tans).'</div>';
+
                     }
                 }
 
-
-                self::$ruecklauf = $courses;
-                if (isset(self::$ruecklauf[$course->getId()])) {
-                    return self::$ruecklauf[$course->getId()]['ResponseCount'] . " / " . self::$ruecklauf[$course->getId()]['ParticipantCount'];
-                } else {
-                    return "z";
-                }
+                return implode("\n", $results);
         }
     }
 
