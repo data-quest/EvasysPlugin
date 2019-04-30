@@ -1,4 +1,4 @@
-<? $student_infotext = trim($profile->getParentsDefaultValue("student_infotext")) ?>
+<? $student_infotext = trim($profile->getPresetAttribute("student_infotext")) ?>
 <? if ($student_infotext) : ?>
     <div class="messagebox">
         <?= formatReady($student_infotext) ?>
