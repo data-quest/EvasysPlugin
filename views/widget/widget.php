@@ -15,7 +15,7 @@
             </tr>
         </thead>
         <tbody>
-            <? if (count($courses)) : ?>
+            <? if (!empty($courses)) : ?>
                 <? foreach ($courses as $course) : ?>
                     <? $profile = EvasysCourseProfile::findBySemester($course['Seminar_id']) ?>
                     <tr>

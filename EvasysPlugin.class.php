@@ -464,7 +464,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             ");
             $statement->execute(array($GLOBALS['user']->id));
             $roles = $statement->fetchAll(PDO::FETCH_ASSOC);
-            if (!$seminar_id && count($roles)) {
+            if (!$seminar_id && !empty($roles)) {
                 return true;
             } else {
 

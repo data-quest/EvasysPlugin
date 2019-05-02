@@ -18,7 +18,7 @@
         </thead>
 
         <tbody>
-            <? if (count($profiles)) : ?>
+            <? if (!empty($profiles)) : ?>
             <? foreach ($profiles as $profile) : ?>
                 <?= $this->render_partial("individual/course", array(
                         'profile' => $profile,

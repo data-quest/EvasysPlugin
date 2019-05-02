@@ -103,7 +103,7 @@
                 </label>
             </td>
             <td>
-                <? if (count($available_form_ids)) : ?>
+                <? if (!empty($available_form_ids)) : ?>
                 <select name="form_id"
                         onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
                     <option value="">

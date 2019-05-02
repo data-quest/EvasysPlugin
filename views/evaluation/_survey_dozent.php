@@ -1,10 +1,10 @@
-<? if (!$surveys && !count($surveys)) : ?>
+<? if (!$surveys && empty($surveys)) : ?>
     <h3><?= _("Es gibt keine aktuellen Evaluationen zu dieser Veranstaltung.") ?></h3>
 <? else : ?>
     <div style="padding: 15px; font-size: 1.2em; text-align: center;">
         <? if (count($surveys) < 2) : ?>
             <h3><?= _("Es gibt eine Evaluation zu dieser Veranstaltung") ?></h3>
-        <? elseif(!count($surveys)) : ?>
+        <? elseif(empty($surveys)) : ?>
             <h3><?= _("Keine verfügbaren Evaluationen") ?></h3>
         <? else : ?>
             <h3><?= _("Evaluationen zu dieser Veranstaltung") ?></h3>

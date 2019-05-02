@@ -45,7 +45,7 @@
                 <? if ($values["visible"] == 0) : ?>
                     <?= _("(versteckt)") ?>
                 <? endif ?>
-                <?php if (count($children) > 0) : ?>
+                <?php if (!empty($children)) : ?>
                     <br>
                     <a href="" class="toggle-subcourses" data-get-subcourses-url="<?= $controller->url_for('admin/courses/get_subcourses', $semid) ?>">
                         <?= Icon::create('add', 'clickable')->asImg(12) ?>

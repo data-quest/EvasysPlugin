@@ -54,7 +54,7 @@ class AdminController extends PluginController
             $courses = array_unique($courses);
             foreach ($courses as $course_id) {
                 $evasys_evaluations = EvasysSeminar::findBySeminar($course_id);
-                if (count($evasys_evaluations)) {
+                if (!empty($evasys_evaluations)) {
                     foreach ($evasys_evaluations as $evaluation) {
                         $evaluation['activated'] = $activate[$course_id] ? 1 : 0;
                         if (!$evaluation['activated']) {
@@ -73,7 +73,7 @@ class AdminController extends PluginController
                 }
             }
 
-            if (count($evasys_seminar) > 0) {
+            if (!empty($evasys_seminar)) {
                 $success = EvasysSeminar::UploadSessions($evasys_seminar);
                 if ($success === true) {
                     foreach (Request::getArray("course") as $course_id) {

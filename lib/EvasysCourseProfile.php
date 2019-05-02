@@ -258,7 +258,7 @@ class EvasysCourseProfile extends SimpleORMap {
             ));
             $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
-            if (count($available_form_ids)) {
+            if (!empty($available_form_ids)) {
                 if ($form_id && in_array($form_id, $available_form_ids)) {
                     return $form_id;
                 } else {
@@ -298,7 +298,7 @@ class EvasysCourseProfile extends SimpleORMap {
                 ));
                 $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
-                if (count($available_form_ids)) {
+                if (!empty($available_form_ids)) {
                     if ($form_id && in_array($form_id, $available_form_ids)) {
                         return $form_id;
                     } else {
@@ -337,7 +337,7 @@ class EvasysCourseProfile extends SimpleORMap {
             ));
             $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
-            if (count($available_form_ids)) {
+            if (!empty($available_form_ids)) {
                 if ($form_id && in_array($form_id, $available_form_ids)) {
                     return $form_id;
                 } else {
@@ -376,7 +376,7 @@ class EvasysCourseProfile extends SimpleORMap {
                 'profile_id' => $inst_profile->getId()
             ));
             $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-            if (count($form_ids)) {
+            if (!empty($form_ids)) {
                 return $form_ids;
             }
         }
@@ -399,7 +399,7 @@ class EvasysCourseProfile extends SimpleORMap {
                     'profile_id' => $inst_profile->getId()
                 ));
                 $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-                if (count($form_ids)) {
+                if (!empty($form_ids)) {
                     return $form_ids;
                 }
             }
@@ -422,7 +422,7 @@ class EvasysCourseProfile extends SimpleORMap {
                 'profile_id' => $global_profile->getId()
             ));
             $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-            if (count($form_ids)) {
+            if (!empty($form_ids)) {
                 return $form_ids;
             }
         }

@@ -31,7 +31,7 @@ class EvaluationController extends PluginController
         $this->surveys = array();
 
         //repair-code
-        if (!count($this->evasys_seminars)) {
+        if (empty($this->evasys_seminars)) {
             $activated = false;
             foreach (EvasysCourseProfile::findBySQL("seminar_id = ?", array(Context::get()->id)) as $profile) {
                 if ($profile['applied'] && $profile['transferred']) {
@@ -113,7 +113,7 @@ class EvaluationController extends PluginController
 
         $this->open_surveys = array();
 
-        if (count($this->evasys_seminars)
+        if (!empty($this->evasys_seminars)
             && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
             foreach ($this->evasys_seminars as $dozent_id => $seminar) {
                 $this->open_surveys[$dozent_id] = $seminar->getSurveys($GLOBALS['user']->id);

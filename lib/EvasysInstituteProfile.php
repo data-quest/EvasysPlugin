@@ -69,7 +69,7 @@ class EvasysInstituteProfile extends SimpleORMap
                 'profile_id' => $profile->getId(),
                 'sem_type_id' => $sem_type_id
             ));
-            if (count($forms)) {
+            if (!empty($forms)) {
                 return $forms;
             } else {
                 return $profile->getParentsAvailableForms($sem_type_id);

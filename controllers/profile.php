@@ -105,7 +105,7 @@ class ProfileController extends PluginController {
         Navigation::activateItem("/browse/my_courses/list");
         PageLayout::setTitle(_("Evaluationsdaten"));
         $this->ids = array_keys(Request::getArray("c"));
-        if (!count($this->ids)) {
+        if (empty($this->ids)) {
             PageLayout::postError(_("Es wurden keine Veranstaltungen zum Bearbeiten ausgewählt."));
             $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
         }

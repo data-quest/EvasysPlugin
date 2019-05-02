@@ -170,7 +170,7 @@
                         <? if ($this->controller->profile_type === "institute") : ?>
                             <? $semtypeforms = $profile->getParentsAvailableForms($sem_type['id']) ?>
                             <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
-                                  class="default_value">(<? if (count($semtypeforms)) {
+                                  class="default_value">(<? if (!empty($semtypeforms)) {
                                     foreach ($semtypeforms as $key => $semtypeform) {
                                         if ($key > 0) {
                                             echo ", ";
@@ -186,7 +186,7 @@
                         <? endif ?>
                     </td>
                     <td>
-                        <? if (count($available_forms_by_type[$sem_type['id']])) : ?>
+                        <? if (!empty($available_forms_by_type[$sem_type['id']])) : ?>
                         <a href="<?= PluginEngine::getLink($plugin, array(), "forms/sort/".$this->controller->profile_type."/".$sem_type['id']."/".$profile->getId()) ?>"
                            title="<?= _("Sortierung bearbeiten") ?>"
                            data-dialog>

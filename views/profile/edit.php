@@ -128,7 +128,7 @@
 
                 <? if (!$profile->hasDatesInEvalTimespan()) : ?>
                     <?= MessageBox::error(_("Kein Veranstaltungstermin befindet sich in dem vorgesehenen Evaluationszeitraum!")) ?>
-                    <? if (count($profile->course->dates) && $editable) : ?>
+                    <? if (!empty($profile->course->dates) && $editable) : ?>
                         <?= _("Anderen Termin auswählen") ?>
                         <?
                             $default_date = null;

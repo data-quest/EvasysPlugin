@@ -1,5 +1,5 @@
 <? $min_user_permissions = EvasysPlugin::useLowerPermissionLevels() ? "user" : "autor" ?>
-<? if (count($surveys)
+<? if (!empty($surveys)
     && $GLOBALS['perm']->have_studip_perm($min_user_permissions, Context::get()->id)
     && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
 

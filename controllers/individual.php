@@ -98,7 +98,7 @@ class IndividualController extends PluginController
         $data = array();
         foreach ($this->profiles as $profile) {
             $teachers = $profile['teachers']->getArrayCopy();
-            if (!count($teachers)) {
+            if (empty($teachers)) {
                 $seminar = new Seminar($profile['seminar_id']);
                 $teachers = array_map(function ($dozent) { return $dozent['user_id']; }, $seminar->getMembers("dozent"));
             }

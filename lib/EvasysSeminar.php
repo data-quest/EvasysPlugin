@@ -123,7 +123,7 @@ class EvasysSeminar extends SimpleORMap
                 }
             }
         }
-        if (!count($courses)) {
+        if (empty($courses)) {
             //nothing to insert, we probably have only deleted something
             return true;
         }
