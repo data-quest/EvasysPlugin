@@ -592,14 +592,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                         return;
                     }
                     //var_dump($evasys_surveys_object->m_oSurveyHolder->m_aSurveys->Surveys);
-                    foreach ($evasys_surveys_object->m_oSurveyHolder->m_aSurveys->Surveys as $survey_data) {
+                    foreach ((array) $evasys_surveys_object->m_oSurveyHolder->m_aSurveys->Surveys as $survey_data) {
                         $count_forms = $survey_data->m_nFormCount;
                         $tans = $survey_data->m_nPswdCount;
                         $open = $survey_data->m_nOpenState;
                         $return = round(100 * $count_forms / ($tans ?: 1));
                         $color = $return >= 80 ? '#8bbd40' : ($return >= 30 ? '#a1aec7' : '#d60000');
                         $results[] = '<div style="background-image: linear-gradient(0deg, '. $color .', '. $color . '); background-repeat: no-repeat; background-size: ' . (int) $return .'% 100%;">'.htmlReady($count_forms . " / ". $tans).'</div>';
-
                     }
                 }
 
