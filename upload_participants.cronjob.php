@@ -25,13 +25,7 @@ class EvasysUploadParticipantsJob extends CronJob
     public function setUp()
     {
         ini_set("memory_limit","1024M"); //won't work with suhosin
-        require_once __DIR__."/lib/EvasysSeminar.php";
-        require_once __DIR__."/lib/EvasysCourseProfile.php";
-        require_once __DIR__."/lib/EvasysInstituteProfile.php";
-        require_once __DIR__."/lib/EvasysGlobalProfile.php";
-        require_once __DIR__."/lib/EvasysMatching.php";
-        require_once __DIR__."/lib/EvasysForm.php";
-        require_once __DIR__."/lib/EvasysProfileSemtypeForm.php";
+        require_once __DIR__."/EvasysPlugin.class.php";
     }
 
     /**
