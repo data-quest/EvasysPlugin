@@ -59,46 +59,41 @@ class EvasysUploadParticipantsJob extends CronJob
     {
         $start = mktime(0, 0, 0, date("n"), date("j") + 1);
         $end = $start + 86400;
-        $semester_id = Semester::findByTimestamp($start)->id;
-        if ($semester_id) {
-            $statement = DBManager::get()->prepare("
-                SELECT `evasys_course_profiles`.`Seminar_id`
-                FROM `evasys_course_profiles`
-                    LEFT JOIN seminare ON (`evasys_course_profiles`.`Seminar_id` = `seminare`.`Seminar_id`)
-                    LEFT JOIN evasys_institute_profiles ON (`evasys_institute_profiles`.`institut_id` = `seminare`.`Institut_id` 
-                            AND evasys_institute_profiles.semester_id = :semester_id)
-                    LEFT JOIN `Institute` ON (`seminare`.`Institut_id` = `Institute`.`Institut_id`)
-                    LEFT JOIN `evasys_institute_profiles` AS `evasys_fakultaet_profiles` ON (`evasys_fakultaet_profiles`.`institut_id` = `Institute`.`fakultaets_id` 
-                            AND `evasys_fakultaet_profiles`.`semester_id` = :semester_id)
-                    LEFT JOIN evasys_global_profiles ON (`evasys_global_profiles`.`semester_id` = :semester_id)
-                WHERE `evasys_course_profiles`.`applied` = '1'
-                    AND `evasys_course_profiles`.`transferred` = '1'
-                    AND `evasys_course_profiles`.`semester_id` = :semester_id
-                    AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :start 
-                    AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :end
-            ");
-            $statement->execute(array(
-                'start' => $start,
-                'end' => $end,
-                'semester_id' => $semester_id
-            ));
-            $seminars = array();
-            foreach ($statement->fetchAll(PDO::FETCH_COLUMN, 0) as $seminar_id) {
-                $seminars[] = new EvasysSeminar($seminar_id);
+        $statement = DBManager::get()->prepare("
+            SELECT `evasys_course_profiles`.`Seminar_id`
+            FROM `evasys_course_profiles`
+                LEFT JOIN seminare ON (`evasys_course_profiles`.`Seminar_id` = `seminare`.`Seminar_id`)
+                LEFT JOIN evasys_institute_profiles ON (`evasys_institute_profiles`.`institut_id` = `seminare`.`Institut_id` 
+                        AND evasys_institute_profiles.semester_id = `evasys_course_profiles`.`semester_id`)
+                LEFT JOIN `Institute` ON (`seminare`.`Institut_id` = `Institute`.`Institut_id`)
+                LEFT JOIN `evasys_institute_profiles` AS `evasys_fakultaet_profiles` ON (`evasys_fakultaet_profiles`.`institut_id` = `Institute`.`fakultaets_id` 
+                        AND `evasys_fakultaet_profiles`.`semester_id` = `evasys_course_profiles`.`semester_id`)
+                LEFT JOIN evasys_global_profiles ON (`evasys_global_profiles`.`semester_id` = `evasys_course_profiles`.`semester_id`)
+            WHERE `evasys_course_profiles`.`applied` = '1'
+                AND `evasys_course_profiles`.`transferred` = '1'
+                AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :start 
+                AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :end
+        ");
+        $statement->execute(array(
+            'start' => $start,
+            'end' => $end
+        ));
+        $seminars = array();
+        foreach ($statement->fetchAll(PDO::FETCH_COLUMN, 0) as $seminar_id) {
+            $seminars[] = new EvasysSeminar($seminar_id);
+        }
+        if (count($seminars)) {
+            echo count($seminars) . " Veranstaltungen werden mit EvaSys synchronisiert.\n";
+            echo implode(" ", array_map(function ($s) { return $s->getId(); }, $seminars))."\n";
+            $error = EvasysSeminar::UploadSessions($seminars);
+            if (is_string($error)) {
+                echo "error: " . $error . "\n";
             }
-            if (count($seminars)) {
-                echo count($seminars) . " Veranstaltungen werden mit EvaSys synchronisiert.\n";
-                echo implode(" ", array_map(function ($s) { return $s->getId(); }, $seminars))."\n";
-                $error = EvasysSeminar::UploadSessions($seminars);
-                if (is_string($error)) {
-                    echo "error: " . $error . "\n";
-                }
-                foreach (PageLayout::getMessages() as $messagebox) {
-                    echo $messagebox->class . ": " . $messagebox->message . "\n";
-                }
-            } else {
-                echo "Es müssen keine Evaluationen am ".date("d.m.Y", $start)." gestartet werden, daher wird auch nichts synchronisiert.";
+            foreach (PageLayout::getMessages() as $messagebox) {
+                echo $messagebox->class . ": " . $messagebox->message . "\n";
             }
+        } else {
+            echo "Es müssen keine Evaluationen am ".date("d.m.Y", $start)." gestartet werden, daher wird auch nichts synchronisiert.";
         }
     }
 }
