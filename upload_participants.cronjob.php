@@ -26,6 +26,12 @@ class EvasysUploadParticipantsJob extends CronJob
     {
         ini_set("memory_limit","1024M"); //won't work with suhosin
         require_once __DIR__."/lib/EvasysSeminar.php";
+        require_once __DIR__."/lib/EvasysCourseProfile.php";
+        require_once __DIR__."/lib/EvasysInstituteProfile.php";
+        require_once __DIR__."/lib/EvasysGlobalProfile.php";
+        require_once __DIR__."/lib/EvasysMatching.php";
+        require_once __DIR__."/lib/EvasysForm.php";
+        require_once __DIR__."/lib/EvasysProfileSemtypeForm.php";
     }
 
     /**
@@ -52,6 +58,7 @@ class EvasysUploadParticipantsJob extends CronJob
     public function execute($last_result, $parameters = array())
     {
         $start = mktime(0, 0, 0, date("n"), date("j") + 1);
+        $end = $start + 86400;
         $semester_id = Semester::findByTimestamp($start)->id;
         if ($semester_id) {
             $statement = DBManager::get()->prepare("
@@ -66,24 +73,31 @@ class EvasysUploadParticipantsJob extends CronJob
                     LEFT JOIN evasys_global_profiles ON (`evasys_global_profiles`.`semester_id` = :semester_id)
                 WHERE `evasys_course_profiles`.`applied` = '1'
                     AND `evasys_course_profiles`.`transferred` = '1'
+                    AND `evasys_course_profiles`.`semester_id` = :semester_id
                     AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :start 
-                    AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) <= :end
+                    AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :end
             ");
             $statement->execute(array(
                 'start' => $start,
-                'end' => $start + 86400,
+                'end' => $end,
                 'semester_id' => $semester_id
             ));
             $seminars = array();
             foreach ($statement->fetchAll(PDO::FETCH_COLUMN, 0) as $seminar_id) {
                 $seminars[] = new EvasysSeminar($seminar_id);
             }
-            $error = EvasysSeminar::UploadSessions($seminars);
-            if ($error) {
-                echo "error: ".$error."\n";
-            }
-            foreach (PageLayout::getMessages() as $messagebox) {
-                echo $messagebox->class.": ".$messagebox->message."\n";
+            if (count($seminars)) {
+                echo count($seminars) . " Veranstaltungen werden mit EvaSys synchronisiert.\n";
+                echo implode(" ", array_map(function ($s) { return $s->getId(); }, $seminars))."\n";
+                $error = EvasysSeminar::UploadSessions($seminars);
+                if (is_string($error)) {
+                    echo "error: " . $error . "\n";
+                }
+                foreach (PageLayout::getMessages() as $messagebox) {
+                    echo $messagebox->class . ": " . $messagebox->message . "\n";
+                }
+            } else {
+                echo "Es müssen keine Evaluationen am ".date("d.m.Y", $start)." gestartet werden, daher wird auch nichts synchronisiert.";
             }
         }
     }

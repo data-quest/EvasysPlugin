@@ -447,7 +447,7 @@ class EvasysSeminar extends SimpleORMap
                 //'InstructorLogin' => "",
                 'FirstName' => $user['Vorname'] ?: "",
                 'LastName' => $user['Nachname'] ?: "",
-                'Gender' => $user['geschlecht'] == 1 ? "m" : "w",
+                'Gender' => $user['geschlecht'] == 1 ? "m" : ($user['geschlecht'] == 2 ? "w" : "n"),
                 'Email' => $user['Email'],
                 'Title' => $user['title_front']
             );
