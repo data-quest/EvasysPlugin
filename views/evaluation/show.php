@@ -64,7 +64,7 @@ if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
     );
     Sidebar::Get()->addWidget($actions);
 
-    if (Config::get()->EVASYS_PUBLISH_RESULTS) {
+    if (Config::get()->EVASYS_PUBLISH_RESULTS && !$GLOBALS['perm']->have_perm("admin")) {
         $publish = $evasys_seminars[0] && $evasys_seminars[0]->publishingAllowed();
         $option = new OptionsWidget();
         $option->addCheckbox(

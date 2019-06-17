@@ -124,7 +124,7 @@ class EvaluationController extends PluginController
 
     public function toggle_publishing_action()
     {
-        if (Request::get("dozent_vote")) {
+        if (Request::get("dozent_vote") && !$GLOBALS['perm']->have_perm("admin")) {
             $evasys_seminar = EvasysSeminar::find(Context::get()->id);
             if (!$evasys_seminar) {
                 $evasys_seminar = new EvasysSeminar(Context::get()->id);
