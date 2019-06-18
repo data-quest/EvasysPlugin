@@ -8,15 +8,15 @@ class ProfileController extends PluginController {
             Navigation::activateItem("/course/admin/evasys");
         }
         PageLayout::setTitle(_("Evaluationsdaten bearbeiten"));
-        if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
-            $this->profile = EvasysCourseProfile::findBySemester(
-                $course_id,
-                $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
-            );
-        } elseif(Request::option("semester_id")) {
+        if (Request::option("semester_id")) {
             $this->profile = EvasysCourseProfile::findBySemester(
                 $course_id,
                 Request::option("semester_id")
+            );
+        } elseif ($GLOBALS['perm']->have_perm("admin") && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && strlen($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE) === 32) {
+            $this->profile = EvasysCourseProfile::findBySemester(
+                $course_id,
+                $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
             );
         } else {
             $course = Course::find($course_id);
