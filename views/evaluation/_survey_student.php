@@ -7,13 +7,27 @@
         <? if ($survey_data->TransactionNumber && ($survey_data->TransactionNumber !== "null")) : ?>
             <? $_SESSION['EVASYS_SURVEY_TAN_EXISTED_'.Context::get()->id] = true ?>
             <?= MessageBox::info(_("Falls die Evaluation länger braucht zum Laden, drücken Sie bitte nicht auf Neuladen der ganzen Seite.")) ?>
-            <iframe
-                id="survey_<?= htmlReady($survey_data->TransactionNumber) ?>"
-                style="width: 100%; height: 600px; border: 0px;"
-                frameborder="0"
-                allowfullscreen
-                src="<?= htmlReady(Config::get()->EVASYS_URI."/indexstud.php?typ=html&user_tan=".urlencode($survey_data->TransactionNumber)) ?>">
-            </iframe>
+
+            <!-- Set scrollable div around iframe when on iOS (Safari and other Browsers on iOS need this to scroll the iframe) -->
+            <? if (preg_match('/iP(ad|hone|od).+Safari/', $_SERVER['HTTP_USER_AGENT']) === 1) : ?>
+                <div style="-webkit-overflow-scrolling: touch; overflow: scroll;">
+                    <iframe
+                        id="survey_<?= htmlReady($survey_data->TransactionNumber) ?>"
+                        style="width: 100%; height: 600px; border: 0px;"
+                        frameborder="0"
+                        allowfullscreen
+                        src="<?= htmlReady(Config::get()->EVASYS_URI.'/indexstud.php?typ=html&user_tan='.urlencode($survey_data->TransactionNumber)) ?>">
+                    </iframe>
+                </div>
+            <? else : ?>
+                <iframe
+                    id="survey_<?= htmlReady($survey_data->TransactionNumber) ?>"
+                    style="width: 100%; height: 600px; border: 0px;"
+                    frameborder="0"
+                    allowfullscreen
+                    src="<?= htmlReady(Config::get()->EVASYS_URI.'/indexstud.php?typ=html&user_tan='.urlencode($survey_data->TransactionNumber)) ?>">
+                </iframe>
+            <? endif ?>
         <? else : ?>
             <? if ($_SESSION['EVASYS_SURVEY_TAN_EXISTED_'.Context::get()->id]) : ?>
                 <?= MessageBox::success(_("Sie haben schon an der aktuellen Evaluation teilgenommen. Besten Dank!")) ?>
