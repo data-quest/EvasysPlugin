@@ -17,7 +17,7 @@ class EvasysSoap
                 throw new Exception("EVASYS_* Konfiguration unvollständig!");
             }
             self::$instance = new EvasysSoapClient($evasys_wsdl, array(
-                'connection_timeout' => 60 * 60,
+                'connection_timeout' => 1, //Zeit für den Verbindungsaufbau
                 'trace' => 1,
                 'exceptions' => 0,
                 'cache_wsdl' => ($GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE']))

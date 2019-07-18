@@ -51,8 +51,8 @@ class EvasysUploadParticipantsJob extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
-        $start = mktime(0, 0, 0, date("n"), date("j") + 1);
-        $end = $start + 86400;
+        $start = mktime(0, 0, 0, date("n"), date("j") + 1); // 0 Uhr des nächsten Tages
+        $end = $start + 86400; // 0 Uhr des übernächsten Tages
         $statement = DBManager::get()->prepare("
             SELECT `evasys_course_profiles`.`Seminar_id`
             FROM `evasys_course_profiles`
