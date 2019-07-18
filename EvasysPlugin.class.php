@@ -366,7 +366,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getDisplayName() {
         if (Navigation::hasItem("/course") && Navigation::getItem("/course")->isActive()) {
-            return Context::get()->getHeaderLine().": "._("Evaluation");
+            return Context::getHeaderLine().": "._("Evaluation");
         } else {
             return _("EvaSys");
         }
