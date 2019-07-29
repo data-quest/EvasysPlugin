@@ -16,6 +16,7 @@ Man braucht dafür ein EvaSys und einen Nutzer, für den die SOAP-Schnittstelle 
 * `GetSurveyIDsByParams`
 * `GetUserIdsByParams`
 * `InsertCourses`
+* `GetPDFReport`
 
 #### Einstellungen des Plugins
 
@@ -25,8 +26,10 @@ Die Daten der SOAP-Nutzer müssen noch in Stud.IP eingegeben werden. Das macht m
 * `EVASYS_USER`: Nutzername des SOAP-Nutzers, der die obigen Services abfragen kann.
 * `EVASYS_PASSWORD`: Passwort dieses SOAP-Nutzers im Klartext.
 
-Hat man zumindest diese Einstellungen eingetragen und sollten sie stimmen, so sieht man unter Admin -> EvaSys -> Fragebögen eine aktuelle Liste aller aktiven Fragebögen aus EvaSys. Sieht man diese Liste nicht oder gibt es einen Fehler, stimmt die verbindung zwischen Stud.IP und EvaSys noch nicht. 
-
+Hat man zumindest diese Einstellungen eingetragen und sollten sie stimmen, so sieht man unter Admin -> EvaSys -> Fragebögen eine aktuelle Liste aller aktiven Fragebögen aus EvaSys. Sieht man diese Liste nicht oder gibt es einen Fehler, stimmt die Verbindung zwischen Stud.IP und EvaSys noch nicht.
+Ein weiterer wichtiger Konfigurationsparameter ist `EVASYS_CACHE`:
+* `EVASYS_CACHE`: Zeitwert (in Minuten), in der Ergebnisse von Anfragen an EvaSys zwischengespeichert werden.
+Der Wert für die Cache-Zeit sollte in produktiven Umgebungen min. 1 betragen. Anderenfalls werden unnötig viele Anfragen an EvaSys gestellt.
 
 #### Weitere Dokumentationen des Plugins
 
