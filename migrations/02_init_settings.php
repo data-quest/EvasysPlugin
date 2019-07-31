@@ -31,7 +31,7 @@ class InitSettings extends Migration
             'description' => "Password to authenticate at the evasys-server."
         ));
         Config::get()->create("EVASYS_CACHE", array(
-            'value' => 0,
+            'value' => 1,
             'type' => "integer",
             'range' => "global",
             'section' => "EVASYS_PLUGIN",
