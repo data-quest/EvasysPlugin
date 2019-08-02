@@ -10,4 +10,8 @@ class AddExportDozentByEmail extends Migration
             'description' => "Which field should be used to export the dozent (user_id, email, datafield_id)."
         ));
 	}
+
+    function down() {
+        Config::get()->delete("EVASYS_EXPORT_DOZENT_BY_FIELD");
+    }
 }

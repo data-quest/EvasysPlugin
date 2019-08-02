@@ -233,6 +233,11 @@ class AddCourseProfiles extends Migration
             DROP COLUMN `publishing_allowed_by_dozent`
         ");
 
+        // revert up migration (line 209-215), which will fail on reinstall, since evasys_seminar is not dropped on deinstallation
+        // with error: dublicate key 'evasys_id'
+        DBManager::get()->exec("ALTER TABLE `evasys_seminar` DROP PRIMARY KEY, DROP KEY `evasys_id`");
+        DBManager::get()->exec("ALTER TABLE `evasys_seminar` ADD PRIMARY KEY ( `Seminar_id` , `evasys_id` )");
+
         Config::get()->delete("EVASYS_TRANSFER_PERMISSION");
 
         DBManager::get()->exec("

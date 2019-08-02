@@ -9,7 +9,11 @@ class InitPlugin extends Migration
             `activated` tinyint(4) NOT NULL DEFAULT '0',
             `publishing_allowed` tinyint(4) NOT NULL DEFAULT '0',
             PRIMARY KEY (`Seminar_id`, `evasys_id`)
-        ) ENGINE=MyISAM
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
         ");
 	}
+
+    function down() {
+        // do we want to remove this table on deinstallation?
+    }
 }

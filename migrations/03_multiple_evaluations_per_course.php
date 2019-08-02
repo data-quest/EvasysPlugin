@@ -1,6 +1,7 @@
 <?php
 class MultipleEvaluationsPerCourse extends Migration
 {
+    // not needed anymore
     function up(){
         DBManager::get()->exec("
             ALTER TABLE evasys_seminar DROP PRIMARY KEY;

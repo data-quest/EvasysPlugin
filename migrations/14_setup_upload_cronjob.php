@@ -44,4 +44,10 @@ class SetupUploadCronjob extends Migration {
             ':hour'        => $new_job['hour']
         ));
     }
+
+    //todo
+    function down()
+    {
+        // remove cronjob
+    }
 }
