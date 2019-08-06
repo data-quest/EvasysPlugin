@@ -7,7 +7,8 @@ class EvasysSoapClient extends SoapClient {
         $result = parent::__soapCall($function_name, $arguments, $options, $input_headers, $output_headers);
         $soapcalltime = microtime(true) - $starttime;
         if (class_exists("Log")) {
-            Log::set("evasys", Config::get()->EVASYS_LOGPATH . '/studipevasys.log');
+            $logpath = empty(Config::get()->EVASYS_LOGPATH) ? $GLOBALS['TMP_PATH'] : Config::get()->EVASYS_LOGPATH;
+            Log::set("evasys", $logpath . '/studipevasys.log');
             $log = Log::set("evasys");
             $log->setLogLevel(Log::DEBUG);
             $log->log("EvaSys-SOAP-Call ".$function_name.": ".json_encode($arguments). " request-time: ".$soapcalltime, Log::DEBUG);
