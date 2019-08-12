@@ -45,4 +45,13 @@ class InitSettings extends Migration
             'description' => "Should students see the results of an evaluation?"
         ));
 	}
+
+    function down() {
+        Config::get()->delete("EVASYS_WSDL");
+        Config::get()->delete("EVASYS_URI");
+        Config::get()->delete("EVASYS_USER");
+        Config::get()->delete("EVASYS_PASSWORD");
+        Config::get()->delete("EVASYS_CACHE");
+        Config::get()->delete("EVASYS_PUBLISH_RESULTS");
+    }
 }
