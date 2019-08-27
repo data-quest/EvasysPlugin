@@ -309,12 +309,14 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
             }
             $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Lehrveranstaltungsevaluationen")));
-            $number = 0;
-            foreach ($evasys_seminars as $evasys_seminar) {
-                $number += $evasys_seminar->getEvaluationStatus();
-            }
-            if ($number > 0) {
-                $tab->setImage(Icon::create("evaluation", "new"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
+            if (!Config::get()->EVASYS_NO_RED_ICONS) {
+                $number = 0;
+                foreach ($evasys_seminars as $evasys_seminar) {
+                    $number += $evasys_seminar->getEvaluationStatus();
+                }
+                if ($number > 0) {
+                    $tab->setImage(Icon::create("evaluation", "new"), array('title' => sprintf(_("%s neue Evaluation"), $number)));
+                }
             }
             return $tab;
         } elseif($profile && $profile['applied'] && $GLOBALS['perm']->have_studip_perm("dozent", $course_id)) {
