@@ -1,6 +1,6 @@
 <?php
 
-class AddSOAPConTimeoutConfigOption extends Migration
+class AddSoapConTimeoutConfigOption extends Migration
 {
     public function up()
     {
