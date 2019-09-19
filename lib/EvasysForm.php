@@ -56,7 +56,6 @@ class EvasysForm extends SimpleORMap
             $form_ids = array();
             foreach ($forms->Strings as $formdata) {
                 $formdata = json_decode($formdata, true);
-                //var_dump($formdata); die();
                 $form = EvasysForm::findOneBySQL("form_id = ?", array($formdata['FormId']));
                 if (!$form) {
                     $form = new EvasysForm();
