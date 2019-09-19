@@ -59,7 +59,11 @@ class EvasysSeminar extends SimpleORMap
             if ($evasys_sem_object->getMessage() === "ERR_212") {
                 $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
             } else {
-                PageLayout::postError("SOAP-error: " . $evasys_sem_object->detail);
+                $message = "SOAP-error: " . $forms->getMessage()
+                    . ((is_string($evasys_sem_object->detail) || (is_object($evasys_sem_object->detail) && method_exists($evasys_sem_object->detail, "__toString")))
+                        ? " (" . $evasys_sem_object->detail . ")"
+                        : "");
+                PageLayout::postError($message);
                 return 0;
             }
         } else {
@@ -139,7 +143,10 @@ class EvasysSeminar extends SimpleORMap
             } else {
                 //var_dump($evasys_sem_object);
                 //var_dump($soap->__getLastResponse());die();
-                return "SOAP-error: " . $evasys_sem_object->getMessage().($evasys_sem_object->detail ? " (".$evasys_sem_object->detail.")" : "");
+                return "SOAP-error: " . $forms->getMessage()
+                    . ((is_string($evasys_sem_object->detail) || (is_object($evasys_sem_object->detail) && method_exists($evasys_sem_object->detail, "__toString")))
+                        ? " (" . $evasys_sem_object->detail . ")"
+                        : "");
             }
         } else {
             //Speichern der survey_ids, sodass wir beim nächsten Mal die alten Survey_ids mitgeben können.
