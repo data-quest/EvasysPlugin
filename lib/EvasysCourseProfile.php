@@ -76,7 +76,7 @@ class EvasysCourseProfile extends SimpleORMap {
         $is_dozent = (bool) $is_dozent->fetch(PDO::FETCH_COLUMN, 0);
         if ($applied && $is_dozent) {
             $institut_ids = array($this->course['institut_id']);
-            $fakultaet_id = $this->course->home_institut['fakultaet_id'];
+            $fakultaet_id = $this->course->home_institut['fakultaets_id'];
             if (!in_array($fakultaet_id, $institut_ids)) {
                 $institut_ids[] = $fakultaet_id;
             }
