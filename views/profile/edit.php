@@ -273,8 +273,10 @@
                     <label>
                         <?= _("Art der Evaluation") ?>
                         <? if ($editable) : ?>
-                        <select name="data[mode]" onClick="jQuery('.evasys_paper').toggle(this.value === 'paper');">
-                            <option value=""></option>
+                        <select name="data[mode]" onClick="jQuery('.evasys_paper').toggle(this.value === 'paper');" required>
+                            <? if (!in_array($profile->getFinalMode(), array("online", "paper"))) : ?>
+                                <option value=""></option>
+                            <? endif ?>
                             <option value="online"<?= $profile->getFinalMode() === "online" ? " selected" : "" ?>>
                                 <?= _("Online-Evaluation") ?>
                             </option>
