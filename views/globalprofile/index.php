@@ -111,6 +111,24 @@
                   class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
         <? endif ?>
 
+        <label>
+            <?= _("Berichte erst nach Ablauf der Evaluation zum Download bereitstellen") ?>
+            <select name="data[reports_after_evaluation]">
+                <option value=""></option>
+                <option value="yes"<?= $profile['reports_after_evaluation'] === "yes" ? " selected" : "" ?>>
+                    <?= _("Papierbasierte Evaluation") ?>
+                </option>
+                <option value="no"<?= $profile['reports_after_evaluation'] === "no" ? " selected" : "" ?>>
+                    <?= _("Online-Evaluation") ?>
+                </option>
+            </select>
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("mode") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
+        <? endif ?>
+
     </fieldset>
 
     <fieldset class="forms_for_types">

@@ -558,7 +558,14 @@ class EvasysSeminar extends SimpleORMap
     public function publishingAllowed($dozent_id = null)
     {
         if (Config::get()->EVASYS_PUBLISH_RESULTS) {
-            $profile = EvasysCourseProfile::findBySemester($this['Seminar_id']);
+            $semester = $this->course->start_semester;
+            $profile = EvasysCourseProfile::findBySemester(
+                $this['Seminar_id'],
+                $semester ? $semester->getId() : null
+            );
+            if ($profile->getPresetAttribute("reports_after_evaluation") === "no") {
+                return false;
+            }
             if ($profile && $profile['split']) {
                 return (bool) $this->publishing_allowed_by_dozent[$dozent_id];
             } else {
