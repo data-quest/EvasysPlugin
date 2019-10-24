@@ -563,7 +563,7 @@ class EvasysSeminar extends SimpleORMap
                 $this['Seminar_id'],
                 $semester ? $semester->getId() : null
             );
-            if ($profile->getPresetAttribute("reports_after_evaluation") === "no") {
+            if (($profile->getPresetAttribute("reports_after_evaluation") === "yes") && ($profile->getFinalEnd() > time())) {
                 return false;
             }
             if ($profile && $profile['split']) {

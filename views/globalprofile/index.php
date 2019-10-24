@@ -111,22 +111,25 @@
                   class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
         <? endif ?>
 
+        <? $strings = array('yes' => _("Erst nach Ablauf der Evaluation"), "no" => _("Sobald der Mindestrücklauf erreicht ist.")) ?>
         <label>
-            <?= _("Berichte erst nach Ablauf der Evaluation zum Download bereitstellen") ?>
+            <?= _("PDF-Berichte bereitstellen") ?>
             <select name="data[reports_after_evaluation]">
-                <option value=""></option>
-                <option value="yes"<?= $profile['reports_after_evaluation'] === "yes" ? " selected" : "" ?>>
-                    <?= _("Papierbasierte Evaluation") ?>
-                </option>
+                <? if ($this->controller->profile_type === "institute") : ?>
+                    <option value=""></option>
+                <? endif ?>
                 <option value="no"<?= $profile['reports_after_evaluation'] === "no" ? " selected" : "" ?>>
-                    <?= _("Online-Evaluation") ?>
+                    <?= $strings['no'] ?>
+                </option>
+                <option value="yes"<?= $profile['reports_after_evaluation'] === "yes" ? " selected" : "" ?>>
+                    <?= $strings['yes'] ?>
                 </option>
             </select>
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
-            <? $default_value = $profile->getParentsDefaultValue("mode") ?>
+            <? $default_value = $profile->getParentsDefaultValue("reports_after_evaluation") ?>
             <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
-                  class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
+                  class="default_value">(<?= $default_value ? $strings[$default_value] : _("Kein Standardwert") ?>)</span>
         <? endif ?>
 
     </fieldset>
