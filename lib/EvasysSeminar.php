@@ -239,14 +239,18 @@ class EvasysSeminar extends SimpleORMap
         }
 
         $stmt = DBManager::get()->prepare("
-            SELECT DISTINCT IF(sem_tree.studip_object_id IS NOT NULL, (SELECT Institute.Name FROM Institute WHERE Institute.Institut_id = sem_tree.studip_object_id), sem_tree.name) 
+            SELECT DISTINCT sem_tree.sem_tree_id 
             FROM seminar_sem_tree 
                 INNER JOIN sem_tree ON (seminar_sem_tree.sem_tree_id = sem_tree.sem_tree_id) 
             WHERE seminar_sem_tree.seminar_id = ? 
             ORDER BY sem_tree.name ASC 
         ");
         $stmt->execute(array($this['Seminar_id']));
-        $studienbereiche = $stmt->fetchAll(PDO::FETCH_COLUMN, 0);
+        $studienbereiche = array();
+        $study_areas = StudipStudyArea::findMany($stmt->fetchAll(PDO::FETCH_COLUMN, 0));
+        foreach ($study_areas as $studyarea) {
+            $studienbereiche[] = $studyarea->getPath(" » ");
+        }
         $datenfelder = DataFieldEntry::getDataFieldEntries($this['Seminar_id'], 'sem', $seminar->status);
         $custom_fields = array(
             '1' => $seminar->getNumber(),
@@ -370,7 +374,7 @@ class EvasysSeminar extends SimpleORMap
                         'CourseName' => mb_substr($seminar->getName(), 0, 199),
                         'CourseCode' => $this['Seminar_id'] . $dozent_id,
                         'CourseType' => EvasysMatching::semtypeName($seminar->status),
-                        'CourseProgramOfStudy' => implode('|', $studienbereiche),
+                        'CourseProgramOfStudy' => implode(' | ', $studienbereiche),
                         'CourseEnrollment' => 0, // ?
                         'CustomFieldsJSON' => json_encode($custom_fields),
                         'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
@@ -421,7 +425,7 @@ class EvasysSeminar extends SimpleORMap
                 'CourseName' => mb_substr($seminar->getName(), 0, 199),
                 'CourseCode' => $this['Seminar_id'],
                 'CourseType' => EvasysMatching::semtypeName($seminar->status),
-                'CourseProgramOfStudy' => implode('|', $studienbereiche),
+                'CourseProgramOfStudy' => implode(' | ', $studienbereiche),
                 'CourseEnrollment' => 0, // ?
                 'CustomFieldsJSON' => json_encode($custom_fields),
                 'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
