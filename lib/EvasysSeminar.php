@@ -36,13 +36,14 @@ class EvasysSeminar extends SimpleORMap
             return 0;
         }
         $profile = EvasysCourseProfile::findBySemester($this->getId());
+        $id = $this->getExportedId();
         if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES && $profile['split']) {
             $seminar_ids = array();
             foreach ($profile['teachers'] as $dozent_id) {
-                $seminar_ids[] = $this->getId() . $dozent_id;
+                $seminar_ids[] = $id . $dozent_id;
             }
         } else {
-            $seminar_ids = array($this->getId());
+            $seminar_ids = array($id);
         }
         if (isset($_SESSION['EVASYS_SEMINARS_STATUS'])
                 && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE) {
@@ -104,7 +105,7 @@ class EvasysSeminar extends SimpleORMap
                     }
                     //try to delete a course-evaluation if we have a split course
                     $soap->__soapCall("DeleteCourse", array(
-                        'CourseId' => $seminar['seminar_id'],
+                        'CourseId' => $seminar->getExportedId(),
                         'IdType' => "PUBLIC"
                     ));
                 }
@@ -184,16 +185,35 @@ class EvasysSeminar extends SimpleORMap
                     }
                     $profile['surveys']['form_id'] = $profile->getFinalFormId();
                 }
-                $profile->store();
+                $success = $profile->store();
+
             }
             return true;
         }
     }
 
+    public function getExportedId()
+    {
+        switch (Config::get()->EVASYS_COURSE_IDENTIFIER) {
+            case "seminar_id":
+                $id = $this['Seminar_id'];
+                break;
+            case "number":
+                $id = $this['VeranstaltungsNummer'];
+                break;
+            default: //Datenfeld:
+                $datafield_entry = DatafieldEntryModel::findByModel($course, Config::get()->EVASYS_COURSE_IDENTIFIER);
+                $id = $datafield_entry['content'];
+                break;
+        }
+        return $id;
+    }
+
     public function getCoursePart()
     {
         $db = DBManager::get();
-        $seminar = new Seminar($this['Seminar_id']);
+        $course = new Course($this['Seminar_id']);
+        $id = $this->getExportedId();
         $profile = EvasysCourseProfile::findBySemester(
             $this['Seminar_id'],
             ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
@@ -201,12 +221,14 @@ class EvasysSeminar extends SimpleORMap
                 : Semester::findCurrent()->id)
         );
         if (Config::get()->EVASYS_ENABLE_PROFILES && !$profile['applied'] && !$profile['split']) {
-            return $profile['transferred'] ? array("delete", array($this['Seminar_id'])) : null; //course should be deleted from evasys database
+            return $profile['transferred']
+                ? array("delete", array($id))
+                : null; //course should be deleted from evasys database
         }
+
         $participants = array();
 
         $user_permissions = ['autor', 'tutor'];
-
         if (EvasysPlugin::useLowerPermissionLevels()) {
             $user_permissions[] = 'user';
         }
@@ -251,13 +273,13 @@ class EvasysSeminar extends SimpleORMap
         foreach ($study_areas as $studyarea) {
             $studienbereiche[] = $studyarea->getPath(" » ");
         }
-        $datenfelder = DataFieldEntry::getDataFieldEntries($this['Seminar_id'], 'sem', $seminar->status);
+        $datenfelder = DataFieldEntry::getDataFieldEntries($this['Seminar_id'], 'sem', $course->status);
         $custom_fields = array(
-            '1' => $seminar->getNumber(),
+            '1' => $course['veranstaltungsnummer'],
             '2' => "" //Anzahl der Bögen ?
         );
         $i = 3;
-        foreach ($datenfelder as $id => $datafield) {
+        foreach ($datenfelder as $datafield_id => $datafield) {
             $custom_fields[$i] = $datafield;
             $i++;
         }
@@ -296,7 +318,7 @@ class EvasysSeminar extends SimpleORMap
                 } else {
                     PageLayout::postError(sprintf(
                         _("Evaluation für die Veranstaltung '%s' ist schon gestartet und konnte nicht mehr verändert werden."),
-                        $seminar->getName()
+                        $course['name']
                     ));
                 }
 
@@ -309,7 +331,7 @@ class EvasysSeminar extends SimpleORMap
                 'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
                     ? $profile['surveys'][$this['Seminar_id']]
                     : "", //experimental
-                'PeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
+                'PeriodId' => date("Y-m-d", $course['start_time']),
                 'PeriodIdType' => "PERIODDATE",
                 'SurveyType' => array(
                     'm_chSurveyType' => ($profile['mode'] === "paper" && !Config::get()->EVASYS_FORCE_ONLINE)
@@ -370,18 +392,18 @@ class EvasysSeminar extends SimpleORMap
                     }
 
                     $parts[] = array(
-                        'CourseUid' => $this['Seminar_id'] . $dozent_id,
-                        'CourseName' => mb_substr($seminar->getName(), 0, 199),
-                        'CourseCode' => $this['Seminar_id'] . $dozent_id,
-                        'CourseType' => EvasysMatching::semtypeName($seminar->status),
+                        'CourseUid' => $id . $dozent_id,
+                        'CourseName' => mb_substr($course['name'], 0, 199),
+                        'CourseCode' => $id . $dozent_id,
+                        'CourseType' => EvasysMatching::semtypeName($course->status),
                         'CourseProgramOfStudy' => implode(' | ', $studienbereiche),
                         'CourseEnrollment' => 0, // ?
                         'CustomFieldsJSON' => json_encode($custom_fields),
-                        'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
+                        'CoursePeriodId' => date("Y-m-d", $course['start_time']),
                         'CoursePeriodIdType' => "PERIODDATE",
                         'InstructorList' => $instructorlist,
-                        'RoomName' => (string) $seminar->location,
-                        'SubunitName' => (string) EvasysMatching::instituteName($seminar->institut_id),
+                        'RoomName' => (string) $course->ort,
+                        'SubunitName' => (string) EvasysMatching::instituteName($course->institut_id),
                         'ParticipantList' => $participants,
                         'AnonymousParticipants' => true,
                         'SurveyCreatorList' => $surveys2,
@@ -395,7 +417,7 @@ class EvasysSeminar extends SimpleORMap
             if ($profile['transferred']) {
                 $ids = array();
                 foreach ($dozenten as $dozent_id) {
-                    $ids[] = $this['Seminar_id'].$dozent_id;
+                    $ids[] = $id.$dozent_id;
                 }
                 return array("delete", $ids);
             }  else {
@@ -421,18 +443,18 @@ class EvasysSeminar extends SimpleORMap
             }
 
             return array(
-                'CourseUid' => $this['Seminar_id'],
-                'CourseName' => mb_substr($seminar->getName(), 0, 199),
-                'CourseCode' => $this['Seminar_id'],
-                'CourseType' => EvasysMatching::semtypeName($seminar->status),
+                'CourseUid' => $id,
+                'CourseName' => mb_substr($course['name'], 0, 199),
+                'CourseCode' => $id,
+                'CourseType' => EvasysMatching::semtypeName($course->status),
                 'CourseProgramOfStudy' => implode(' | ', $studienbereiche),
                 'CourseEnrollment' => 0, // ?
                 'CustomFieldsJSON' => json_encode($custom_fields),
-                'CoursePeriodId' => date("Y-m-d", $seminar->getSemesterStartTime()),
+                'CoursePeriodId' => date("Y-m-d", $course['start_time']),
                 'CoursePeriodIdType' => "PERIODDATE",
                 'InstructorList' => $instructorlist,
-                'RoomName' => (string) $seminar->location,
-                'SubunitName' => (string) EvasysMatching::instituteName($seminar->institut_id),
+                'RoomName' => (string) $course->ort,
+                'SubunitName' => (string) EvasysMatching::instituteName($course->institut_id),
                 'ParticipantList' => $participants,
                 'AnonymousParticipants' => true,
                 'SurveyCreatorList' => $surveys,
@@ -484,7 +506,7 @@ class EvasysSeminar extends SimpleORMap
 
         $surveys = $soap->__soapCall("GetPswdsByParticipant", array(
             'UserMailAddress' => $user->email,
-            'CourseCode' => $this['Seminar_id']
+            'CourseCode' => $this->getExportedId()
         ));
 
         if (is_a($surveys, "SoapFault")) {
@@ -517,7 +539,7 @@ class EvasysSeminar extends SimpleORMap
 
         $soap = EvasysSoap::get();
         $course = $soap->__soapCall("GetCourse", array(
-            'CourseId' => $this['Seminar_id'],
+            'CourseId' => $this->getExportedId(),
             'IdType' => "EXTERNAL", //the CourseUid from the export
             'IncludeSurveys' => 1
         ));
@@ -561,7 +583,15 @@ class EvasysSeminar extends SimpleORMap
 
     public function publishingAllowed($dozent_id = null)
     {
-        if (Config::get()->EVASYS_PUBLISH_RESULTS) {
+        $statement = DBManager::get()->prepare("
+            SELECT user_id 
+            FROM seminar_user
+            WHERE Seminar_id = ?
+                AND status = 'dozent'
+        ");
+        $statement->execute(array($this['seminar_id']));
+        $dozent_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+        if (Config::get()->EVASYS_PUBLISH_RESULTS || in_array($GLOBALS['user']->id, $dozent_ids)) {
             $semester = $this->course->start_semester;
             $profile = EvasysCourseProfile::findBySemester(
                 $this['Seminar_id'],
@@ -571,9 +601,9 @@ class EvasysSeminar extends SimpleORMap
                 return false;
             }
             if ($profile && $profile['split']) {
-                return (bool) $this->publishing_allowed_by_dozent[$dozent_id];
+                return (bool) $this->publishing_allowed_by_dozent[$dozent_id] || ($GLOBALS['user']->id == $dozent_id);
             } else {
-                return (bool) $this->publishing_allowed;
+                return (bool) $this->publishing_allowed || in_array($GLOBALS['user']->id, $dozent_ids);
             }
         } else {
             return false;
@@ -588,18 +618,6 @@ class EvasysSeminar extends SimpleORMap
         $this->publishing_allowed_by_dozent[$GLOBALS['user']->id] = $vote ? 1 : 0;
         $this->publishing_allowed = $vote ? 1 : 0;
         return $this->store();
-    }
-
-    public function getDozent()
-    {
-        $db = DBManager::get();
-        return $db->query(
-            "SELECT user_id " .
-            "FROM seminar_user " .
-            "WHERE Seminar_id = ".$db->quote($this['Seminar_id'])." " .
-                "AND status = 'dozent' " .
-            "ORDER BY position ASC " .
-        "")->fetch(PDO::FETCH_COLUMN, 0);
     }
 
 }
