@@ -31,6 +31,13 @@ class EvasysSeminar extends SimpleORMap
      */
     public function getEvaluationStatus($user_id = null)
     {
+        if (Config::get()->EVASYS_RED_ICONS_STOP_UNTIL > 0) {
+            if (Config::get()->EVASYS_RED_ICONS_STOP_UNTIL > time()) {
+                return 0;
+            } else {
+                Config::get()->store("EVASYS_RED_ICONS_STOP_UNTIL", 0);
+            }
+        }
         $user = $user_id ? User::find($user_id) : User::findCurrent();
         if ($GLOBALS['perm']->have_perm("admin", $user->getId())) {
             return 0;
@@ -55,8 +62,31 @@ class EvasysSeminar extends SimpleORMap
         }
         $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
         $soap = EvasysSoap::get();
+        $old_default_socket_timeout = ini_get("default_socket_timeout");
+        $start_time = microtime(true);
+        ini_set("default_socket_timeout", 10);
         $evasys_sem_object = $soap->__soapCall("GetEvaluationSummaryByParticipant", array($user['email']));
+        $end_time = microtime(true);
         if (is_a($evasys_sem_object, "SoapFault")) {
+            if ($end_time - $start_time >= 10) {
+                Config::get()->store("EVASYS_RED_ICONS_STOP_UNTIL", time() + 60 * 30);
+                $roots = User::findBySQL("perms = 'root'");
+                $messaging = new messaging();
+                $messaging->insert_message(
+                    "Das Abrufen der Informationen zu neuen Befragungen von Studierenden hat zu lange gedauert (10 Sekunden oder länger) und wurde für eine halbe Stunde deaktiviert.",
+                    array_map(function ($u) { return $u->username; }, $roots),
+                    '____%system%____',
+                    '',
+                    '',
+                    '',
+                    '',
+                    'EvaSys: Abrufen von Daten aus EvaSys auf Meine Veranstaltungen ist zu langsam',
+                    '',
+                    'normal',
+                    array("EvaSys", "Rote Icons")
+                );
+                return 0;
+            }
             if ($evasys_sem_object->getMessage() === "ERR_212") {
                 $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
             } else {
@@ -74,6 +104,7 @@ class EvasysSeminar extends SimpleORMap
                 }
             }
         }
+        ini_set("default_socket_timeout", $old_default_socket_timeout);
         $_SESSION['EVASYS_STATUS_EXPIRE'] = time();
         $new = 0;
         foreach ($seminar_ids as $seminar_id) {
@@ -136,14 +167,11 @@ class EvasysSeminar extends SimpleORMap
             array('CourseCreators' => $courses),
             true
         );
-        //var_dump($sessionlist); die();
         $evasys_sem_object = $soap->__soapCall("InsertCourses", $sessionlist);
         if (is_a($evasys_sem_object, "SoapFault")) {
             if ($evasys_sem_object->getMessage() == "Not Found") {
                 return "SoapPort der WSDL-Datei antwortet nicht.";
             } else {
-                //var_dump($evasys_sem_object);
-                //var_dump($soap->__getLastResponse());die();
                 return "SOAP-error: " . $forms->getMessage()
                     . ((is_string($evasys_sem_object->detail) || (is_object($evasys_sem_object->detail) && method_exists($evasys_sem_object->detail, "__toString")))
                         ? " (" . $evasys_sem_object->detail . ")"
@@ -395,7 +423,7 @@ class EvasysSeminar extends SimpleORMap
                         'CourseUid' => $id . $dozent_id,
                         'CourseName' => mb_substr($course['name'], 0, 199),
                         'CourseCode' => $id . $dozent_id,
-                        'CourseType' => EvasysMatching::semtypeName($course->status),
+                        'CourseType' => mb_substr(EvasysMatching::semtypeName($course->status), 0, 49),
                         'CourseProgramOfStudy' => implode(' | ', $studienbereiche),
                         'CourseEnrollment' => 0, // ?
                         'CustomFieldsJSON' => json_encode($custom_fields),
