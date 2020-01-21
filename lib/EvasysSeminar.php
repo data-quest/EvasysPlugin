@@ -69,6 +69,18 @@ class EvasysSeminar extends SimpleORMap
         $end_time = microtime(true);
         if (is_a($evasys_sem_object, "SoapFault")) {
             if ($end_time - $start_time >= 10) {
+                //maybe another process has written something into config_values before we want to do that:
+                $query = "SELECT config.field, IFNULL(config_values.value, config.value) AS value, type, section, `range`, description,
+                                 config_values.comment, config_values.value IS NULL AS is_default
+                          FROM config
+                              LEFT JOIN config_values ON (config.field = config_values.field AND range_id = 'studip')
+                          WHERE config.field = 'EVASYS_RED_ICONS_STOP_UNTIL'";
+                $statement = DBManager::get()->prepare($query);
+                $statement->execute();
+                $config_value = $statement->fetch(PDO::FETCH_ASSOC);
+                if ($config_value['value'] > 0) {
+                    return 0;
+                }
                 Config::get()->store("EVASYS_RED_ICONS_STOP_UNTIL", time() + 60 * 30);
                 $roots = User::findBySQL("perms = 'root'");
                 $messaging = new messaging();
