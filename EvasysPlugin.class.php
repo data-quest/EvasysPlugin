@@ -605,7 +605,11 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                         )
                     );
                     if (is_a($evasys_surveys_object, "SoapFault")) {
-                        PageLayout::postError("SOAP-error: " . $evasys_surveys_object->getMessage());
+                        if ($evasys_surveys_object->getMessage() === "ERR_312") {
+                            PageLayout::postError(sprintf(_("Veranstaltung %s existiert nicht mehr in EvaSys"), htmlReady($course['name'])));
+                        } else {
+                            PageLayout::postError("SOAP-error: " . $evasys_surveys_object->getMessage());
+                        }
                         return;
                     }
                     //var_dump($evasys_surveys_object->m_oSurveyHolder->m_aSurveys->Surveys);
