@@ -181,14 +181,19 @@ class EvasysSeminar extends SimpleORMap
         );
         $evasys_sem_object = $soap->__soapCall("InsertCourses", $sessionlist);
         if (is_a($evasys_sem_object, "SoapFault")) {
-            if ($evasys_sem_object->getMessage() == "Not Found") {
-                return "SoapPort der WSDL-Datei antwortet nicht.";
+            if (method_exists($evasys_sem_object, "getMessage")) {
+                if ($evasys_sem_object->getMessage() == "Not Found") {
+                    return "SoapPort der WSDL-Datei antwortet nicht.";
+                } else {
+                    return "SOAP-error: " . $forms->getMessage()
+                        . ((is_string($evasys_sem_object->detail) || (is_object($evasys_sem_object->detail) && method_exists($evasys_sem_object->detail, "__toString")))
+                            ? " (" . $evasys_sem_object->detail . ")"
+                            : "");
+                }
             } else {
-                return "SOAP-error: " . $forms->getMessage()
-                    . ((is_string($evasys_sem_object->detail) || (is_object($evasys_sem_object->detail) && method_exists($evasys_sem_object->detail, "__toString")))
-                        ? " (" . $evasys_sem_object->detail . ")"
-                        : "");
+                return "SOAP-error: ".print_r($evasys_sem_object, true);
             }
+
         } else {
             //Speichern der survey_ids, sodass wir beim nächsten Mal die alten Survey_ids mitgeben können.
             foreach ((array) $evasys_sem_object->UploadStatus as $status) {
