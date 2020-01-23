@@ -560,8 +560,10 @@ class EvasysSeminar extends SimpleORMap
                 $surveys = array();
             } elseif ($surveys->faultstring === "ERR_207") {
                 $surveys = array("schon teilgenommen");
-            } else {
+            } elseif(is_string($surveys->detail)) {
                 throw new Exception("SOAP-Fehler: ".$surveys->detail);
+            } else {
+                throw new Exception("SOAP-Fehler: ".print_r($surveys->detail, true));
             }
         }
         $_SESSION['EVASYS_SEMINAR_SURVEYS_EXPIRE'][$this['Seminar_id']] = time();
