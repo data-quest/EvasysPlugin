@@ -185,7 +185,7 @@ class EvasysSeminar extends SimpleORMap
                 if ($evasys_sem_object->getMessage() == "Not Found") {
                     return "SoapPort der WSDL-Datei antwortet nicht.";
                 } else {
-                    return "SOAP-error: " . $forms->getMessage()
+                    return "SOAP-error: " . $evasys_sem_object->getMessage()
                         . ((is_string($evasys_sem_object->detail) || (is_object($evasys_sem_object->detail) && method_exists($evasys_sem_object->detail, "__toString")))
                             ? " (" . $evasys_sem_object->detail . ")"
                             : "");
