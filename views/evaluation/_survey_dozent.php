@@ -53,7 +53,7 @@
                                 echo _("Verifikation");
                         } ?></td>
                 </tr>
-                <? if ($evasys_seminar->publishingAllowed($dozent_id)) : ?>
+                <? if ($evasys_seminar->publishingAllowed($dozent_id) && $evasys_seminar->reportsAllowed()) : ?>
                     <? $pdf_link = $evasys_seminar->getPDFLink($survey->m_nSurveyId) ?>
                     <? if ($pdf_link) : ?>
                         <tr>

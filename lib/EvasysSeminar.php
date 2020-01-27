@@ -644,17 +644,27 @@ class EvasysSeminar extends SimpleORMap
                 $this['Seminar_id'],
                 $semester ? $semester->getId() : null
             );
-            if (($profile->getPresetAttribute("reports_after_evaluation") === "yes") && ($profile->getFinalEnd() > time())) {
-                return false;
-            }
             if ($profile && $profile['split']) {
-                return (bool) $this->publishing_allowed_by_dozent[$dozent_id] || ($GLOBALS['user']->id == $dozent_id);
+                return (bool) $this->publishing_allowed_by_dozent[$dozent_id];
             } else {
-                return (bool) $this->publishing_allowed || in_array($GLOBALS['user']->id, $dozent_ids);
+                return (bool) $this->publishing_allowed;
             }
         } else {
             return false;
         }
+    }
+
+    public function reportsAllowed()
+    {
+        $semester = $this->course->start_semester;
+        $profile = EvasysCourseProfile::findBySemester(
+            $this['Seminar_id'],
+            $semester ? $semester->getId() : null
+        );
+        if (($profile->getPresetAttribute("reports_after_evaluation") === "yes") && ($profile->getFinalEnd() > time())) {
+            return false;
+        }
+        return true;
     }
 
     public function allowPublishing($vote)
@@ -662,7 +672,9 @@ class EvasysSeminar extends SimpleORMap
         if (!$GLOBALS['perm']->have_studip_perm("dozent", $this['Seminar_id'])) {
             return false;
         }
-        $this->publishing_allowed_by_dozent[$GLOBALS['user']->id] = $vote ? 1 : 0;
+        $dozenten = (array) $this->publishing_allowed_by_dozent;
+        $dozenten[$GLOBALS['user']->id] = $vote ? 1 : 0;
+        $this->publishing_allowed_by_dozent = $dozenten;
         $this->publishing_allowed = $vote ? 1 : 0;
         return $this->store();
     }

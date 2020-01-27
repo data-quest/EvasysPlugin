@@ -34,7 +34,7 @@
             <? else : ?>
                 <?= MessageBox::info(_("Sie können nicht (mehr) an dieser Befragung teilnehmen.")) ?>
             <? endif ?>
-            <? if ($evasys_seminar->publishingAllowed($dozent_id)) : ?>
+            <? if ($evasys_seminar->publishingAllowed($dozent_id) && $evasys_seminar->reportsAllowed()) : ?>
                 <?= $this->render_partial("evaluation/_survey_dozent.php", array(
                     'surveys' => $surveys,
                     'evasys_seminar' => $evasys_seminar,
@@ -44,7 +44,7 @@
         <? endif ?>
     <? endforeach ?>
 <? else : ?>
-    <? if ($evasys_seminar->publishingAllowed($dozent_id)) : ?>
+    <? if ($evasys_seminar->publishingAllowed($dozent_id) && $evasys_seminar->reportsAllowed()) : ?>
         <?= $this->render_partial("evaluation/_survey_dozent.php", array(
             'surveys' => $surveys,
             'evasys_seminar' => $evasys_seminar,
