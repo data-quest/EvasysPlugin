@@ -630,18 +630,21 @@ class EvasysSeminar extends SimpleORMap
 
     public function publishingAllowed($dozent_id = null)
     {
+        $seminar_id = strlen($this['Seminar_id']) > 32
+            ? substr($this['Seminar_id'], 0, 32)
+            : $this['Seminar_id'];
         $statement = DBManager::get()->prepare("
             SELECT user_id 
             FROM seminar_user
             WHERE Seminar_id = ?
                 AND status = 'dozent'
         ");
-        $statement->execute(array($this['seminar_id']));
+        $statement->execute(array($seminar_id));
         $dozent_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
         if (Config::get()->EVASYS_PUBLISH_RESULTS || in_array($GLOBALS['user']->id, $dozent_ids)) {
             $semester = $this->course->start_semester;
             $profile = EvasysCourseProfile::findBySemester(
-                $this['Seminar_id'],
+                $seminar_id,
                 $semester ? $semester->getId() : null
             );
             if ($profile && $profile['split']) {
@@ -656,9 +659,12 @@ class EvasysSeminar extends SimpleORMap
 
     public function reportsAllowed()
     {
+        $seminar_id = strlen($this['Seminar_id']) > 32
+            ? substr($this['Seminar_id'], 0, 32)
+            : $this['Seminar_id'];
         $semester = $this->course->start_semester;
         $profile = EvasysCourseProfile::findBySemester(
-            $this['Seminar_id'],
+            $seminar_id,
             $semester ? $semester->getId() : null
         );
         if (($profile->getPresetAttribute("reports_after_evaluation") === "yes") && ($profile->getFinalEnd() > time())) {
