@@ -82,7 +82,7 @@ class GlobalprofileController extends PluginController
         }
         $statement = DBManager::get()->prepare("
             SELECT 1
-            FROM semester_data 
+            FROM semester_data
                 LEFT JOIN evasys_global_profiles ON (evasys_global_profiles.semester_id = semester_data.semester_id)
             WHERE evasys_global_profiles.semester_id IS NULL
         ");
@@ -207,6 +207,7 @@ class GlobalprofileController extends PluginController
         }
         PageLayout::setTitle(_("Standardwerte für neues Semester erstellen"));
         if (Request::isPost()) {
+            set_time_limit(60*60*2);
             $old_profile = Request::option("copy_from") ? EvasysGlobalProfile::find(Request::option("copy_from")) : null;
             EvasysGlobalProfile::copy(Request::option("semester_id"), $old_profile);
             PageLayout::postSuccess(_("Neues Semester angelegt"));

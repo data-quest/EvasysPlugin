@@ -76,7 +76,7 @@ class EvasysGlobalProfile extends SimpleORMap
         if ($old_profile) {
             //Taking over standard and available forms:
             $statement = DBManager::get()->prepare("
-                INSERT INTO evasys_profiles_semtype_forms (profile_form_id, profile_id, profile_type, sem_type, form_id, standard, chdate, mkdate)
+                INSERT IGNORE INTO evasys_profiles_semtype_forms (profile_form_id, profile_id, profile_type, sem_type, form_id, standard, chdate, mkdate)
                 SELECT MD5(CONCAT(profile_form_id, :new_semester, standard)), :new_semester, profile_type, sem_type, form_id, standard, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
                 FROM evasys_profiles_semtype_forms
                 WHERE profile_id = :old_semester

@@ -280,7 +280,7 @@ class EvasysSeminar extends SimpleORMap
 
         $statement = DBManager::get()->prepare("
             SELECT auth_user_md5.user_id
-            FROM auth_user_md5 
+            FROM auth_user_md5
                 INNER JOIN seminar_user ON (seminar_user.user_id = auth_user_md5.user_id)
             WHERE seminar_user.Seminar_id = :seminar_id
                 AND seminar_user.status IN ( :user_permissions )
@@ -306,11 +306,11 @@ class EvasysSeminar extends SimpleORMap
         }
 
         $stmt = DBManager::get()->prepare("
-            SELECT DISTINCT sem_tree.sem_tree_id 
-            FROM seminar_sem_tree 
-                INNER JOIN sem_tree ON (seminar_sem_tree.sem_tree_id = sem_tree.sem_tree_id) 
-            WHERE seminar_sem_tree.seminar_id = ? 
-            ORDER BY sem_tree.name ASC 
+            SELECT DISTINCT sem_tree.sem_tree_id
+            FROM seminar_sem_tree
+                INNER JOIN sem_tree ON (seminar_sem_tree.sem_tree_id = sem_tree.sem_tree_id)
+            WHERE seminar_sem_tree.seminar_id = ?
+            ORDER BY sem_tree.name ASC
         ");
         $stmt->execute(array($this['Seminar_id']));
         $studienbereiche = array();
@@ -394,6 +394,7 @@ class EvasysSeminar extends SimpleORMap
                         ? $profile['surveys'][$this['Seminar_id']]
                         : "",
                     'StartTime' => date("c", $profile->getFinalBegin()),
+                    //'sendInstructorNotification' => true, // Template kann nicht überschrieben werden.
                     'EmailSubject' => "###PREVENT_DISPATCH###" //Keine Mail an die Studierenden mit den TANs senden
                 ),
                 'CloseTask' => array(
@@ -617,7 +618,8 @@ class EvasysSeminar extends SimpleORMap
         }
         $soap = EvasysSoap::get();
         $link = $soap->__soapCall("GetPDFReport", array(
-            'nSurveyId' => $survey_id
+            'nSurveyId' => $survey_id,
+            //'nLanguageID' => 1 //SystemLanguage 1= 2=
         ));
         $_SESSION['EVASYS_SURVEY_PDF_LINK_EXPIRE'][$survey_id] = time();
         if (is_a($link, "SoapFault")) {
@@ -634,7 +636,7 @@ class EvasysSeminar extends SimpleORMap
             ? substr($this['Seminar_id'], 0, 32)
             : $this['Seminar_id'];
         $statement = DBManager::get()->prepare("
-            SELECT user_id 
+            SELECT user_id
             FROM seminar_user
             WHERE Seminar_id = ?
                 AND status = 'dozent'

@@ -99,7 +99,19 @@ class EvasysInstituteProfile extends SimpleORMap
         $new_profile['user_id'] = $GLOBALS['user']->id;
         $new_profile->store();
 
-        $semtypeforms = EvasysProfileSemtypeForm::findBySQL("profile_id = ? AND profile_type = 'institute'", array($this->getId()));
+        $statement = DBManager::get()->prepare("
+            INSERT IGNORE INTO evasys_profiles_semtype_forms (profile_form_id, profile_id, profile_type, sem_type, form_id, standard, chdate, mkdate)
+            SELECT MD5(CONCAT(profile_form_id, :new_profile, standard)), :new_profile, profile_type, sem_type, form_id, standard, UNIX_TIMESTAMP(), UNIX_TIMESTAMP()
+            FROM evasys_profiles_semtype_forms
+            WHERE profile_id = :old_profile
+                AND profile_type = 'institute'
+        ");
+        $statement->execute(array(
+            'new_profile' => $new_profile->getId(),
+            'old_profile' => $this->getId()
+        ));
+
+        /*$semtypeforms = EvasysProfileSemtypeForm::findBySQL("profile_id = ? AND profile_type = 'institute'", array($this->getId()));
         foreach ($semtypeforms as $semtypeform) {
             $new_semtypeform = new EvasysProfileSemtypeForm();
             $new_semtypeform->setData($semtypeform->toArray());
@@ -108,7 +120,7 @@ class EvasysInstituteProfile extends SimpleORMap
             $new_semtypeform['mkdate'] = time();
             $new_semtypeform['chdate'] = time();
             $new_semtypeform->store();
-        }
+        }*/
 
         return $new_profile;
     }
