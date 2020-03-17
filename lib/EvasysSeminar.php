@@ -102,7 +102,7 @@ class EvasysSeminar extends SimpleORMap
             if ($evasys_sem_object->getMessage() === "ERR_212") {
                 $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
             } else {
-                $message = "SOAP-error: " . $forms->getMessage()
+                $message = "SOAP-error: " . $evasys_sem_object->getMessage()
                     . ((is_string($evasys_sem_object->detail) || (is_object($evasys_sem_object->detail) && method_exists($evasys_sem_object->detail, "__toString")))
                         ? " (" . $evasys_sem_object->detail . ")"
                         : "");
