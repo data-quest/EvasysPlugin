@@ -38,7 +38,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function __construct()
     {
         parent::__construct();
-        
+
         //The user must be root
         if (self::isRoot()) {
             $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), Config::get()->EVASYS_ENABLE_PROFILES ? "globalprofile" : "forms/index"));
@@ -224,10 +224,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     = "evasys_course_profiles.transferred = '1' ";
             } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "applied") {
                 $filter->settings['query']['where']['evasys_transferred']
-                    = "evasys_course_profiles.transferred = '1'";
+                    = "evasys_course_profiles.applied = '1'";
             } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "notapplied") {
                 $filter->settings['query']['where']['evasys_transferred']
-                    = "(evasys_course_profiles.transferred = '0' OR evasys_course_profiles.transferred IS NULL)";
+                    = "(evasys_course_profiles.applied = '0' OR evasys_course_profiles.applied IS NULL)";
             } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred") {
                 $filter->settings['query']['where']['evasys_transferred']
                     = "(evasys_course_profiles.applied = '1' AND evasys_course_profiles.transferred = '0')";
@@ -248,13 +248,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             );
             $filter->settings['query']['joins']['evasys_institute_profiles'] = array(
                 'join' => "LEFT JOIN",
-                'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id 
+                'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id
                     AND evasys_institute_profiles.semester_id = :evasys_semester_id"
             );
             $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = array(
                 'join' => "LEFT JOIN",
                 'table' => "evasys_institute_profiles",
-                'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id 
+                'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id
                     AND evasys_fakultaet_profiles.semester_id = :evasys_semester_id"
             );
             $filter->settings['query']['joins']['evasys_global_profiles'] = array(
@@ -430,7 +430,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             SELECT semester_data.*
             FROM semester_data
             INNER JOIN seminare ON (semester_data.beginn >= seminare.start_time AND (
-                              seminare.duration_time = -1 
+                              seminare.duration_time = -1
                               OR (seminare.duration_time = 0 AND semester_data.beginn = seminare.start_time)
                               OR (seminare.start_time + seminare.duration_time >= semester_data.beginn)
                   ))
