@@ -244,11 +244,11 @@ class EvasysSeminar extends SimpleORMap
                 $id = $this['Seminar_id'];
                 break;
             case "number":
-                $id = $this['VeranstaltungsNummer'];
+                $id = empty($this['VeranstaltungsNummer']) ? $this['Seminar_id'] : $this['VeranstaltungsNummer'];
                 break;
             default: //Datenfeld:
                 $datafield_entry = DatafieldEntryModel::findByModel($this->course, Config::get()->EVASYS_COURSE_IDENTIFIER);
-                $id = $datafield_entry[0]['content'];
+                $id = empty($datafield_entry[0]['content']) ? $this['Seminar_id'] : $datafield_entry[0]['content'];
                 break;
         }
         return $id;
