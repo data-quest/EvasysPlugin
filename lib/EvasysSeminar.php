@@ -248,7 +248,7 @@ class EvasysSeminar extends SimpleORMap
                 break;
             default: //Datenfeld:
                 $datafield_entry = DatafieldEntryModel::findByModel($this->course, Config::get()->EVASYS_COURSE_IDENTIFIER);
-                $id = $datafield_entry['content'];
+                $id = $datafield_entry[0]['content'];
                 break;
         }
         return $id;
