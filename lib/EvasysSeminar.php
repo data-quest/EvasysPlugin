@@ -198,12 +198,9 @@ class EvasysSeminar extends SimpleORMap
             //Speichern der survey_ids, sodass wir beim nächsten Mal die alten Survey_ids mitgeben können.
             foreach ((array) $evasys_sem_object->UploadStatus as $status) {
 
-                $course_uid = $status->CourseUid;
-                if (strlen($course_uid) > 32) {
-                    $course_id = substr($course_uid, 0, 32);
-                } else {
-                    $course_id = $course_uid;
-                }
+                $course_id = self::getCourseIdByUID($status->CourseUid);
+                //var_dump($course_id); die();
+
                 //$status->StatusMessage;
                 $profile = EvasysCourseProfile::findBySemester(
                     $course_id,
@@ -222,19 +219,42 @@ class EvasysSeminar extends SimpleORMap
                     foreach ($status->SurveyStatusList->SurveyStatusArray as $survey_status) {
                         if ($survey_status->SurveyId) {
                             if (!$profile['surveys']) {
-                                $profile['surveys'] = array($course_uid => $survey_status->SurveyId);
+                                $profile['surveys'] = array($status->CourseUid => $survey_status->SurveyId);
                             } else {
-                                $profile['surveys'][$course_uid] = $survey_status->SurveyId;
+                                $profile['surveys'][$status->CourseUid] = $survey_status->SurveyId;
                             }
                         }
                     }
                     $profile['surveys']['form_id'] = $profile->getFinalFormId();
                 }
                 $success = $profile->store();
-
             }
             return true;
         }
+    }
+
+    static public function getCourseIdByUID($uid)
+    {
+        if (strlen($uid) > 32) {
+            $uid = substr($uid, 0, strlen($uid) - 32);
+        }
+        switch (Config::get()->EVASYS_COURSE_IDENTIFIER) {
+            case "seminar_id":
+                $course_id = $uid;
+                break;
+            case "number":
+                $course = Course::findOneBySQL("VeranstaltungsNummer = ?", [$uid]);
+                $course_id = $course->getId();
+                break;
+            default: //Datenfeld:
+                $course = Course::findOneBySQL("INNER JOIN datafields_entries ON (datafields_entries.range_id = seminare.Seminar_id) WHERE datafields_entries.content = :uid AND datafields_entries.datafield_id = :datafield_id ", [
+                    'uid' => $uid,
+                    'datafield_id' => Config::get()->EVASYS_COURSE_IDENTIFIER
+                ]);
+                $course_id = $course->getId();
+                break;
+        }
+        return $course_id;
     }
 
     public function getExportedId()
@@ -366,8 +386,6 @@ class EvasysSeminar extends SimpleORMap
                         $course['name']
                     ));
                 }
-
-
             }
 
             $surveys[] = array(

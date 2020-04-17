@@ -8,9 +8,8 @@
 
 <? if ($link['Token']) : ?>
     <form method="POST"
-          action="<?= htmlReady($link['ServerIp'] . "/public/forward") ?>"
-          class="default"
-          target="_blank">
+          action="<?= htmlReady($link['ServerIp'] . "public/forward") ?>"
+          class="default">
         <input type="hidden" name="forwardinfo" value="<?= htmlReady($link['Token']) ?>">
 
         <div style="text-align: center">

@@ -16,6 +16,7 @@ require_once __DIR__."/lib/EvasysGlobalProfile.php";
 require_once __DIR__."/lib/EvasysProfileSemtypeForm.php";
 require_once __DIR__."/lib/EvasysMatching.php";
 require_once __DIR__."/lib/EvasysAdditionalField.php";
+require_once __DIR__."/lib/EvasysSoapLog.php";
 
 if (!interface_exists("AdminCourseContents")) {
     interface AdminCourseContents
@@ -52,9 +53,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 Navigation::addItem("/admin/evasys/additionalfields", clone $nav);
                 $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
                 Navigation::addItem("/admin/evasys/forms", clone $nav);
-
                 $nav = new Navigation(ucfirst(EvasysMatching::wording("freiwillige Evaluationen")), PluginEngine::getURL($this, array(), "individual/list"));
                 Navigation::addItem("/admin/evasys/individual", clone $nav);
+                $nav = new Navigation(_("Logs"), PluginEngine::getURL($this, array(), "logs/index"));
+                Navigation::addItem("/admin/evasys/logs", clone $nav);
             }
             $nav = new Navigation(_("Matching Veranstaltungstypen"), PluginEngine::getURL($this, array(), "matching/seminartypes"));
             Navigation::addItem("/admin/evasys/matchingtypes", clone $nav);
