@@ -140,11 +140,19 @@ class EvasysSeminar extends SimpleORMap
             if ($part && $part[0] !== "delete") {
                 if ($part['CourseName']) {
                     //single course with data
-                    $courses[] = $part;
+                    if (!$part['CourseUid']) {
+                        PageLayout::postError(sprintf(_("Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."), $seminar->course['name']));
+                    } else {
+                        $courses[] = $part;
+                    }
                 } else {
                     //we have split courses for each teacher
                     foreach ($part as $subcourse) {
-                        $courses[] = $subcourse;
+                        if (!$subcourse['CourseUid']) {
+                            PageLayout::postError(sprintf(_("Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."), $seminar->course['name']));
+                        } else {
+                            $courses[] = $subcourse;
+                        }
                     }
                     //try to delete a course-evaluation if we have a split course
                     $soap->__soapCall("DeleteCourse", array(
@@ -570,7 +578,7 @@ class EvasysSeminar extends SimpleORMap
 
         $surveys = $soap->__soapCall("GetPswdsByParticipant", array(
             'UserMailAddress' => $user->email,
-            'CourseCode' => $this->getExportedId()
+            'CourseCode' => (strlen($this['Seminar_id']) > 32) ? $this['Seminar_id'] : $this->getExportedId()
         ));
 
         if (is_a($surveys, "SoapFault")) {
@@ -605,7 +613,7 @@ class EvasysSeminar extends SimpleORMap
 
         $soap = EvasysSoap::get();
         $course = $soap->__soapCall("GetCourse", array(
-            'CourseId' => $this->getExportedId(),
+            'CourseId' => (strlen($id) > 32) ? $id : $this->getExportedId(),
             'IdType' => "EXTERNAL", //the CourseUid from the export
             'IncludeSurveys' => 1
         ));
