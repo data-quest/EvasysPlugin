@@ -1,6 +1,7 @@
-<table class="default">
+<table class="default" id="evasys_logs">
     <thead>
         <tr>
+            <th width="16"></th>
             <th><?= _("SOAP-Methode") ?></th>
             <th><?= _("Dauer (ms)") ?></th>
             <th><?= _("Zeitpunkt") ?></th>
@@ -9,17 +10,51 @@
     </thead>
     <tbody>
         <? foreach ($logs as $log) : ?>
-        <tr>
-            <td><a href="<?= PluginEngine::getLink($plugin, ['function' => $log['function']], "logs/index") ?>"><?= htmlReady($log['function']) ?></a></td>
-            <td><?= htmlReady(str_replace(".", ",", $log['time'])) ?></td>
-            <td><?= date("d.m.Y H:i:s", $log['mkdate']) ?></td>
-            <td class="actions">
-                <a href="<?= PluginEngine::getLink($plugin, [], "logs/details/".$log->getId()) ?>"
-                   title="<?= _("Details anzeigen") ?>" data-dialog>
-                    <?= Icon::create("info-circle", "clickable")->asImg(20, ['class' => "text-bottom"]) ?>
-                </a>
-            </td>
-        </tr>
+            <?= $this->render_partial("logs/_row", ['log' => $log, 'plugin' => $plugin]) ?>
         <? endforeach ?>
     </tbody>
+    <tfoot>
+    <? if ($more) : ?>
+        <tr class="more">
+            <td colspan="5" style="text-align: center">
+                <?= Assets::img("ajax-indicator-black.svg") ?>
+            </td>
+        </tr>
+    <? endif ?>
+    </tfoot>
 </table>
+
+
+<script>
+    //Infinity-scroll:
+    jQuery(window.document).bind('scroll', _.throttle(function (event) {
+        if ((jQuery(window).scrollTop() + jQuery(window).height() > jQuery(window.document).height() - 1200)
+            && (jQuery("#evasys_logs .more").length > 0)) {
+            //nachladen
+            jQuery("#evasys_logs .more").removeClass("more").addClass("loading");
+            let earliest = null;
+            jQuery("#evasys_logs tbody > tr").each(function () {
+                if (earliest === null || earliest > jQuery(this).data("id")) {
+                    earliest = jQuery(this).data("id");
+                }
+            });
+            jQuery.ajax({
+                url: STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/evasysplugin/logs/more",
+                data: {
+                    'earliest': earliest
+                },
+                dataType: "json",
+                success: function (response) {
+                    for (let i in response.rows) {
+                        jQuery("#evasys_logs tbody").append(response.rows[i]);
+                    }
+                    if (response.more) {
+                        jQuery("#evasys_logs .loading").removeClass("loading").addClass("more");
+                    } else {
+                        jQuery("#evasys_logs .loading").remove();
+                    }
+                }
+            });
+        }
+    }, 30));
+</script>
