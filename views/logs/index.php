@@ -1,4 +1,7 @@
 <table class="default" id="evasys_logs">
+    <caption>
+        <?= _("SOAP-Logeinträge") ?>
+    </caption>
     <thead>
         <tr>
             <th width="16"></th>
