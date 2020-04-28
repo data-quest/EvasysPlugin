@@ -10,7 +10,7 @@
     <form method="POST"
           action="<?= htmlReady($link['ServerIp'] . "public/forward") ?>"
           class="default">
-        <input type="hidden" name="forwardinfo" value="<?= htmlReady($link['Token']) ?>">
+        <input type="hidden" name="forwardinfo" value="<?= htmlReady($link['ForwardingKey']) ?>">
 
         <div style="text-align: center">
             <?= \Studip\Button::create(_("Nach EvaSys (öffnet in neuem Reiter)")) ?>
