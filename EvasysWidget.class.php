@@ -35,7 +35,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
                 SELECT seminare.*
                 FROM seminar_user
                     INNER JOIN seminare ON (seminare.Seminar_id = seminar_user.Seminar_id)
-                    INNER JOIN evasys_course_profiles ON (evasys_course_profiles.seminar_id = seminare.Seminar_id) 
+                    INNER JOIN evasys_course_profiles ON (evasys_course_profiles.seminar_id = seminare.Seminar_id)
                 WHERE seminar_user.user_id = :user_id
                     AND seminar_user.status = 'dozent'
                     AND evasys_course_profiles.semester_id = :semester_id
@@ -52,14 +52,18 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
             $active_seminar_ids = array();
             foreach ($seminar_ids as $seminar_id) {
                 $profile = EvasysCourseProfile::findBySemester($seminar_id);
-                if ($profile['applied'] && $profile['transferred'] && ($profile->getFinalBegin() < time()) && ($profile->getFinalEnd() >= time() + (86400 * 14))) {
+                if ($profile['applied'] && $profile['transferred'] && ($profile->getFinalBegin() < time()) && ($profile->getFinalEnd() >= time())) {
+                    $seminar = new EvasysSeminar($seminar_id);
+                    $exported_id = $seminar->getExportedId();
                     if ($profile['split']) {
-                        $active_seminar_ids[$seminar_id.$GLOBALS['user']->id] = $seminar_id;
+                        $active_seminar_ids[$exported_id.$GLOBALS['user']->id] = $seminar_id;
                     } else {
-                        $active_seminar_ids[$seminar_id] = $seminar_id;
+                        $active_seminar_ids[$exported_id] = $seminar_id;
                     }
                 }
             }
+
+
 
             $user = User::findCurrent();
 
