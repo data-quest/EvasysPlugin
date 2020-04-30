@@ -29,8 +29,13 @@
                         </td>
                         <td><?= date("d.m.Y G:i", $profile->getFinalEnd()) ?></td>
                         <? $return = round(100 * $course['ResponseCount'] / ($course['ParticipantCount'] ?: 1)) ?>
-                        <? $color = $return >= 80 ? '#8bbd40' : ($return >= 30 ? '#a1aec7' : '#d60000') ?>
+                        <? $color = $return >= 80 ? '#a8ce70' : ($return >= 30 ? '#a1aec7' : '#d60000') ?>
                         <td style="background-image: linear-gradient(0deg, <?= $color ?>, <?= $color ?>); background-repeat: no-repeat; background-size: <?= (int) $return ?>% 100%; width: 150px;">
+                            <? if ($return >= 80) : ?>
+                                <span style="float: right;">
+                                    <?= Icon::create("accept", "info_alt")->asImg(20, ['class' => "text-bottom"]) ?>
+                                </span>
+                            <? endif ?>
                             <?= (int) $return ?>%
                         </td>
                         <? /*<td>
