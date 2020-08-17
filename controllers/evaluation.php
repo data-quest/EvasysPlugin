@@ -85,18 +85,18 @@ class EvaluationController extends PluginController
             $teachers = $this->profile['teachers']->getArrayCopy();
         } else {
             $statement = DBManager::get()->prepare("
-                SELECT seminar_user.user_id 
-                FROM seminar_user 
+                SELECT seminar_user.user_id
+                FROM seminar_user
                 WHERE seminar_user.Seminar_id = ?
-                    AND seminar_user.status = 'dozent' 
-                ORDER BY seminar_user.position ASC 
+                    AND seminar_user.status = 'dozent'
+                ORDER BY seminar_user.position ASC
             ");
             $statement->execute(array(Context::get()->id));
             $teachers = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
         }
         foreach ($teachers as $dozent_id) {
             $seminar = new EvasysSeminar();
-            $seminar['seminar_id'] = Context::get()->id . $dozent_id;
+            $seminar['seminar_id'] = $this->evasys_seminar->getExportedId() . $dozent_id;
             $seminar['publishing_allowed'] = $this->evasys_seminar['publishing_allowed_by_dozent'][$dozent_id];
             $this->evasys_seminars[$dozent_id] = $seminar;
         }

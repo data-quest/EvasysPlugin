@@ -102,7 +102,7 @@ class EvasysSeminar extends SimpleORMap
             if ($evasys_sem_object->getMessage() === "ERR_212") {
                 $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
             } else {
-                $message = "SOAP-error: " . $forms->getMessage()
+                $message = "SOAP-error: " . $evasys_sem_object->getMessage()
                     . ((is_string($evasys_sem_object->detail) || (is_object($evasys_sem_object->detail) && method_exists($evasys_sem_object->detail, "__toString")))
                         ? " (" . $evasys_sem_object->detail . ")"
                         : "");
@@ -140,11 +140,19 @@ class EvasysSeminar extends SimpleORMap
             if ($part && $part[0] !== "delete") {
                 if ($part['CourseName']) {
                     //single course with data
-                    $courses[] = $part;
+                    if (!$part['CourseUid']) {
+                        PageLayout::postError(sprintf(_("Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."), $seminar->course['name']));
+                    } else {
+                        $courses[] = $part;
+                    }
                 } else {
                     //we have split courses for each teacher
                     foreach ($part as $subcourse) {
-                        $courses[] = $subcourse;
+                        if (!$subcourse['CourseUid']) {
+                            PageLayout::postError(sprintf(_("Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."), $seminar->course['name']));
+                        } else {
+                            $courses[] = $subcourse;
+                        }
                     }
                     //try to delete a course-evaluation if we have a split course
                     $soap->__soapCall("DeleteCourse", array(
@@ -198,12 +206,9 @@ class EvasysSeminar extends SimpleORMap
             //Speichern der survey_ids, sodass wir beim nächsten Mal die alten Survey_ids mitgeben können.
             foreach ((array) $evasys_sem_object->UploadStatus as $status) {
 
-                $course_uid = $status->CourseUid;
-                if (strlen($course_uid) > 32) {
-                    $course_id = substr($course_uid, 0, 32);
-                } else {
-                    $course_id = $course_uid;
-                }
+                $course_id = self::getCourseIdByUID($status->CourseUid);
+                //var_dump($course_id); die();
+
                 //$status->StatusMessage;
                 $profile = EvasysCourseProfile::findBySemester(
                     $course_id,
@@ -222,19 +227,42 @@ class EvasysSeminar extends SimpleORMap
                     foreach ($status->SurveyStatusList->SurveyStatusArray as $survey_status) {
                         if ($survey_status->SurveyId) {
                             if (!$profile['surveys']) {
-                                $profile['surveys'] = array($course_uid => $survey_status->SurveyId);
+                                $profile['surveys'] = array($status->CourseUid => $survey_status->SurveyId);
                             } else {
-                                $profile['surveys'][$course_uid] = $survey_status->SurveyId;
+                                $profile['surveys'][$status->CourseUid] = $survey_status->SurveyId;
                             }
                         }
                     }
                     $profile['surveys']['form_id'] = $profile->getFinalFormId();
                 }
                 $success = $profile->store();
-
             }
             return true;
         }
+    }
+
+    static public function getCourseIdByUID($uid)
+    {
+        if (strlen($uid) > 32) {
+            $uid = substr($uid, 0, strlen($uid) - 32);
+        }
+        switch (Config::get()->EVASYS_COURSE_IDENTIFIER) {
+            case "seminar_id":
+                $course_id = $uid;
+                break;
+            case "number":
+                $course = Course::findOneBySQL("VeranstaltungsNummer = ?", [$uid]);
+                $course_id = $course->getId();
+                break;
+            default: //Datenfeld:
+                $course = Course::findOneBySQL("INNER JOIN datafields_entries ON (datafields_entries.range_id = seminare.Seminar_id) WHERE datafields_entries.content = :uid AND datafields_entries.datafield_id = :datafield_id ", [
+                    'uid' => $uid,
+                    'datafield_id' => Config::get()->EVASYS_COURSE_IDENTIFIER
+                ]);
+                $course_id = $course->getId();
+                break;
+        }
+        return $course_id;
     }
 
     public function getExportedId()
@@ -244,11 +272,11 @@ class EvasysSeminar extends SimpleORMap
                 $id = $this['Seminar_id'];
                 break;
             case "number":
-                $id = $this['VeranstaltungsNummer'];
+                $id = empty($this['VeranstaltungsNummer']) ? $this['Seminar_id'] : $this['VeranstaltungsNummer'];
                 break;
             default: //Datenfeld:
-                $datafield_entry = DatafieldEntryModel::findByModel($course, Config::get()->EVASYS_COURSE_IDENTIFIER);
-                $id = $datafield_entry['content'];
+                $datafield_entry = DatafieldEntryModel::findByModel($this->course, Config::get()->EVASYS_COURSE_IDENTIFIER);
+                $id = empty($datafield_entry[0]['content']) ? $this['Seminar_id'] : $datafield_entry[0]['content'];
                 break;
         }
         return $id;
@@ -366,8 +394,6 @@ class EvasysSeminar extends SimpleORMap
                         $course['name']
                     ));
                 }
-
-
             }
 
             $surveys[] = array(
@@ -552,7 +578,7 @@ class EvasysSeminar extends SimpleORMap
 
         $surveys = $soap->__soapCall("GetPswdsByParticipant", array(
             'UserMailAddress' => $user->email,
-            'CourseCode' => $this->getExportedId()
+            'CourseCode' => (strlen($this['Seminar_id']) > 32) ? $this['Seminar_id'] : $this->getExportedId()
         ));
 
         if (is_a($surveys, "SoapFault")) {
@@ -587,7 +613,7 @@ class EvasysSeminar extends SimpleORMap
 
         $soap = EvasysSoap::get();
         $course = $soap->__soapCall("GetCourse", array(
-            'CourseId' => $this->getExportedId(),
+            'CourseId' => (strlen($id) > 32) ? $id : $this->getExportedId(),
             'IdType' => "EXTERNAL", //the CourseUid from the export
             'IncludeSurveys' => 1
         ));

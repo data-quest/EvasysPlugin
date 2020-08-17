@@ -36,6 +36,7 @@ class PassiveaccountController extends PluginController
 
         } else {
             $this->link = (array) $this->link;
+            $this->link['token']; //?
         }
     }
 }
