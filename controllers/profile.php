@@ -8,21 +8,32 @@ class ProfileController extends PluginController {
             Navigation::activateItem("/course/admin/evasys");
         }
         PageLayout::setTitle(_("Evaluationsdaten bearbeiten"));
+        //guess the correct semester:
+        $this->semester_id = null;
+        $course = Course::find($course_id);
         if (Request::option("semester_id")) {
-            $this->profile = EvasysCourseProfile::findBySemester(
-                $course_id,
-                Request::option("semester_id")
-            );
+            $this->semester_id = Request::option("semester_id");
         } elseif ($GLOBALS['perm']->have_perm("admin") && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && strlen($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE) === 32) {
+            $this->semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
+
+            if (Navigation::hasItem("/course/admin/evasys")) {
+                $sem = Semester::find($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
+                if (($course['start_time'] > $sem['beginn'])
+                    || (($course['duration_time'] != -1) && ($course['start_time'] + $course['duration_time'] < $sem['beginn']))) {
+                    //we are in the course and the course semester doesn't fit to our selected admin-semester:
+                    $this->semester_id = $course->start_semester->getId();
+                }
+            }
+        }
+        if ($this->semester_id) {
             $this->profile = EvasysCourseProfile::findBySemester(
                 $course_id,
-                $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+                $this->semester_id
             );
         } else {
-            $course = Course::find($course_id);
             $current_semester = Semester::findCurrent();
             if (($course['start_time'] <= $current_semester['beginn'])
-                    && (($course['duration_time'] == -1) || ($course['start_time'] + $course['duration_time'] >= $current_semester['beginn']))) {
+                && (($course['duration_time'] == -1) || ($course['start_time'] + $course['duration_time'] >= $current_semester['beginn']))) {
                 $this->profile = EvasysCourseProfile::findBySemester($course_id);
             } else {
                 $this->profile = EvasysCourseProfile::findBySemester(
@@ -30,6 +41,7 @@ class ProfileController extends PluginController {
                     $course->start_semester->getId()
                 );
             }
+            $this->semester_id = $this->profile['semester_id'];
         }
 
 
