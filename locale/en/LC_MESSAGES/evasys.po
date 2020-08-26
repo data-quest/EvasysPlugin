@@ -1,0 +1,1012 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <Jakob.Diel@hs-wismar.de>, 2020.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-08-26 14:19+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: April Suddendorf <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: ../views/matching/institutes.php:7
+msgid "Veranstaltungstypen"
+msgstr "Course types"
+
+#: ../views/matching/institutes.php:7
+msgid "Einrichtungen"
+msgstr "Institutes"
+
+#: ../views/matching/institutes.php:7
+msgid "Begriffe"
+msgstr ""
+
+#: ../views/matching/institutes.php:11 ../views/forms/index.php:10
+#: ../views/config/edit_additionalfield.php:9
+#: ../views/config/additionalfields.php:4 ../controllers/admin.php:123
+msgid "Name"
+msgstr ""
+
+#: ../views/matching/institutes.php:12
+msgid "Name in EvaSys"
+msgstr "Name in EvaSys"
+
+#: ../views/matching/institutes.php:39 ../views/forms/index.php:42
+#: ../views/forms/sort.php:37 ../views/forms/edit.php:16
+#: ../views/config/edit_additionalfield.php:35
+#: ../views/globalprofile/index.php:8 ../views/globalprofile/index.php:275
+#: ../views/profile/bulkedit.php:207 ../views/profile/edit.php:360
+msgid "Speichern"
+msgstr ""
+
+#: ../views/forms/index.php:4
+msgid "EvaSys-Fragebögen"
+msgstr "EvaSys questionaires"
+
+#: ../views/forms/index.php:11
+msgid "Überschrift"
+msgstr "Headline"
+
+#: ../views/forms/index.php:12
+msgid "Info"
+msgstr "Info"
+
+#: ../views/forms/sort.php:9
+msgid "Reihenfolge per Drag & Drop festlegen"
+msgstr "Change order by drag & drop"
+
+#: ../views/forms/edit.php:7
+msgid "Aktiv in Stud.IP"
+msgstr ""
+
+#: ../views/forms/edit.php:11
+msgid "Info-Link"
+msgstr "Info link"
+
+#: ../views/widget/nothing.php:2
+msgid ""
+"Dieses Widget ist nur sinnvoll, wenn die EvaSys-Kursprofile aktiviert sind, "
+"was in diesem Stud.IP nicht der Fall ist."
+msgstr ""
+
+#: ../views/widget/widget.php:6 ../views/individual/list.php:7
+msgid "Veranstaltung"
+msgstr "Course"
+
+#: ../views/widget/widget.php:9
+msgid "Evaluation bis"
+msgstr "Survey until"
+
+#: ../views/widget/widget.php:12
+msgid "Rücklaufquote"
+msgstr ""
+
+#: ../views/widget/widget.php:57
+msgid "Keine laufenden Evaluationen"
+msgstr ""
+
+#: ../views/config/edit_additionalfield.php:6
+msgid "Daten des Feldes"
+msgstr ""
+
+#: ../views/config/edit_additionalfield.php:16
+msgid "Nur für papierbasierte Evaluationen"
+msgstr "Only for text based surveys"
+
+#: ../views/config/edit_additionalfield.php:21
+msgid "Text"
+msgstr ""
+
+#: ../views/config/edit_additionalfield.php:25
+msgid "Großes Textfeld"
+msgstr ""
+
+#: ../views/config/edit_additionalfield.php:29
+msgid "Reihenfolge"
+msgstr ""
+
+#: ../views/config/additionalfields.php:5
+msgid "Nur papierbasierte Evaluationen"
+msgstr ""
+
+#: ../views/config/additionalfields.php:6 ../views/logs/index.php:11
+#: ../views/individual/list.php:14
+msgid "Aktion"
+msgstr ""
+
+#: ../views/globalprofile/add.php:9
+msgid "Standardwerte für ein neues Semester"
+msgstr ""
+
+#: ../views/globalprofile/add.php:13
+msgid "Semester auswählen"
+msgstr ""
+
+#: ../views/globalprofile/add.php:26
+msgid "Standardwerte aus welchem Semester übernehmen"
+msgstr ""
+
+#: ../views/globalprofile/add.php:28
+msgid "Keine Werte kopieren"
+msgstr ""
+
+#: ../views/globalprofile/add.php:40
+msgid "Erstellen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:14
+msgid "Standarddaten der Evaluationen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:16
+#, php-format
+msgid "Standarddaten der Evaluationen der Einrichtung %s"
+msgstr ""
+
+#: ../views/globalprofile/index.php:20
+msgid "Beginn"
+msgstr ""
+
+#: ../views/globalprofile/index.php:25 ../views/globalprofile/index.php:35
+#: ../views/globalprofile/index.php:65 ../views/globalprofile/index.php:83
+#: ../views/globalprofile/index.php:100 ../views/globalprofile/index.php:110
+#: ../views/globalprofile/index.php:131 ../views/globalprofile/index.php:193
+#: ../views/globalprofile/index.php:233 ../views/globalprofile/index.php:243
+#: ../views/globalprofile/index.php:253
+msgid "Standardwert, wenn nichts eingetragen ist."
+msgstr ""
+
+#: ../views/globalprofile/index.php:26 ../views/globalprofile/index.php:36
+#: ../views/globalprofile/index.php:66 ../views/globalprofile/index.php:84
+#: ../views/globalprofile/index.php:101 ../views/globalprofile/index.php:111
+#: ../views/globalprofile/index.php:132 ../views/globalprofile/index.php:234
+#: ../views/globalprofile/index.php:244 ../views/globalprofile/index.php:254
+msgid "Kein Standardwert"
+msgstr ""
+
+#: ../views/globalprofile/index.php:30
+msgid "Ende"
+msgstr ""
+
+#: ../views/globalprofile/index.php:41
+msgid "Beginn Bearbeitungszeitraum der Admins"
+msgstr ""
+
+#: ../views/globalprofile/index.php:46
+msgid "Ende Bearbeitungszeitraum der Admins"
+msgstr ""
+
+#: ../views/globalprofile/index.php:52
+msgid "Standardfragebogen (nur aktive werden angezeigt)"
+msgstr ""
+
+#: ../views/globalprofile/index.php:70 ../views/profile/bulkedit.php:135
+#: ../views/profile/edit.php:274
+msgid "Art der Evaluation"
+msgstr ""
+
+#: ../views/globalprofile/index.php:74 ../views/profile/bulkedit.php:150
+#: ../views/profile/edit.php:284 ../views/profile/edit.php:289
+msgid "Papierbasierte Evaluation"
+msgstr ""
+
+#: ../views/globalprofile/index.php:77 ../views/profile/bulkedit.php:147
+#: ../views/profile/edit.php:281 ../views/profile/edit.php:289
+msgid "Online-Evaluation"
+msgstr ""
+
+#: ../views/globalprofile/index.php:89
+msgid ""
+"Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit "
+"Leerzeichen getrennt)"
+msgstr ""
+
+#: ../views/globalprofile/index.php:95
+msgid "Informationen für Lehrende zu den Evaluationsdaten"
+msgstr ""
+
+#: ../views/globalprofile/index.php:105
+msgid "Infotext für Studierende über der Evaluation"
+msgstr ""
+
+#: ../views/globalprofile/index.php:114
+msgid "Erst nach Ablauf der Evaluation"
+msgstr ""
+
+#: ../views/globalprofile/index.php:114
+msgid "Sobald der Mindestrücklauf erreicht ist."
+msgstr ""
+
+#: ../views/globalprofile/index.php:116
+msgid "PDF-Berichte bereitstellen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:139
+msgid "Standardfragebögen nach Veranstaltungstypen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:150
+msgid "Werte kopieren"
+msgstr ""
+
+#: ../views/globalprofile/index.php:153
+msgid "Werte hier einfügen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:156
+msgid "Doch nicht kopieren"
+msgstr ""
+
+#: ../views/globalprofile/index.php:164
+msgid "Standardfragebogen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:179
+msgid "Verfügbar"
+msgstr ""
+
+#: ../views/globalprofile/index.php:204
+msgid "Keine Standardwerte"
+msgstr ""
+
+#: ../views/globalprofile/index.php:212
+msgid "Sortierung bearbeiten"
+msgstr ""
+
+#: ../views/globalprofile/index.php:228
+msgid "Beginn der Antragsfrist"
+msgstr ""
+
+#: ../views/globalprofile/index.php:238
+msgid "Ende der Antragsfrist"
+msgstr ""
+
+#: ../views/globalprofile/index.php:248
+msgid "Informationstext"
+msgstr ""
+
+#: ../views/globalprofile/index.php:277
+msgid "Löschen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:277
+msgid ""
+"Sollen die Einstellungen des gesamten Semesters wirklich gelöscht werden?"
+msgstr ""
+
+#: ../views/globalprofile/index.php:284
+#, php-format
+msgid "Wählen Sie erst eine %s aus."
+msgstr ""
+
+#: ../views/globalprofile/index.php:290
+msgid "Einrichtung"
+msgstr ""
+
+#: ../views/globalprofile/index.php:299
+msgid "Alle"
+msgstr ""
+
+#: ../views/globalprofile/index.php:299
+msgid "Alle meine Einrichtungen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:319
+#: ../views/evaluation/_survey_dozent.php:18 ../controllers/admin.php:126
+msgid "Semester"
+msgstr ""
+
+#: ../views/globalprofile/index.php:339
+msgid "Neues Semester anlegen"
+msgstr ""
+
+#: ../views/admin/_admin_checkbox.php:38
+#, php-format
+msgid "Dies ist eine %s"
+msgstr ""
+
+#: ../views/admin/_admin_checkbox.php:42
+msgid ""
+"Es gibt keinen Termin dieser Veranstaltung im gewünschten Evaluationszeitraum"
+msgstr ""
+
+#: ../views/admin/_admin_checkbox.php:47
+msgid "Veranstaltung wurde bereits übertragen."
+msgstr ""
+
+#: ../views/admin/_admin_checkbox.php:53
+msgid "Evaluation beantragen oder bearbeiten"
+msgstr ""
+
+#: ../views/admin/course_tr.php:7 ../views/admin/course_tr.php:8
+msgid "Bearbeitungsstatus ändern"
+msgstr ""
+
+#: ../views/admin/course_tr.php:11
+msgid "Bearbeitungsstatus kann nicht von Ihnen geändert werden."
+msgstr ""
+
+#: ../views/admin/course_tr.php:41
+msgid "Veranstaltungsdetails anzeigen"
+msgstr ""
+
+#: ../views/admin/course_tr.php:46
+msgid "(versteckt)"
+msgstr ""
+
+#: ../views/admin/course_tr.php:54
+#, php-format
+msgid "%u Unterveranstaltung"
+msgid_plural "%u Unterveranstaltungen"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../views/admin/course_tr.php:72
+msgid "nicht angegeben"
+msgstr ""
+
+#: ../views/admin/course_tr.php:92 ../controllers/admin.php:128
+msgid "Teilnehmende"
+msgstr ""
+
+#: ../views/admin/course_tr.php:99
+msgid "Teilnehmende auf der Warteliste"
+msgstr ""
+
+#: ../views/admin/course_tr.php:106 ../controllers/admin.php:130
+msgid "Vorläufige Anmeldungen"
+msgstr ""
+
+#: ../views/admin/course_tr.php:134
+msgid "Datum der letzten Aktivität in dieser Veranstaltung"
+msgstr ""
+
+#: ../views/passiveaccount/index.php:16
+msgid "Nach EvaSys (öffnet in neuem Reiter)"
+msgstr ""
+
+#: ../views/logs/details.php:4 ../views/logs/index.php:8
+msgid "SOAP-Methode"
+msgstr ""
+
+#: ../views/logs/details.php:8
+msgid "Argumente"
+msgstr ""
+
+#: ../views/logs/details.php:14
+msgid "Ergebnis"
+msgstr ""
+
+#: ../views/logs/index.php:3
+msgid "SOAP-Logeinträge"
+msgstr ""
+
+#: ../views/logs/index.php:9
+msgid "Dauer (ms)"
+msgstr ""
+
+#: ../views/logs/index.php:10
+msgid "Zeitpunkt"
+msgstr ""
+
+#: ../views/logs/_row.php:3
+msgid "Auf Typ filtern"
+msgstr ""
+
+#: ../views/logs/_row.php:8 ../views/logs/_row.php:16
+msgid "Details anzeigen"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:10
+#, php-format
+msgid "Bearbeiten von %s Veranstaltungen"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:13
+msgid "Zu verändernde Eigenschaft auswählen"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:14
+msgid "Neuen Wert festlegen"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:22
+msgid "Veranstaltungen sollen evaluiert werden."
+msgstr ""
+
+#: ../views/profile/bulkedit.php:30 ../views/profile/bulkedit.php:55
+#: ../views/profile/bulkedit.php:78 ../views/profile/bulkedit.php:93
+#: ../views/profile/bulkedit.php:111 ../views/profile/bulkedit.php:143
+msgid "Unterschiedliche Werte"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:34 ../views/profile/bulkedit.php:59
+msgid "Nein"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:37 ../views/profile/bulkedit.php:62
+msgid "Ja"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:47
+msgid "Lehrende einzeln evaluieren?"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:72 ../views/profile/edit.php:106
+msgid "Evaluationsbeginn"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:87 ../views/profile/edit.php:118
+msgid "Evaluationsende"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:102 ../EvasysPlugin.class.php:511
+msgid "Fragebogen"
+msgstr ""
+
+#: ../views/profile/bulkedit.php:121
+msgid ""
+"Fragebogen darf nicht allen ausgewählten Veranstaltungstypen zugewiesen "
+"werden."
+msgstr ""
+
+#: ../views/profile/bulkedit.php:127
+msgid ""
+"Es gibt keinen Fragebogen, der bei allen ausgewählten Veranstaltungen "
+"erlaubt ist."
+msgstr ""
+
+#: ../views/profile/bulkedit.php:208
+msgid "Abbrechen"
+msgstr ""
+
+#: ../views/profile/edit.php:3
+msgid ""
+"Diese Veranstaltung ist aktuell nicht für eine Lehrveranstaltungsevaluation "
+"vorgesehen. Rückfragen richten Sie bitte an Ihr zuständiges Studiendekanat."
+msgstr ""
+
+#: ../views/profile/edit.php:23 ../controllers/profile.php:118
+msgid "Evaluationsdaten"
+msgstr ""
+
+#: ../views/profile/edit.php:33
+msgid "Veranstaltung soll evaluiert werden."
+msgstr ""
+
+#: ../views/profile/edit.php:40
+msgid "Wer wird evaluiert?"
+msgstr ""
+
+#: ../views/profile/edit.php:69
+msgid "Wird auf dem Fragebogen genannt."
+msgstr ""
+
+#: ../views/profile/edit.php:88
+msgid "Lehrende einzeln evaluieren"
+msgstr ""
+
+#: ../views/profile/edit.php:94
+msgid ""
+"Weitere Emailadressen, an die die Ergebnisse gesendet werden sollen (mit "
+"Leerzeichen getrennt)"
+msgstr ""
+
+#: ../views/profile/edit.php:130
+msgid ""
+"Kein Veranstaltungstermin befindet sich in dem vorgesehenen "
+"Evaluationszeitraum!"
+msgstr ""
+
+#: ../views/profile/edit.php:132
+msgid "Anderen Termin auswählen"
+msgstr ""
+
+#: ../views/profile/edit.php:152
+#, php-format
+msgid "Termin am %s aussuchen"
+msgstr ""
+
+#: ../views/profile/edit.php:181
+msgid "Termin als Evaluationszeitraum auswählen"
+msgstr ""
+
+#: ../views/profile/edit.php:191
+msgid "Keine möglichen Termine gefunden."
+msgstr ""
+
+#: ../views/profile/edit.php:205
+msgid "Ausgewähler Fragebogen"
+msgstr ""
+
+#: ../views/profile/edit.php:326
+msgid "Log"
+msgstr ""
+
+#: ../views/profile/edit.php:329
+#, php-format
+msgid "Letzte Bearbeitung von %s am %s Uhr"
+msgstr ""
+
+#: ../views/profile/edit.php:329
+msgid "unbekannt"
+msgstr ""
+
+#: ../views/profile/edit.php:332
+#, php-format
+msgid "Diese Veranstaltung ist eine %s."
+msgstr ""
+
+#: ../views/profile/edit.php:336
+msgid "Diese Veranstaltung wurde bereits an den Evaluationsserver übertragen."
+msgstr ""
+
+#: ../views/profile/edit.php:357
+msgid "In Pflichtevaluation umwandeln"
+msgstr ""
+
+#: ../views/profile/edit.php:357
+msgid "Wirklich in Pflichtevaluation umwandeln?"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:2
+msgid "Es gibt keine aktuellen Evaluationen zu dieser Veranstaltung."
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:6
+msgid "Es gibt eine Evaluation zu dieser Veranstaltung"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:8
+msgid "Keine verfügbaren Evaluationen"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:10
+msgid "Evaluationen zu dieser Veranstaltung"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:22
+msgid "Papier/Online-Umfrage"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:23
+msgid "Onlineumfrage"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:23
+msgid "Papierumfrage"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:26
+msgid "Aktueller Rücklauf"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:29
+msgid "Noch keine Antworten abgegeben"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:31
+msgid "Ein abgegebener Fragebogen"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:38
+msgid "Status"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:41
+msgid "Bereit / Keine Daten vorhanden"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:44
+msgid "Daten vorhanden / Bereit zur Auswertung"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:47
+msgid "Daten unter Mindestrücklauf"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:50
+msgid "Validierung / Datenerfassungskraft"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:53
+msgid "Verifikation"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:60
+msgid "Auswertung der Evaluation"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:64
+msgid "Ergebnisse als PDF"
+msgstr ""
+
+#: ../views/evaluation/_survey_dozent.php:75
+msgid ""
+"Zum Administrieren dieser Evaluation melden Sie sich bitte in EvaSys an oder "
+"wenden Sie sich an Ihren Administrator."
+msgstr ""
+
+#: ../views/evaluation/show.php:60 ../views/evaluation/split.php:88
+msgid "QR-Code für Studierende anzeigen"
+msgstr ""
+
+#: ../views/evaluation/show.php:71 ../views/evaluation/split.php:99
+msgid "Veröffentlichung der Ergebnisse an Studenten erlauben."
+msgstr ""
+
+#: ../views/evaluation/_survey_student.php:9
+msgid ""
+"Falls die Evaluation länger braucht zum Laden, drücken Sie bitte nicht auf "
+"Neuladen der ganzen Seite."
+msgstr ""
+
+#: ../views/evaluation/_survey_student.php:33
+msgid "Sie haben schon an der aktuellen Evaluation teilgenommen. Besten Dank!"
+msgstr ""
+
+#: ../views/evaluation/_survey_student.php:35
+msgid "Sie können nicht (mehr) an dieser Befragung teilnehmen."
+msgstr ""
+
+#: ../views/evaluation/_survey_student.php:54
+msgid "Es gibt für Sie hier keine aktuellen, ausstehenden Evaluationen."
+msgstr ""
+
+#: ../views/individual/list.php:6
+msgid "Nummer"
+msgstr ""
+
+#: ../views/individual/list.php:8
+msgid "Dozenten"
+msgstr ""
+
+#: ../views/individual/list.php:9
+msgid "Evaluationszeitraum"
+msgstr ""
+
+#: ../views/individual/list.php:11
+msgid "Art"
+msgstr ""
+
+#: ../views/individual/list.php:31
+#, php-format
+msgid "Noch keine %s in diesem Semester."
+msgstr ""
+
+#: ../views/individual/list.php:46 ../EvasysPlugin.class.php:406
+msgid "Bearbeiten"
+msgstr ""
+
+#: ../views/individual/list.php:104
+msgid "Export als CSV"
+msgstr ""
+
+#: ../views/individual/list.php:111
+msgid "Semesterauswahl"
+msgstr ""
+
+#: ../views/individual/course.php:15
+msgid "Dieser Lehrende soll evaluiert werden."
+msgstr ""
+
+#: ../views/individual/course.php:17
+msgid "Dieser Lehrende ist nicht für eine Evaluierung vorgesehen."
+msgstr ""
+
+#: ../views/individual/course.php:29 ../EvasysPlugin.class.php:555
+msgid "Papier"
+msgstr ""
+
+#: ../views/individual/course.php:29 ../EvasysPlugin.class.php:553
+#: ../EvasysPlugin.class.php:555
+msgid "Online"
+msgstr ""
+
+#: ../controllers/evaluation.php:20
+msgid "Lehrveranstaltungsevaluation mit EvaSys"
+msgstr ""
+
+#: ../controllers/passiveaccount.php:9
+msgid "EvaSys-Zugang"
+msgstr ""
+
+#: ../controllers/logs.php:35
+msgid "Logeintrag anzeigen"
+msgstr ""
+
+#: ../controllers/config.php:33
+msgid "Angaben des Feldes wurden gespeichert."
+msgstr ""
+
+#: ../controllers/config.php:43
+msgid "Feld wurde gelöscht."
+msgstr ""
+
+#: ../controllers/matching.php:18 ../EvasysPlugin.class.php:64
+msgid "Matching Einrichtungen"
+msgstr ""
+
+#: ../controllers/matching.php:38 ../controllers/matching.php:77
+#: ../controllers/matching.php:130 ../controllers/profile.php:105
+msgid "Daten wurden gespeichert."
+msgstr ""
+
+#: ../controllers/matching.php:57 ../EvasysPlugin.class.php:62
+msgid "Matching Veranstaltungstypen"
+msgstr ""
+
+#: ../controllers/matching.php:98 ../EvasysPlugin.class.php:66
+msgid "Begrifflichkeiten"
+msgstr ""
+
+#: ../controllers/profile.php:10
+msgid "Evaluationsdaten bearbeiten"
+msgstr ""
+
+#: ../controllers/profile.php:121
+msgid "Es wurden keine Veranstaltungen zum Bearbeiten ausgewählt."
+msgstr ""
+
+#: ../controllers/profile.php:213
+msgid "Evaluationsdaten wurden gespeichert"
+msgstr ""
+
+#: ../controllers/admin.php:84
+#, php-format
+msgid "%s Veranstaltungen mit EvaSys synchronisiert."
+msgstr ""
+
+#: ../controllers/admin.php:86
+msgid "Fehler beim Synchronisieren mit EvaSys. "
+msgstr ""
+
+#: ../controllers/admin.php:89
+msgid "Veranstaltungen abgewählt. Keine Synchronisation erfolgt."
+msgstr ""
+
+#: ../controllers/admin.php:122
+msgid "Nr."
+msgstr ""
+
+#: ../controllers/admin.php:124
+msgid "Veranstaltungstyp"
+msgstr ""
+
+#: ../controllers/admin.php:125
+msgid "Raum/Zeit"
+msgstr ""
+
+#: ../controllers/admin.php:127
+msgid "Lehrende"
+msgstr ""
+
+#: ../controllers/admin.php:129
+msgid "Personen auf Warteliste"
+msgstr ""
+
+#: ../controllers/admin.php:131
+msgid "Inhalt"
+msgstr ""
+
+#: ../controllers/admin.php:132
+msgid "Letzte Aktivität"
+msgstr ""
+
+#: ../controllers/forms.php:23
+msgid "Fragebogen bearbeiten"
+msgstr ""
+
+#: ../controllers/forms.php:30
+msgid "Fragebogen wurde gespeichert"
+msgstr ""
+
+#: ../controllers/forms.php:66
+#, php-format
+msgid "Fragebögen sortieren für Typ %s"
+msgstr ""
+
+#: ../controllers/forms.php:78
+msgid "Sortierung wurde gespeichert."
+msgstr ""
+
+#: ../controllers/globalprofile.php:117
+msgid "Einstellungen des Semesters wurden gelöscht."
+msgstr ""
+
+#: ../controllers/globalprofile.php:198
+msgid "Einstellungen wurden gespeichert"
+msgstr ""
+
+#: ../controllers/globalprofile.php:208
+msgid "Standardwerte für neues Semester erstellen"
+msgstr ""
+
+#: ../controllers/globalprofile.php:213
+msgid "Neues Semester angelegt"
+msgstr ""
+
+#: ../lib/EvasysCourseProfile.php:110
+#, php-format
+msgid ""
+"%s hat eine Lehrevaluation für die Veranstaltung %s beantragt. Sie können "
+"die Evaluationsdaten hier einsehen:"
+msgstr ""
+
+#: ../lib/EvasysCourseProfile.php:123
+#, php-format
+msgid "Lehrevaluation für Veranstaltung %s wurde von %s beantragt"
+msgstr ""
+
+#: ../lib/EvasysCourseProfile.php:181
+#, php-format
+msgid ""
+"%s hat gerade die Lehrevaluationsdaten der Veranstaltung %s verändert. Die "
+"geänderten Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n"
+"\n"
+" %s"
+msgstr ""
+
+#: ../lib/EvasysCourseProfile.php:194
+msgid "Bearbeitung der Evaluationsdaten"
+msgstr ""
+
+#: ../lib/EvasysSeminar.php:144 ../lib/EvasysSeminar.php:152
+#, php-format
+msgid "Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."
+msgstr ""
+
+#: ../lib/EvasysSeminar.php:219
+#, php-format
+msgid "Die 'Veranstaltung '%s' konnte nicht korrekt übertragen werden."
+msgstr ""
+
+#: ../lib/EvasysSeminar.php:393
+#, php-format
+msgid ""
+"Evaluation für die Veranstaltung '%s' ist schon gestartet und konnte nicht "
+"mehr verändert werden."
+msgstr ""
+
+#: ../EvasysPlugin.class.php:49
+msgid "Standardwerte"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:51
+#, php-format
+msgid "Standardwerte der %s"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:53
+msgid "Freie Felder"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:55
+msgid "Fragebögen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:59
+msgid "Logs"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:69
+msgid "Standard-Evaluationsprofil"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:101
+msgid "Eigene Evaluationen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:104 ../EvasysPlugin.class.php:321
+#: ../EvasysPlugin.class.php:341 ../EvasysPlugin.class.php:370
+msgid "Lehrveranst.-Evaluation"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:106
+msgid ""
+"Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, "
+"ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."
+msgstr ""
+
+#: ../EvasysPlugin.class.php:110 ../EvasysPlugin.class.php:391
+msgid "EvaSys"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:123
+msgid "Transfer-Filter"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:130
+msgid "Beantragt"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:135
+msgid "Nicht beantragt"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:140
+msgid "Beantragt und noch nicht übertragen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:145
+msgid "Beantragt und nach EvaSys übetragen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:157
+msgid "Zeiten im Evaluationszeitraum"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:159
+msgid "Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:172
+msgid "Ausreißer-Filter"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:174
+msgid "Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen."
+msgstr ""
+
+#: ../EvasysPlugin.class.php:325
+msgid "Lehrveranstaltungsevaluationen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:328
+msgid "Neue Evaluation"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:335
+#, php-format
+msgid "%s neue Evaluation"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:342
+msgid "Evaluationen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:389
+msgid "Evaluation"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:405
+msgid "Übertragen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:512
+msgid "Evaluationsart"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:513
+msgid "Eval-Zeitraum"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:514
+msgid "Evaluation beantragt"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:515
+msgid "Eval: Beantragte Lehrende (Emails)"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:516
+msgid "Rückläufer"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:519
+msgid "Teilevaluation"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:612
+#, php-format
+msgid "Veranstaltung %s existiert nicht mehr in EvaSys"
+msgstr ""

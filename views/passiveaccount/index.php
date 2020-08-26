@@ -13,7 +13,7 @@
         <input type="hidden" name="forwardinfo" value="<?= htmlReady($link['ForwardingKey']) ?>">
 
         <div style="text-align: center">
-            <?= \Studip\Button::create(_("Nach EvaSys (öffnet in neuem Reiter)")) ?>
+            <?= \Studip\Button::create(dgettext("evasys", "Nach EvaSys (öffnet in neuem Reiter)")) ?>
         </div>
 
     </form>

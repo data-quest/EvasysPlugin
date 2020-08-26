@@ -1,14 +1,14 @@
 <table class="default" id="evasys_logs">
     <caption>
-        <?= _("SOAP-Logeinträge") ?>
+        <?= dgettext("evasys", "SOAP-Logeinträge") ?>
     </caption>
     <thead>
         <tr>
             <th width="16"></th>
-            <th><?= _("SOAP-Methode") ?></th>
-            <th><?= _("Dauer (ms)") ?></th>
-            <th><?= _("Zeitpunkt") ?></th>
-            <th class="actions"><?= _("Aktion") ?></th>
+            <th><?= dgettext("evasys", "SOAP-Methode") ?></th>
+            <th><?= dgettext("evasys", "Dauer (ms)") ?></th>
+            <th><?= dgettext("evasys", "Zeitpunkt") ?></th>
+            <th class="actions"><?= dgettext("evasys", "Aktion") ?></th>
         </tr>
     </thead>
     <tbody>

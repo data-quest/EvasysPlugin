@@ -141,7 +141,7 @@ class EvasysSeminar extends SimpleORMap
                 if ($part['CourseName']) {
                     //single course with data
                     if (!$part['CourseUid']) {
-                        PageLayout::postError(sprintf(_("Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."), $seminar->course['name']));
+                        PageLayout::postError(sprintf(dgettext("evasys", "Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."), $seminar->course['name']));
                     } else {
                         $courses[] = $part;
                     }
@@ -149,7 +149,7 @@ class EvasysSeminar extends SimpleORMap
                     //we have split courses for each teacher
                     foreach ($part as $subcourse) {
                         if (!$subcourse['CourseUid']) {
-                            PageLayout::postError(sprintf(_("Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."), $seminar->course['name']));
+                            PageLayout::postError(sprintf(dgettext("evasys", "Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."), $seminar->course['name']));
                         } else {
                             $courses[] = $subcourse;
                         }
@@ -216,7 +216,7 @@ class EvasysSeminar extends SimpleORMap
                 );
                 if ($status->StatusId === "ERR_108") {
                     PageLayout::postError(sprintf(
-                        _("Die 'Veranstaltung '%s' konnte nicht korrekt übertragen werden."),
+                        dgettext("evasys", "Die 'Veranstaltung '%s' konnte nicht korrekt übertragen werden."),
                         Course::find($course_id)->name
                     ), array($status->StatusMessage));
                     $profile['transferred'] = 0;
@@ -390,7 +390,7 @@ class EvasysSeminar extends SimpleORMap
                     }
                 } else {
                     PageLayout::postError(sprintf(
-                        _("Evaluation für die Veranstaltung '%s' ist schon gestartet und konnte nicht mehr verändert werden."),
+                        dgettext("evasys", "Evaluation für die Veranstaltung '%s' ist schon gestartet und konnte nicht mehr verändert werden."),
                         $course['name']
                     ));
                 }

@@ -1,6 +1,6 @@
 <? $editable = $profile->isEditable() ?>
 <? if (!$editable && !$profile['applied']) : ?>
-    <?= MessageBox::info(_("Diese Veranstaltung ist aktuell nicht für eine Lehrveranstaltungsevaluation vorgesehen. Rückfragen richten Sie bitte an Ihr zuständiges Studiendekanat.")) ?>
+    <?= MessageBox::info(dgettext("evasys", "Diese Veranstaltung ist aktuell nicht für eine Lehrveranstaltungsevaluation vorgesehen. Rückfragen richten Sie bitte an Ihr zuständiges Studiendekanat.")) ?>
 <? else : ?>
 
 
@@ -20,7 +20,7 @@
 
         <fieldset>
             <legend>
-                <?= _("Evaluationsdaten") ?>
+                <?= dgettext("evasys", "Evaluationsdaten") ?>
             </legend>
 
             <? if ($editable) : ?>
@@ -30,14 +30,14 @@
                        value="1"
                        onChange="jQuery('#evasys_evaldata').toggle();"
                         <?= $profile['applied'] ? " checked" : "" ?>>
-                <?= _("Veranstaltung soll evaluiert werden.") ?>
+                <?= dgettext("evasys", "Veranstaltung soll evaluiert werden.") ?>
             </label>
             <? endif ?>
 
             <div<?= $profile['applied'] ? '' : ' style="display: none;"' ?> id="evasys_evaldata">
                 <? $seminar = new Seminar($profile['seminar_id']) ?>
                 <? $teachers = $seminar->getMembers("dozent") ?>
-                <?= _("Wer wird evaluiert?") ?>
+                <?= dgettext("evasys", "Wer wird evaluiert?") ?>
                 <ul class="clean evasys_teachers<?= $editable ? " editable" : "" ?><?= Config::get()->EVASYS_ENABLE_SPLITTING_COURSES && $profile['split'] ? " split" : "" ?>">
                     <?
                     $active = array_flip($profile['teachers'] ? $profile['teachers']->getArrayCopy() : array());
@@ -66,7 +66,7 @@
                                    <?= $profile->isEditable() ? "" : "disabled" ?>
                                    value="<?= htmlReady($teacher['user_id']) ?>"
                                    <?= count($teachers) === 1 || (!$profile['teachers'] && ($number == 0 || !Config::get()->EVASYS_SELECT_FIRST_TEACHER)) || ($profile['teachers'] && in_array($teacher['user_id'], $profile['teachers']->getArrayCopy())) ? " checked" : "" ?>>
-                            <span class="note">(<?= _("Wird auf dem Fragebogen genannt.") ?>)</span>
+                            <span class="note">(<?= dgettext("evasys", "Wird auf dem Fragebogen genannt.") ?>)</span>
                         <? if ($editable && count($teachers) > 1) : ?>
                         </label>
                         <? endif ?>
@@ -85,13 +85,13 @@
                     <? else : ?>
                         <?= Icon::create("checkbox-".(!$profile['split'] ? "un" : "")."checked", "info") ?>
                     <? endif ?>
-                    <?= _("Lehrende einzeln evaluieren") ?>
+                    <?= dgettext("evasys", "Lehrende einzeln evaluieren") ?>
                 </label>
                 <? endif ?>
 
                 <? if ($editable || trim($profile['results_email'])) : ?>
                 <label>
-                    <?= _("Weitere Emailadressen, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>
+                    <?= dgettext("evasys", "Weitere Emailadressen, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>
                     <? if ($editable) : ?>
                     <input type="text" name="data[results_email]" value="<?= htmlReady($profile['results_email']) ?>">
                     <? else : ?>
@@ -103,7 +103,7 @@
                 <? endif ?>
 
                 <label>
-                    <?= _("Evaluationsbeginn") ?>
+                    <?= dgettext("evasys", "Evaluationsbeginn") ?>
                     <? $begin = $profile->getFinalBegin() ?>
                     <? if ($editable) : ?>
                     <input type="text" name="data[begin]" value="<?= $begin ? date("d.m.Y H:i", $begin) : "" ?>" class="datepicker evasys_begin">
@@ -115,7 +115,7 @@
                 </label>
 
                 <label>
-                    <?= _("Evaluationsende") ?>
+                    <?= dgettext("evasys", "Evaluationsende") ?>
                     <? $end = $profile->getFinalEnd() ?>
                     <? if ($editable) : ?>
                     <input type="text" name="data[end]" value="<?= $end ? date("d.m.Y H:i", $end) : "" ?>" class="datepicker evasys_end">
@@ -127,9 +127,9 @@
                 </label>
 
                 <? if (!$profile->hasDatesInEvalTimespan()) : ?>
-                    <?= MessageBox::error(_("Kein Veranstaltungstermin befindet sich in dem vorgesehenen Evaluationszeitraum!")) ?>
+                    <?= MessageBox::error(dgettext("evasys", "Kein Veranstaltungstermin befindet sich in dem vorgesehenen Evaluationszeitraum!")) ?>
                     <? if (!empty($profile->course->dates) && $editable) : ?>
-                        <?= _("Anderen Termin auswählen") ?>
+                        <?= dgettext("evasys", "Anderen Termin auswählen") ?>
                         <?
                             $default_date = null;
                             $last_date = null;
@@ -149,7 +149,7 @@
                         ?>
                         <? if ($default_date) : ?>
                             <div>
-                                <?= \Studip\LinkButton::create(sprintf(_("Termin am %s aussuchen"), date("d.m.Y", $default_date['date'])), "#", array('onClick' => "jQuery('.evasys_begin').val('". date("d.m.Y H:i", $default_date['date']) ."'); jQuery('.evasys_end').val('". date("d.m.Y H:i", $default_date['end_time']) ."'); return false;")) ?>
+                                <?= \Studip\LinkButton::create(sprintf(dgettext("evasys", "Termin am %s aussuchen"), date("d.m.Y", $default_date['date'])), "#", array('onClick' => "jQuery('.evasys_begin').val('". date("d.m.Y H:i", $default_date['date']) ."'); jQuery('.evasys_end').val('". date("d.m.Y H:i", $default_date['end_time']) ."'); return false;")) ?>
                             </div>
                         <? endif ?>
                         <div class="evasys_propose_dates">
@@ -178,7 +178,7 @@
                                             </td>
                                             <td class="actions">
                                                 <a href="#" onClick="jQuery('.evasys_begin').val('<?= date("d.m.Y H:i", $date['date']) ?>'); jQuery('.evasys_end').val('<?= date("d.m.Y H:i", $date['end_time']) ?>'); return false;"
-                                                   title="<?= _("Termin als Evaluationszeitraum auswählen") ?>">
+                                                   title="<?= dgettext("evasys", "Termin als Evaluationszeitraum auswählen") ?>">
                                                     <?= Icon::create("date+move_up", "clickable")->asImg(20) ?>
                                                 </a>
                                             </td>
@@ -188,7 +188,7 @@
                                 <? if (!$found) : ?>
                                 <tr>
                                     <td style="text-align: center;">
-                                        <?= _("Keine möglichen Termine gefunden.") ?>
+                                        <?= dgettext("evasys", "Keine möglichen Termine gefunden.") ?>
                                     </td>
                                 </tr>
                                 <? endif ?>
@@ -202,7 +202,7 @@
                     <table class="default nohover">
                         <thead>
                             <tr>
-                                <th><?= _("Ausgewähler Fragebogen") ?></th>
+                                <th><?= dgettext("evasys", "Ausgewähler Fragebogen") ?></th>
                                 <th class="actions"></th>
                             </tr>
                         </thead>
@@ -271,22 +271,22 @@
 
                 <? if (!Config::get()->EVASYS_FORCE_ONLINE) : ?>
                     <label>
-                        <?= _("Art der Evaluation") ?>
+                        <?= dgettext("evasys", "Art der Evaluation") ?>
                         <? if ($editable) : ?>
                         <select name="data[mode]" onClick="jQuery('.evasys_paper').toggle(this.value === 'paper');" required>
                             <? if (!in_array($profile->getFinalMode(), array("online", "paper"))) : ?>
                                 <option value=""></option>
                             <? endif ?>
                             <option value="online"<?= $profile->getFinalMode() === "online" ? " selected" : "" ?>>
-                                <?= _("Online-Evaluation") ?>
+                                <?= dgettext("evasys", "Online-Evaluation") ?>
                             </option>
                             <option value="paper"<?= $profile->getFinalMode() === "paper" ? " selected" : "" ?>>
-                                <?= _("Papierbasierte Evaluation") ?>
+                                <?= dgettext("evasys", "Papierbasierte Evaluation") ?>
                             </option>
                         </select>
                         <? else : ?>
                             <div>
-                                <?= $profile->getFinalMode() === "online" ? _("Online-Evaluation") : _("Papierbasierte Evaluation") ?>
+                                <?= $profile->getFinalMode() === "online" ? dgettext("evasys", "Online-Evaluation") : dgettext("evasys", "Papierbasierte Evaluation") ?>
                             </div>
                         <? endif ?>
                     </label>
@@ -323,17 +323,17 @@
 
         <? if (!$profile->isNew() && $editable) : ?>
         <fieldset>
-            <legend><?= _("Log") ?></legend>
+            <legend><?= dgettext("evasys", "Log") ?></legend>
 
             <? $last_author = $profile['user_id'] ? User::find($profile['user_id']) : null ?>
-            <?= MessageBox::info(sprintf(_("Letzte Bearbeitung von %s am %s Uhr"), ($last_author ? $last_author->getFullName() : ($profile['user_id'] ?: _("unbekannt"))), date("d.m.Y H:i", $profile['chdate'])) ) ?>
+            <?= MessageBox::info(sprintf(dgettext("evasys", "Letzte Bearbeitung von %s am %s Uhr"), ($last_author ? $last_author->getFullName() : ($profile['user_id'] ?: dgettext("evasys", "unbekannt"))), date("d.m.Y H:i", $profile['chdate'])) ) ?>
 
             <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id']))) : ?>
-                <?= MessageBox::info(sprintf(_("Diese Veranstaltung ist eine %s."), EvasysMatching::wording("freiwillige Evaluation"))) ?>
+                <?= MessageBox::info(sprintf(dgettext("evasys", "Diese Veranstaltung ist eine %s."), EvasysMatching::wording("freiwillige Evaluation"))) ?>
             <? endif ?>
 
             <? if ($profile['transferred']) : ?>
-                <?= MessageBox::info(_("Diese Veranstaltung wurde bereits an den Evaluationsserver übertragen.")) ?>
+                <?= MessageBox::info(dgettext("evasys", "Diese Veranstaltung wurde bereits an den Evaluationsserver übertragen.")) ?>
             <? endif ?>
         </fieldset>
         <? endif ?>
@@ -354,10 +354,10 @@
 
             <div data-dialog-button>
                 <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id']))) : ?>
-                    <?= \Studip\Button::create(_("In Pflichtevaluation umwandeln"), "unset_by_dozent", array('onclick' => "return window.confirm('"._("Wirklich in Pflichtevaluation umwandeln?")."');")) ?>
+                    <?= \Studip\Button::create(dgettext("evasys", "In Pflichtevaluation umwandeln"), "unset_by_dozent", array('onclick' => "return window.confirm('".dgettext("evasys", "Wirklich in Pflichtevaluation umwandeln?")."');")) ?>
                 <? endif ?>
 
-                <?= \Studip\Button::create(_("Speichern")) ?>
+                <?= \Studip\Button::create(dgettext("evasys", "Speichern")) ?>
             </div>
         <? else : ?>
             <? $info = $profile->getPresetAttribute("teacher_info") ?>

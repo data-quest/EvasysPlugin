@@ -7,7 +7,7 @@ class ProfileController extends PluginController {
         if (Navigation::hasItem("/course/admin/evasys")) {
             Navigation::activateItem("/course/admin/evasys");
         }
-        PageLayout::setTitle(_("Evaluationsdaten bearbeiten"));
+        PageLayout::setTitle(dgettext("evasys", "Evaluationsdaten bearbeiten"));
         //guess the correct semester:
         $this->semester_id = null;
         $course = Course::find($course_id);
@@ -102,7 +102,7 @@ class ProfileController extends PluginController {
                 }
             }
 
-            PageLayout::postSuccess(_("Daten wurden gespeichert."));
+            PageLayout::postSuccess(dgettext("evasys", "Daten wurden gespeichert."));
             $this->response->add_header("X-Dialog-Execute", json_encode(array(
                 'func' => "STUDIP.Evasys.refreshCourseInOverview",
                 'payload' => $course_id
@@ -115,10 +115,10 @@ class ProfileController extends PluginController {
     public function bulkedit_action()
     {
         Navigation::activateItem("/browse/my_courses/list");
-        PageLayout::setTitle(_("Evaluationsdaten"));
+        PageLayout::setTitle(dgettext("evasys", "Evaluationsdaten"));
         $this->ids = array_keys(Request::getArray("c"));
         if (empty($this->ids)) {
-            PageLayout::postError(_("Es wurden keine Veranstaltungen zum Bearbeiten ausgewählt."));
+            PageLayout::postError(dgettext("evasys", "Es wurden keine Veranstaltungen zum Bearbeiten ausgewählt."));
             $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
         }
         $this->profiles = array();
@@ -210,7 +210,7 @@ class ProfileController extends PluginController {
                     }
                 }
             }
-            PageLayout::postSuccess(_("Evaluationsdaten wurden gespeichert"));
+            PageLayout::postSuccess(dgettext("evasys", "Evaluationsdaten wurden gespeichert"));
             if (Request::get("individual")) {
                 $this->redirect(PluginEngine::getURL($this->plugin, array(), "individual/list"));
             } else {

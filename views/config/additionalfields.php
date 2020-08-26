@@ -1,9 +1,9 @@
 <table class="default">
     <thead>
         <tr>
-            <th><?= _("Name") ?></th>
-            <th><?= _("Nur papierbasierte Evaluationen") ?></th>
-            <th class="actions"><?= _("Aktion") ?></th>
+            <th><?= dgettext("evasys", "Name") ?></th>
+            <th><?= dgettext("evasys", "Nur papierbasierte Evaluationen") ?></th>
+            <th class="actions"><?= dgettext("evasys", "Aktion") ?></th>
         </tr>
     </thead>
     <tbody>

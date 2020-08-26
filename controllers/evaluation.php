@@ -17,7 +17,7 @@ class EvaluationController extends PluginController
             }
         }
         PageLayout::addScript($this->plugin->getPluginURL()."/assets/qrcode.js");
-        PageLayout::setTitle(_("Lehrveranstaltungsevaluation mit EvaSys"));
+        PageLayout::setTitle(dgettext("evasys", "Lehrveranstaltungsevaluation mit EvaSys"));
     }
 
     public function show_action()

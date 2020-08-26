@@ -6,7 +6,7 @@
     <? foreach ($evasys_seminar->getSurveys() as $survey_data) : ?>
         <? if ($survey_data->TransactionNumber && ($survey_data->TransactionNumber !== "null")) : ?>
             <? $_SESSION['EVASYS_SURVEY_TAN_EXISTED_'.Context::get()->id] = true ?>
-            <?= MessageBox::info(_("Falls die Evaluation länger braucht zum Laden, drücken Sie bitte nicht auf Neuladen der ganzen Seite.")) ?>
+            <?= MessageBox::info(dgettext("evasys", "Falls die Evaluation länger braucht zum Laden, drücken Sie bitte nicht auf Neuladen der ganzen Seite.")) ?>
 
             <!-- Set scrollable div around iframe when on iOS (Safari and other Browsers on iOS need this to scroll the iframe) -->
             <? if (preg_match('/iP(ad|hone|od).+Safari/', $_SERVER['HTTP_USER_AGENT']) === 1) : ?>
@@ -30,9 +30,9 @@
             <? endif ?>
         <? else : ?>
             <? if ($_SESSION['EVASYS_SURVEY_TAN_EXISTED_'.Context::get()->id]) : ?>
-                <?= MessageBox::success(_("Sie haben schon an der aktuellen Evaluation teilgenommen. Besten Dank!")) ?>
+                <?= MessageBox::success(dgettext("evasys", "Sie haben schon an der aktuellen Evaluation teilgenommen. Besten Dank!")) ?>
             <? else : ?>
-                <?= MessageBox::info(_("Sie können nicht (mehr) an dieser Befragung teilnehmen.")) ?>
+                <?= MessageBox::info(dgettext("evasys", "Sie können nicht (mehr) an dieser Befragung teilnehmen.")) ?>
             <? endif ?>
             <? if ($evasys_seminar->publishingAllowed($dozent_id) && $evasys_seminar->reportsAllowed()) : ?>
                 <?= $this->render_partial("evaluation/_survey_dozent.php", array(
@@ -51,7 +51,7 @@
             'dozent_ids' => array($dozent_id)
         )) ?>
     <? else : ?>
-        <?= MessageBox::info(_("Es gibt für Sie hier keine aktuellen, ausstehenden Evaluationen.")) ?>
+        <?= MessageBox::info(dgettext("evasys", "Es gibt für Sie hier keine aktuellen, ausstehenden Evaluationen.")) ?>
     <? endif ?>
 <? endif ?>
 <script>

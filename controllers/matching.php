@@ -15,7 +15,7 @@ class MatchingController extends PluginController
     public function institutes_action()
     {
         Navigation::activateItem("/admin/evasys/matchinginstitutes");
-        PageLayout::setTitle(_("Matching Einrichtungen"));
+        PageLayout::setTitle(dgettext("evasys", "Matching Einrichtungen"));
         $this->action = "institutes";
 
         if (Request::isPost()) {
@@ -35,7 +35,7 @@ class MatchingController extends PluginController
                     $matching->store();
                 }
             }
-            PageLayout::postSuccess(_("Daten wurden gespeichert."));
+            PageLayout::postSuccess(dgettext("evasys", "Daten wurden gespeichert."));
             $this->redirect("matching/".$this->action);
             return;
         }
@@ -54,7 +54,7 @@ class MatchingController extends PluginController
     public function seminartypes_action()
     {
         Navigation::activateItem("/admin/evasys/matchingtypes");
-        PageLayout::setTitle(_("Matching Veranstaltungstypen"));
+        PageLayout::setTitle(dgettext("evasys", "Matching Veranstaltungstypen"));
         $this->action = "seminartypes";
 
         if (Request::isPost()) {
@@ -74,7 +74,7 @@ class MatchingController extends PluginController
                     $matching->store();
                 }
             }
-            PageLayout::postSuccess(_("Daten wurden gespeichert."));
+            PageLayout::postSuccess(dgettext("evasys", "Daten wurden gespeichert."));
             $this->redirect("matching/".$this->action);
             return;
         }
@@ -95,7 +95,7 @@ class MatchingController extends PluginController
     public function wording_action()
     {
         Navigation::activateItem("/admin/evasys/wording");
-        PageLayout::setTitle(_("Begrifflichkeiten"));
+        PageLayout::setTitle(dgettext("evasys", "Begrifflichkeiten"));
         $this->action = "wording";
         $this->i18n = true;
 
@@ -127,7 +127,7 @@ class MatchingController extends PluginController
                     $matching->store();
                 }
             }
-            PageLayout::postSuccess(_("Daten wurden gespeichert."));
+            PageLayout::postSuccess(dgettext("evasys", "Daten wurden gespeichert."));
             $this->redirect("matching/".$this->action);
             return;
         }

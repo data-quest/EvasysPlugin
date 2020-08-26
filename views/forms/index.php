@@ -1,15 +1,15 @@
 <form action="<?= PluginEngine::getLink($plugin, array(), "forms/activate") ?>" method="post">
 
     <table class="default evasys_formstable">
-        <caption><?= _("EvaSys-Fragebögen") ?></caption>
+        <caption><?= dgettext("evasys", "EvaSys-Fragebögen") ?></caption>
         <thead>
             <tr>
                 <th width="20">
                     <input data-proxyfor=".evasys_formstable tbody input[type=checkbox]" type="checkbox">
                 </th>
-                <th><?= _("Name") ?></th>
-                <th><?= _("Überschrift") ?></th>
-                <th><?= _("Info") ?></th>
+                <th><?= dgettext("evasys", "Name") ?></th>
+                <th><?= dgettext("evasys", "Überschrift") ?></th>
+                <th><?= dgettext("evasys", "Info") ?></th>
                 <th></th>
             </tr>
         </thead>
@@ -39,7 +39,7 @@
         <tfoot>
             <tr>
                 <td colspan="100">
-                    <?= \Studip\Button::create(_("Speichern")) ?>
+                    <?= \Studip\Button::create(dgettext("evasys", "Speichern")) ?>
                 </td>
             </tr>
         </tfoot>

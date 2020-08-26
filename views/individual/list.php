@@ -3,15 +3,15 @@
         <caption><?= htmlReady(ucfirst(EvasysMatching::wording("freiwillige Evaluationen"))) ?></caption>
         <thead>
             <tr>
-                <th><?= _("Nummer") ?></th>
-                <th><?= _("Veranstaltung") ?></th>
-                <th><?= _("Dozenten") ?></th>
-                <th><?= _("Evaluationszeitraum") ?></th>
+                <th><?= dgettext("evasys", "Nummer") ?></th>
+                <th><?= dgettext("evasys", "Veranstaltung") ?></th>
+                <th><?= dgettext("evasys", "Dozenten") ?></th>
+                <th><?= dgettext("evasys", "Evaluationszeitraum") ?></th>
                 <? if (!Config::get()->EVASYS_FORCE_ONLINE) : ?>
-                    <th><?= _("Art") ?></th>
+                    <th><?= dgettext("evasys", "Art") ?></th>
                 <? endif ?>
                 <th class="actions">
-                    <?= _("Aktion") ?>
+                    <?= dgettext("evasys", "Aktion") ?>
                     <input type="checkbox" data-proxyfor=".evasys_individuelle_liste > tbody :checkbox">
                 </th>
             </tr>
@@ -28,7 +28,7 @@
             <? else : ?>
             <tr>
                 <td colspan="100" style="text-align: center;">
-                    <?= sprintf(_("Noch keine %s in diesem Semester."), EvasysMatching::wording("freiwillige Evaluationen")) ?>
+                    <?= sprintf(dgettext("evasys", "Noch keine %s in diesem Semester."), EvasysMatching::wording("freiwillige Evaluationen")) ?>
                 </td>
             </tr>
             <? endif ?>
@@ -43,7 +43,7 @@
         <tfoot>
             <tr>
                 <td colspan="100" style="text-align: right;">
-                    <?= \Studip\Button::create(_("Bearbeiten")) ?>
+                    <?= \Studip\Button::create(dgettext("evasys", "Bearbeiten")) ?>
                 </td>
             </tr>
         </tfoot>
@@ -101,14 +101,14 @@
 <?
 $actions = new ActionsWidget();
 $actions->addLink(
-    _("Export als CSV"),
+    dgettext("evasys", "Export als CSV"),
     PluginEngine::getURL($plugin, array('semester_id' => $semester->getId()), "individual/csv"),
     Icon::create("file-excel", "clickable")
 );
 Sidebar::Get()->addWidget($actions);
 
 $semester_select = new SelectWidget(
-    _("Semesterauswahl"),
+    dgettext("evasys", "Semesterauswahl"),
     PluginEngine::getURL($plugin, array(), "individual/list"),
     'semester_id'
 );
