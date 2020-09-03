@@ -6,7 +6,7 @@
         <tr>
             <th width="16"></th>
             <th><?= _("SOAP-Methode") ?></th>
-            <th><?= _("Dauer (ms)") ?></th>
+            <th><?= _("Dauer (Sekunden)") ?></th>
             <th><?= _("Zeitpunkt") ?></th>
             <th class="actions"><?= _("Aktion") ?></th>
         </tr>
