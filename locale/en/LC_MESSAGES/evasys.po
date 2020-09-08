@@ -3,20 +3,20 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <Jakob.Diel@hs-wismar.de>, 2020.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-08-26 14:19+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2020-08-28 15:31+0200\n"
 "Last-Translator: April Suddendorf <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language-Team: \n"
+"X-Generator: Poedit 2.2.1\n"
 
 #: ../views/matching/institutes.php:7
 msgid "Veranstaltungstypen"
@@ -26,15 +26,16 @@ msgstr "Course types"
 msgid "Einrichtungen"
 msgstr "Institutes"
 
+# keywords
 #: ../views/matching/institutes.php:7
 msgid "Begriffe"
-msgstr ""
+msgstr "Keywords"
 
 #: ../views/matching/institutes.php:11 ../views/forms/index.php:10
 #: ../views/config/edit_additionalfield.php:9
 #: ../views/config/additionalfields.php:4 ../controllers/admin.php:123
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 #: ../views/matching/institutes.php:12
 msgid "Name in EvaSys"
@@ -46,7 +47,7 @@ msgstr "Name in EvaSys"
 #: ../views/globalprofile/index.php:8 ../views/globalprofile/index.php:275
 #: ../views/profile/bulkedit.php:207 ../views/profile/edit.php:360
 msgid "Speichern"
-msgstr ""
+msgstr "Save"
 
 #: ../views/forms/index.php:4
 msgid "EvaSys-Fragebögen"
@@ -66,7 +67,7 @@ msgstr "Change order by drag & drop"
 
 #: ../views/forms/edit.php:7
 msgid "Aktiv in Stud.IP"
-msgstr ""
+msgstr "Active in Stud.IP"
 
 #: ../views/forms/edit.php:11
 msgid "Info-Link"
@@ -77,6 +78,8 @@ msgid ""
 "Dieses Widget ist nur sinnvoll, wenn die EvaSys-Kursprofile aktiviert sind, "
 "was in diesem Stud.IP nicht der Fall ist."
 msgstr ""
+"This widget is only appropriate is the EvaSys course profiles are activated, "
+"which is not the case in this Stud.IP."
 
 #: ../views/widget/widget.php:6 ../views/individual/list.php:7
 msgid "Veranstaltung"
@@ -87,16 +90,17 @@ msgid "Evaluation bis"
 msgstr "Survey until"
 
 #: ../views/widget/widget.php:12
+#, fuzzy
 msgid "Rücklaufquote"
-msgstr ""
+msgstr "Response rate"
 
 #: ../views/widget/widget.php:57
 msgid "Keine laufenden Evaluationen"
-msgstr ""
+msgstr "No ongoing evaluations"
 
 #: ../views/config/edit_additionalfield.php:6
 msgid "Daten des Feldes"
-msgstr ""
+msgstr "Field data"
 
 #: ../views/config/edit_additionalfield.php:16
 msgid "Nur für papierbasierte Evaluationen"
@@ -104,57 +108,57 @@ msgstr "Only for text based surveys"
 
 #: ../views/config/edit_additionalfield.php:21
 msgid "Text"
-msgstr ""
+msgstr "Text"
 
 #: ../views/config/edit_additionalfield.php:25
 msgid "Großes Textfeld"
-msgstr ""
+msgstr "Large Text field"
 
 #: ../views/config/edit_additionalfield.php:29
 msgid "Reihenfolge"
-msgstr ""
+msgstr "Sequence"
 
 #: ../views/config/additionalfields.php:5
 msgid "Nur papierbasierte Evaluationen"
-msgstr ""
+msgstr "Only paper-based evaluations"
 
 #: ../views/config/additionalfields.php:6 ../views/logs/index.php:11
 #: ../views/individual/list.php:14
 msgid "Aktion"
-msgstr ""
+msgstr "Action"
 
 #: ../views/globalprofile/add.php:9
 msgid "Standardwerte für ein neues Semester"
-msgstr ""
+msgstr "Standard value for a new semester"
 
 #: ../views/globalprofile/add.php:13
 msgid "Semester auswählen"
-msgstr ""
+msgstr "Choose semester"
 
 #: ../views/globalprofile/add.php:26
 msgid "Standardwerte aus welchem Semester übernehmen"
-msgstr ""
+msgstr "Apply standard values from which semester"
 
 #: ../views/globalprofile/add.php:28
 msgid "Keine Werte kopieren"
-msgstr ""
+msgstr "Copy no values"
 
 #: ../views/globalprofile/add.php:40
 msgid "Erstellen"
-msgstr ""
+msgstr "Create"
 
 #: ../views/globalprofile/index.php:14
 msgid "Standarddaten der Evaluationen"
-msgstr ""
+msgstr "Standard values of the evaluations"
 
 #: ../views/globalprofile/index.php:16
 #, php-format
 msgid "Standarddaten der Evaluationen der Einrichtung %s"
-msgstr ""
+msgstr "Standard values of the evaluations of institutions %s"
 
 #: ../views/globalprofile/index.php:20
 msgid "Beginn"
-msgstr ""
+msgstr "Start"
 
 #: ../views/globalprofile/index.php:25 ../views/globalprofile/index.php:35
 #: ../views/globalprofile/index.php:65 ../views/globalprofile/index.php:83
@@ -163,7 +167,7 @@ msgstr ""
 #: ../views/globalprofile/index.php:233 ../views/globalprofile/index.php:243
 #: ../views/globalprofile/index.php:253
 msgid "Standardwert, wenn nichts eingetragen ist."
-msgstr ""
+msgstr "Standard values if nothing is entered."
 
 #: ../views/globalprofile/index.php:26 ../views/globalprofile/index.php:36
 #: ../views/globalprofile/index.php:66 ../views/globalprofile/index.php:84
@@ -171,669 +175,678 @@ msgstr ""
 #: ../views/globalprofile/index.php:132 ../views/globalprofile/index.php:234
 #: ../views/globalprofile/index.php:244 ../views/globalprofile/index.php:254
 msgid "Kein Standardwert"
-msgstr ""
+msgstr "No standard value"
 
 #: ../views/globalprofile/index.php:30
 msgid "Ende"
-msgstr ""
+msgstr "End"
 
 #: ../views/globalprofile/index.php:41
 msgid "Beginn Bearbeitungszeitraum der Admins"
-msgstr ""
+msgstr "Start processing period of Admins"
 
 #: ../views/globalprofile/index.php:46
 msgid "Ende Bearbeitungszeitraum der Admins"
-msgstr ""
+msgstr "End processing period of Admins"
 
 #: ../views/globalprofile/index.php:52
 msgid "Standardfragebogen (nur aktive werden angezeigt)"
-msgstr ""
+msgstr "Standard questionaire (only actives are displayed)"
 
 #: ../views/globalprofile/index.php:70 ../views/profile/bulkedit.php:135
 #: ../views/profile/edit.php:274
 msgid "Art der Evaluation"
-msgstr ""
+msgstr "Type of evaluation"
 
 #: ../views/globalprofile/index.php:74 ../views/profile/bulkedit.php:150
 #: ../views/profile/edit.php:284 ../views/profile/edit.php:289
 msgid "Papierbasierte Evaluation"
-msgstr ""
+msgstr "Paper-based evaluation"
 
 #: ../views/globalprofile/index.php:77 ../views/profile/bulkedit.php:147
 #: ../views/profile/edit.php:281 ../views/profile/edit.php:289
 msgid "Online-Evaluation"
-msgstr ""
+msgstr "Online evaluation"
 
 #: ../views/globalprofile/index.php:89
 msgid ""
 "Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit "
 "Leerzeichen getrennt)"
 msgstr ""
+"Further emails to which the results should be sent (separated by spaces)"
 
 #: ../views/globalprofile/index.php:95
 msgid "Informationen für Lehrende zu den Evaluationsdaten"
-msgstr ""
+msgstr "Information for lecturers about the evaluation data"
 
 #: ../views/globalprofile/index.php:105
 msgid "Infotext für Studierende über der Evaluation"
-msgstr ""
+msgstr "Info text for students about the evaluation"
 
 #: ../views/globalprofile/index.php:114
 msgid "Erst nach Ablauf der Evaluation"
-msgstr ""
+msgstr "Only after the end of the evaluation"
 
+# bei Übersetzung von Rücklauf (return rate) bin ich mir unsicher
 #: ../views/globalprofile/index.php:114
+#, fuzzy
 msgid "Sobald der Mindestrücklauf erreicht ist."
-msgstr ""
+msgstr "As soon as the minimum return rate is reached."
 
 #: ../views/globalprofile/index.php:116
 msgid "PDF-Berichte bereitstellen"
-msgstr ""
+msgstr "Provide PDF reports"
 
 #: ../views/globalprofile/index.php:139
 msgid "Standardfragebögen nach Veranstaltungstypen"
-msgstr ""
+msgstr "Standard questionnaire by course"
 
 #: ../views/globalprofile/index.php:150
 msgid "Werte kopieren"
-msgstr ""
+msgstr "Copy values"
 
 #: ../views/globalprofile/index.php:153
 msgid "Werte hier einfügen"
-msgstr ""
+msgstr "Insert values here"
 
 #: ../views/globalprofile/index.php:156
 msgid "Doch nicht kopieren"
-msgstr ""
+msgstr "Do not copy"
 
 #: ../views/globalprofile/index.php:164
 msgid "Standardfragebogen"
-msgstr ""
+msgstr "Standard questionnaire"
 
 #: ../views/globalprofile/index.php:179
 msgid "Verfügbar"
-msgstr ""
+msgstr "Available"
 
 #: ../views/globalprofile/index.php:204
 msgid "Keine Standardwerte"
-msgstr ""
+msgstr "No standard values"
 
 #: ../views/globalprofile/index.php:212
 msgid "Sortierung bearbeiten"
-msgstr ""
+msgstr "Edit Order"
 
 #: ../views/globalprofile/index.php:228
 msgid "Beginn der Antragsfrist"
-msgstr ""
+msgstr "Start of the application period"
 
 #: ../views/globalprofile/index.php:238
 msgid "Ende der Antragsfrist"
-msgstr ""
+msgstr "End of the application period"
 
 #: ../views/globalprofile/index.php:248
 msgid "Informationstext"
-msgstr ""
+msgstr "Information text"
 
 #: ../views/globalprofile/index.php:277
 msgid "Löschen"
-msgstr ""
+msgstr "Delete"
 
 #: ../views/globalprofile/index.php:277
 msgid ""
 "Sollen die Einstellungen des gesamten Semesters wirklich gelöscht werden?"
-msgstr ""
+msgstr "Should the settings of the whole semester really be deleted?"
 
 #: ../views/globalprofile/index.php:284
 #, php-format
 msgid "Wählen Sie erst eine %s aus."
-msgstr ""
+msgstr "First pick a %s."
 
 #: ../views/globalprofile/index.php:290
 msgid "Einrichtung"
-msgstr ""
+msgstr "Institutes"
 
 #: ../views/globalprofile/index.php:299
 msgid "Alle"
-msgstr ""
+msgstr "All"
 
 #: ../views/globalprofile/index.php:299
 msgid "Alle meine Einrichtungen"
-msgstr ""
+msgstr "All my institutes"
 
 #: ../views/globalprofile/index.php:319
 #: ../views/evaluation/_survey_dozent.php:18 ../controllers/admin.php:126
 msgid "Semester"
-msgstr ""
+msgstr "Semester"
 
 #: ../views/globalprofile/index.php:339
 msgid "Neues Semester anlegen"
-msgstr ""
+msgstr "Create new Semester"
 
 #: ../views/admin/_admin_checkbox.php:38
 #, php-format
 msgid "Dies ist eine %s"
-msgstr ""
+msgstr "This is a %s"
 
 #: ../views/admin/_admin_checkbox.php:42
 msgid ""
 "Es gibt keinen Termin dieser Veranstaltung im gewünschten Evaluationszeitraum"
-msgstr ""
+msgstr "There is no date of this course in the desired evaluation period"
 
 #: ../views/admin/_admin_checkbox.php:47
 msgid "Veranstaltung wurde bereits übertragen."
-msgstr ""
+msgstr "Course was already transferred."
 
 #: ../views/admin/_admin_checkbox.php:53
 msgid "Evaluation beantragen oder bearbeiten"
-msgstr ""
+msgstr "Request or edit evaluation"
 
 #: ../views/admin/course_tr.php:7 ../views/admin/course_tr.php:8
 msgid "Bearbeitungsstatus ändern"
-msgstr ""
+msgstr "Edit processing status"
 
 #: ../views/admin/course_tr.php:11
 msgid "Bearbeitungsstatus kann nicht von Ihnen geändert werden."
-msgstr ""
+msgstr "Processing status can not be edited."
 
 #: ../views/admin/course_tr.php:41
 msgid "Veranstaltungsdetails anzeigen"
-msgstr ""
+msgstr "Display course details"
 
 #: ../views/admin/course_tr.php:46
 msgid "(versteckt)"
-msgstr ""
+msgstr "(hidden)"
 
 #: ../views/admin/course_tr.php:54
 #, php-format
 msgid "%u Unterveranstaltung"
 msgid_plural "%u Unterveranstaltungen"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%u Sub-course"
+msgstr[1] "%u Sub-courses"
 
 #: ../views/admin/course_tr.php:72
 msgid "nicht angegeben"
-msgstr ""
+msgstr "do not display"
 
 #: ../views/admin/course_tr.php:92 ../controllers/admin.php:128
 msgid "Teilnehmende"
-msgstr ""
+msgstr "Participants"
 
 #: ../views/admin/course_tr.php:99
 msgid "Teilnehmende auf der Warteliste"
-msgstr ""
+msgstr "Participants on the waitlist"
 
 #: ../views/admin/course_tr.php:106 ../controllers/admin.php:130
 msgid "Vorläufige Anmeldungen"
-msgstr ""
+msgstr "Preliminary registrations"
 
 #: ../views/admin/course_tr.php:134
 msgid "Datum der letzten Aktivität in dieser Veranstaltung"
-msgstr ""
+msgstr "Date of last activity in this course"
 
 #: ../views/passiveaccount/index.php:16
 msgid "Nach EvaSys (öffnet in neuem Reiter)"
-msgstr ""
+msgstr "To EvaSys (opens in new tab)"
 
 #: ../views/logs/details.php:4 ../views/logs/index.php:8
 msgid "SOAP-Methode"
-msgstr ""
+msgstr "SOAP method"
 
 #: ../views/logs/details.php:8
 msgid "Argumente"
-msgstr ""
+msgstr "Arguments"
 
 #: ../views/logs/details.php:14
 msgid "Ergebnis"
-msgstr ""
+msgstr "Result"
 
 #: ../views/logs/index.php:3
 msgid "SOAP-Logeinträge"
-msgstr ""
+msgstr "SOAP log entries"
 
 #: ../views/logs/index.php:9
 msgid "Dauer (ms)"
-msgstr ""
+msgstr "Duration (ms)"
 
 #: ../views/logs/index.php:10
 msgid "Zeitpunkt"
-msgstr ""
+msgstr "Point in time"
 
 #: ../views/logs/_row.php:3
 msgid "Auf Typ filtern"
-msgstr ""
+msgstr "Filter by type"
 
 #: ../views/logs/_row.php:8 ../views/logs/_row.php:16
 msgid "Details anzeigen"
-msgstr ""
+msgstr "Display details"
 
 #: ../views/profile/bulkedit.php:10
 #, php-format
 msgid "Bearbeiten von %s Veranstaltungen"
-msgstr ""
+msgstr "Edit of %s courses"
 
 #: ../views/profile/bulkedit.php:13
 msgid "Zu verändernde Eigenschaft auswählen"
-msgstr ""
+msgstr "Pick to be edited features"
 
 #: ../views/profile/bulkedit.php:14
 msgid "Neuen Wert festlegen"
-msgstr ""
+msgstr "Set new value"
 
 #: ../views/profile/bulkedit.php:22
 msgid "Veranstaltungen sollen evaluiert werden."
-msgstr ""
+msgstr "Courses should be evaluated."
 
 #: ../views/profile/bulkedit.php:30 ../views/profile/bulkedit.php:55
 #: ../views/profile/bulkedit.php:78 ../views/profile/bulkedit.php:93
 #: ../views/profile/bulkedit.php:111 ../views/profile/bulkedit.php:143
 msgid "Unterschiedliche Werte"
-msgstr ""
+msgstr "Different values"
 
 #: ../views/profile/bulkedit.php:34 ../views/profile/bulkedit.php:59
 msgid "Nein"
-msgstr ""
+msgstr "No"
 
 #: ../views/profile/bulkedit.php:37 ../views/profile/bulkedit.php:62
 msgid "Ja"
-msgstr ""
+msgstr "Yes"
 
 #: ../views/profile/bulkedit.php:47
 msgid "Lehrende einzeln evaluieren?"
-msgstr ""
+msgstr "Evaluate lecturers individually?"
 
 #: ../views/profile/bulkedit.php:72 ../views/profile/edit.php:106
 msgid "Evaluationsbeginn"
-msgstr ""
+msgstr "Evaluation begin"
 
 #: ../views/profile/bulkedit.php:87 ../views/profile/edit.php:118
 msgid "Evaluationsende"
-msgstr ""
+msgstr "Evaluation end"
 
 #: ../views/profile/bulkedit.php:102 ../EvasysPlugin.class.php:511
 msgid "Fragebogen"
-msgstr ""
+msgstr "Questionnaire"
 
 #: ../views/profile/bulkedit.php:121
 msgid ""
 "Fragebogen darf nicht allen ausgewählten Veranstaltungstypen zugewiesen "
 "werden."
-msgstr ""
+msgstr "Questionnaire cannot be assigned to all course types."
 
 #: ../views/profile/bulkedit.php:127
 msgid ""
 "Es gibt keinen Fragebogen, der bei allen ausgewählten Veranstaltungen "
 "erlaubt ist."
-msgstr ""
+msgstr "There is no questionnaire that is allowed in all courses."
 
 #: ../views/profile/bulkedit.php:208
 msgid "Abbrechen"
-msgstr ""
+msgstr "Cancel"
 
 #: ../views/profile/edit.php:3
 msgid ""
 "Diese Veranstaltung ist aktuell nicht für eine Lehrveranstaltungsevaluation "
 "vorgesehen. Rückfragen richten Sie bitte an Ihr zuständiges Studiendekanat."
 msgstr ""
+"This course is currently not intended for course evaluation. Please direct "
+"any questions to your responsible Dean of Studies."
 
 #: ../views/profile/edit.php:23 ../controllers/profile.php:118
 msgid "Evaluationsdaten"
-msgstr ""
+msgstr "Evaluation data"
 
 #: ../views/profile/edit.php:33
 msgid "Veranstaltung soll evaluiert werden."
-msgstr ""
+msgstr "Course is to be evaluated."
 
 #: ../views/profile/edit.php:40
 msgid "Wer wird evaluiert?"
-msgstr ""
+msgstr "Who will be evaluated?"
 
 #: ../views/profile/edit.php:69
 msgid "Wird auf dem Fragebogen genannt."
-msgstr ""
+msgstr "Is mentioned in the questionnaire."
 
 #: ../views/profile/edit.php:88
 msgid "Lehrende einzeln evaluieren"
-msgstr ""
+msgstr "Evaluate lecturers indiviually"
 
 #: ../views/profile/edit.php:94
 msgid ""
 "Weitere Emailadressen, an die die Ergebnisse gesendet werden sollen (mit "
 "Leerzeichen getrennt)"
 msgstr ""
+"Further emails to which the results should be sent (separated by spaces)"
 
 #: ../views/profile/edit.php:130
 msgid ""
 "Kein Veranstaltungstermin befindet sich in dem vorgesehenen "
 "Evaluationszeitraum!"
-msgstr ""
+msgstr "No course date is in the planned evaluation period!"
 
 #: ../views/profile/edit.php:132
 msgid "Anderen Termin auswählen"
-msgstr ""
+msgstr "Pick other date"
 
 #: ../views/profile/edit.php:152
 #, php-format
 msgid "Termin am %s aussuchen"
-msgstr ""
+msgstr "Pick date on %s"
 
 #: ../views/profile/edit.php:181
 msgid "Termin als Evaluationszeitraum auswählen"
-msgstr ""
+msgstr "Select date as evaluation period"
 
 #: ../views/profile/edit.php:191
 msgid "Keine möglichen Termine gefunden."
-msgstr ""
+msgstr "No possible dates found."
 
 #: ../views/profile/edit.php:205
 msgid "Ausgewähler Fragebogen"
-msgstr ""
+msgstr "Selected questionnaire"
 
 #: ../views/profile/edit.php:326
 msgid "Log"
-msgstr ""
+msgstr "Log"
 
 #: ../views/profile/edit.php:329
 #, php-format
 msgid "Letzte Bearbeitung von %s am %s Uhr"
-msgstr ""
+msgstr "Last edit of %s at %s o'clock"
 
 #: ../views/profile/edit.php:329
 msgid "unbekannt"
-msgstr ""
+msgstr "unknown"
 
 #: ../views/profile/edit.php:332
 #, php-format
 msgid "Diese Veranstaltung ist eine %s."
-msgstr ""
+msgstr "This course is a %s"
 
 #: ../views/profile/edit.php:336
 msgid "Diese Veranstaltung wurde bereits an den Evaluationsserver übertragen."
-msgstr ""
+msgstr "This course has already been transferred to the evaluation server."
 
 #: ../views/profile/edit.php:357
 msgid "In Pflichtevaluation umwandeln"
-msgstr ""
+msgstr "Convert to mandatory evaluation"
 
 #: ../views/profile/edit.php:357
 msgid "Wirklich in Pflichtevaluation umwandeln?"
-msgstr ""
+msgstr "Really convert to mandatory evaluation?"
 
 #: ../views/evaluation/_survey_dozent.php:2
 msgid "Es gibt keine aktuellen Evaluationen zu dieser Veranstaltung."
-msgstr ""
+msgstr "There are no current evaluations for this course."
 
 #: ../views/evaluation/_survey_dozent.php:6
 msgid "Es gibt eine Evaluation zu dieser Veranstaltung"
-msgstr ""
+msgstr "There is one evaluation for this event."
 
 #: ../views/evaluation/_survey_dozent.php:8
 msgid "Keine verfügbaren Evaluationen"
-msgstr ""
+msgstr "No available evaluations"
 
 #: ../views/evaluation/_survey_dozent.php:10
 msgid "Evaluationen zu dieser Veranstaltung"
-msgstr ""
+msgstr "Evaluations to this course"
 
 #: ../views/evaluation/_survey_dozent.php:22
 msgid "Papier/Online-Umfrage"
-msgstr ""
+msgstr "Paper/online questionnaire"
 
 #: ../views/evaluation/_survey_dozent.php:23
 msgid "Onlineumfrage"
-msgstr ""
+msgstr "online questionnaire"
 
 #: ../views/evaluation/_survey_dozent.php:23
 msgid "Papierumfrage"
-msgstr ""
+msgstr "paper questionnaire"
 
 #: ../views/evaluation/_survey_dozent.php:26
 msgid "Aktueller Rücklauf"
-msgstr ""
+msgstr "current return"
 
 #: ../views/evaluation/_survey_dozent.php:29
 msgid "Noch keine Antworten abgegeben"
-msgstr ""
+msgstr "No answers given yet"
 
 #: ../views/evaluation/_survey_dozent.php:31
 msgid "Ein abgegebener Fragebogen"
-msgstr ""
+msgstr "One submitted questionnaire"
 
 #: ../views/evaluation/_survey_dozent.php:38
 msgid "Status"
-msgstr ""
+msgstr "Status"
 
 #: ../views/evaluation/_survey_dozent.php:41
 msgid "Bereit / Keine Daten vorhanden"
-msgstr ""
+msgstr "Ready / No data available"
 
 #: ../views/evaluation/_survey_dozent.php:44
 msgid "Daten vorhanden / Bereit zur Auswertung"
-msgstr ""
+msgstr "Data available / Ready for analysis"
 
 #: ../views/evaluation/_survey_dozent.php:47
 msgid "Daten unter Mindestrücklauf"
-msgstr ""
+msgstr "Data below minimum return "
 
 #: ../views/evaluation/_survey_dozent.php:50
 msgid "Validierung / Datenerfassungskraft"
-msgstr ""
+msgstr "Validation / Data Acquisition Power"
 
 #: ../views/evaluation/_survey_dozent.php:53
 msgid "Verifikation"
-msgstr ""
+msgstr "Verification"
 
 #: ../views/evaluation/_survey_dozent.php:60
 msgid "Auswertung der Evaluation"
-msgstr ""
+msgstr "Analysis of Evaluation"
 
 #: ../views/evaluation/_survey_dozent.php:64
 msgid "Ergebnisse als PDF"
-msgstr ""
+msgstr "Results as PDF"
 
 #: ../views/evaluation/_survey_dozent.php:75
 msgid ""
 "Zum Administrieren dieser Evaluation melden Sie sich bitte in EvaSys an oder "
 "wenden Sie sich an Ihren Administrator."
 msgstr ""
+"To administer this evaluation please log in to EvaSys or contact your "
+"administrator."
 
 #: ../views/evaluation/show.php:60 ../views/evaluation/split.php:88
 msgid "QR-Code für Studierende anzeigen"
-msgstr ""
+msgstr "Display QR-code for studens"
 
 #: ../views/evaluation/show.php:71 ../views/evaluation/split.php:99
 msgid "Veröffentlichung der Ergebnisse an Studenten erlauben."
-msgstr ""
+msgstr "Allow publication of results to students"
 
 #: ../views/evaluation/_survey_student.php:9
 msgid ""
 "Falls die Evaluation länger braucht zum Laden, drücken Sie bitte nicht auf "
 "Neuladen der ganzen Seite."
 msgstr ""
+"If the evaluation takes longer to load, please do not reload the whole page."
 
 #: ../views/evaluation/_survey_student.php:33
 msgid "Sie haben schon an der aktuellen Evaluation teilgenommen. Besten Dank!"
-msgstr ""
+msgstr "You have already taken part of the current evaluation. Thank you!"
 
 #: ../views/evaluation/_survey_student.php:35
 msgid "Sie können nicht (mehr) an dieser Befragung teilnehmen."
-msgstr ""
+msgstr "You cannot take part in this survey (anymore)."
 
 #: ../views/evaluation/_survey_student.php:54
 msgid "Es gibt für Sie hier keine aktuellen, ausstehenden Evaluationen."
-msgstr ""
+msgstr "There are no current, pending evaluations for you here."
 
 #: ../views/individual/list.php:6
 msgid "Nummer"
-msgstr ""
+msgstr "Number"
 
 #: ../views/individual/list.php:8
 msgid "Dozenten"
-msgstr ""
+msgstr "Lecturers"
 
 #: ../views/individual/list.php:9
 msgid "Evaluationszeitraum"
-msgstr ""
+msgstr "Evaluation period"
 
 #: ../views/individual/list.php:11
 msgid "Art"
-msgstr ""
+msgstr "Type"
 
 #: ../views/individual/list.php:31
 #, php-format
 msgid "Noch keine %s in diesem Semester."
-msgstr ""
+msgstr "No %s in this Semester yet"
 
 #: ../views/individual/list.php:46 ../EvasysPlugin.class.php:406
 msgid "Bearbeiten"
-msgstr ""
+msgstr "Edit"
 
 #: ../views/individual/list.php:104
 msgid "Export als CSV"
-msgstr ""
+msgstr "Export as CSV"
 
 #: ../views/individual/list.php:111
 msgid "Semesterauswahl"
-msgstr ""
+msgstr "Semester selection"
 
 #: ../views/individual/course.php:15
 msgid "Dieser Lehrende soll evaluiert werden."
-msgstr ""
+msgstr "This lecturer is to be evaluated."
 
 #: ../views/individual/course.php:17
 msgid "Dieser Lehrende ist nicht für eine Evaluierung vorgesehen."
-msgstr ""
+msgstr "This lecturer is not intended to be evaluated."
 
 #: ../views/individual/course.php:29 ../EvasysPlugin.class.php:555
 msgid "Papier"
-msgstr ""
+msgstr "Paper"
 
 #: ../views/individual/course.php:29 ../EvasysPlugin.class.php:553
 #: ../EvasysPlugin.class.php:555
 msgid "Online"
-msgstr ""
+msgstr "Online"
 
 #: ../controllers/evaluation.php:20
 msgid "Lehrveranstaltungsevaluation mit EvaSys"
-msgstr ""
+msgstr "Course evaluation with EvaSys"
 
 #: ../controllers/passiveaccount.php:9
 msgid "EvaSys-Zugang"
-msgstr ""
+msgstr "EvaSys access"
 
 #: ../controllers/logs.php:35
 msgid "Logeintrag anzeigen"
-msgstr ""
+msgstr "Display log entry"
 
 #: ../controllers/config.php:33
 msgid "Angaben des Feldes wurden gespeichert."
-msgstr ""
+msgstr "Information in the field were saved."
 
 #: ../controllers/config.php:43
 msgid "Feld wurde gelöscht."
-msgstr ""
+msgstr "Field has been deleted."
 
 #: ../controllers/matching.php:18 ../EvasysPlugin.class.php:64
 msgid "Matching Einrichtungen"
-msgstr ""
+msgstr "Matching institutes"
 
 #: ../controllers/matching.php:38 ../controllers/matching.php:77
 #: ../controllers/matching.php:130 ../controllers/profile.php:105
 msgid "Daten wurden gespeichert."
-msgstr ""
+msgstr "Data has been saved"
 
 #: ../controllers/matching.php:57 ../EvasysPlugin.class.php:62
 msgid "Matching Veranstaltungstypen"
-msgstr ""
+msgstr "Matching course types"
 
 #: ../controllers/matching.php:98 ../EvasysPlugin.class.php:66
 msgid "Begrifflichkeiten"
-msgstr ""
+msgstr "Terms"
 
 #: ../controllers/profile.php:10
 msgid "Evaluationsdaten bearbeiten"
-msgstr ""
+msgstr "Edit evaluation"
 
 #: ../controllers/profile.php:121
 msgid "Es wurden keine Veranstaltungen zum Bearbeiten ausgewählt."
-msgstr ""
+msgstr "No courses were selected for editing."
 
 #: ../controllers/profile.php:213
 msgid "Evaluationsdaten wurden gespeichert"
-msgstr ""
+msgstr "Evaluation data has been saved"
 
 #: ../controllers/admin.php:84
 #, php-format
 msgid "%s Veranstaltungen mit EvaSys synchronisiert."
-msgstr ""
+msgstr "%s courses synchronised with EvaSys"
 
 #: ../controllers/admin.php:86
 msgid "Fehler beim Synchronisieren mit EvaSys. "
-msgstr ""
+msgstr "Error when synchronizing with EvaSys. "
 
 #: ../controllers/admin.php:89
 msgid "Veranstaltungen abgewählt. Keine Synchronisation erfolgt."
-msgstr ""
+msgstr "Courses deselected. No synchronization performed."
 
 #: ../controllers/admin.php:122
 msgid "Nr."
-msgstr ""
+msgstr "No."
 
 #: ../controllers/admin.php:124
 msgid "Veranstaltungstyp"
-msgstr ""
+msgstr "Course type"
 
 #: ../controllers/admin.php:125
 msgid "Raum/Zeit"
-msgstr ""
+msgstr "Room/time"
 
 #: ../controllers/admin.php:127
 msgid "Lehrende"
-msgstr ""
+msgstr "Lecturers"
 
 #: ../controllers/admin.php:129
 msgid "Personen auf Warteliste"
-msgstr ""
+msgstr "People on waitlist"
 
 #: ../controllers/admin.php:131
 msgid "Inhalt"
-msgstr ""
+msgstr "Content"
 
 #: ../controllers/admin.php:132
 msgid "Letzte Aktivität"
-msgstr ""
+msgstr "Last activity"
 
 #: ../controllers/forms.php:23
 msgid "Fragebogen bearbeiten"
-msgstr ""
+msgstr "Edit questionnaire"
 
 #: ../controllers/forms.php:30
 msgid "Fragebogen wurde gespeichert"
-msgstr ""
+msgstr "Questionnaire saved"
 
 #: ../controllers/forms.php:66
 #, php-format
 msgid "Fragebögen sortieren für Typ %s"
-msgstr ""
+msgstr "Sort questionnaires for type %s"
 
 #: ../controllers/forms.php:78
 msgid "Sortierung wurde gespeichert."
-msgstr ""
+msgstr "Sorting has been saved."
 
 #: ../controllers/globalprofile.php:117
 msgid "Einstellungen des Semesters wurden gelöscht."
-msgstr ""
+msgstr "Settings for the semester have been deleted."
 
 #: ../controllers/globalprofile.php:198
 msgid "Einstellungen wurden gespeichert"
-msgstr ""
+msgstr "Settings have been saved"
 
 #: ../controllers/globalprofile.php:208
 msgid "Standardwerte für neues Semester erstellen"
-msgstr ""
+msgstr "Create standard values for semester"
 
 #: ../controllers/globalprofile.php:213
 msgid "Neues Semester angelegt"
-msgstr ""
+msgstr "New semester created"
 
 #: ../lib/EvasysCourseProfile.php:110
 #, php-format
@@ -841,11 +854,13 @@ msgid ""
 "%s hat eine Lehrevaluation für die Veranstaltung %s beantragt. Sie können "
 "die Evaluationsdaten hier einsehen:"
 msgstr ""
+"%s has applied for a teaching evaluation for the course %s. You can view the "
+"evaluation data here:"
 
 #: ../lib/EvasysCourseProfile.php:123
 #, php-format
 msgid "Lehrevaluation für Veranstaltung %s wurde von %s beantragt"
-msgstr ""
+msgstr "Teaching evaluation for course %s was requested by %s"
 
 #: ../lib/EvasysCourseProfile.php:181
 #, php-format
@@ -855,20 +870,24 @@ msgid ""
 "\n"
 " %s"
 msgstr ""
+"%s has just changed the teaching evaluation data of the %s course. You can "
+"view the changed data here and edit it if necessary: \n"
+"\n"
+" %s"
 
 #: ../lib/EvasysCourseProfile.php:194
 msgid "Bearbeitung der Evaluationsdaten"
-msgstr ""
+msgstr "Edit of evaluation data"
 
 #: ../lib/EvasysSeminar.php:144 ../lib/EvasysSeminar.php:152
 #, php-format
 msgid "Veranstaltung %s hat keine ID und kann daher nicht übertragen werden."
-msgstr ""
+msgstr "Course %s has no ID and can therefor not be transmitted."
 
 #: ../lib/EvasysSeminar.php:219
 #, php-format
 msgid "Die 'Veranstaltung '%s' konnte nicht korrekt übertragen werden."
-msgstr ""
+msgstr "The course '%s' could not be correctly transmitted."
 
 #: ../lib/EvasysSeminar.php:393
 #, php-format
@@ -876,135 +895,139 @@ msgid ""
 "Evaluation für die Veranstaltung '%s' ist schon gestartet und konnte nicht "
 "mehr verändert werden."
 msgstr ""
+"Evaluation for the course '%s' has already started and could not be changed."
 
 #: ../EvasysPlugin.class.php:49
 msgid "Standardwerte"
-msgstr ""
+msgstr "Standard values"
 
 #: ../EvasysPlugin.class.php:51
 #, php-format
 msgid "Standardwerte der %s"
-msgstr ""
+msgstr "Standard values of %s"
 
 #: ../EvasysPlugin.class.php:53
 msgid "Freie Felder"
-msgstr ""
+msgstr "free fields"
 
 #: ../EvasysPlugin.class.php:55
 msgid "Fragebögen"
-msgstr ""
+msgstr "Questionnaire"
 
 #: ../EvasysPlugin.class.php:59
 msgid "Logs"
-msgstr ""
+msgstr "Logs"
 
 #: ../EvasysPlugin.class.php:69
 msgid "Standard-Evaluationsprofil"
-msgstr ""
+msgstr "Standard evaluation profile"
 
 #: ../EvasysPlugin.class.php:101
 msgid "Eigene Evaluationen"
-msgstr ""
+msgstr "Own evaluations"
 
 #: ../EvasysPlugin.class.php:104 ../EvasysPlugin.class.php:321
 #: ../EvasysPlugin.class.php:341 ../EvasysPlugin.class.php:370
 msgid "Lehrveranst.-Evaluation"
-msgstr ""
+msgstr "Course evaluation"
 
 #: ../EvasysPlugin.class.php:106
 msgid ""
 "Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, "
 "ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."
 msgstr ""
+"Apply for a teaching evaluation for this course or see whether a teaching "
+"evaluation is planned for this course."
 
 #: ../EvasysPlugin.class.php:110 ../EvasysPlugin.class.php:391
 msgid "EvaSys"
-msgstr ""
+msgstr "EvaSys"
 
 #: ../EvasysPlugin.class.php:123
 msgid "Transfer-Filter"
-msgstr ""
+msgstr "Transfer filter"
 
 #: ../EvasysPlugin.class.php:130
 msgid "Beantragt"
-msgstr ""
+msgstr "Requested"
 
 #: ../EvasysPlugin.class.php:135
 msgid "Nicht beantragt"
-msgstr ""
+msgstr "Not requested"
 
 #: ../EvasysPlugin.class.php:140
 msgid "Beantragt und noch nicht übertragen"
-msgstr ""
+msgstr "Requested and not yet transferred"
 
 #: ../EvasysPlugin.class.php:145
 msgid "Beantragt und nach EvaSys übetragen"
-msgstr ""
+msgstr "Requested and transferred to EvaSys"
 
 #: ../EvasysPlugin.class.php:157
 msgid "Zeiten im Evaluationszeitraum"
-msgstr ""
+msgstr "Times during the evaluation period"
 
 #: ../EvasysPlugin.class.php:159
 msgid "Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"
-msgstr ""
+msgstr "Only courses that have no dates in evaluation period"
 
 #: ../EvasysPlugin.class.php:172
 msgid "Ausreißer-Filter"
-msgstr ""
+msgstr "Outlier filter"
 
 #: ../EvasysPlugin.class.php:174
 msgid "Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen."
-msgstr ""
+msgstr "Outlier course "
 
 #: ../EvasysPlugin.class.php:325
 msgid "Lehrveranstaltungsevaluationen"
-msgstr ""
+msgstr "Course evaluations"
 
 #: ../EvasysPlugin.class.php:328
 msgid "Neue Evaluation"
-msgstr ""
+msgstr "New evaluation"
 
 #: ../EvasysPlugin.class.php:335
 #, php-format
 msgid "%s neue Evaluation"
-msgstr ""
+msgstr "%s new evaluation"
 
 #: ../EvasysPlugin.class.php:342
 msgid "Evaluationen"
-msgstr ""
+msgstr "evaluations"
 
 #: ../EvasysPlugin.class.php:389
 msgid "Evaluation"
-msgstr ""
+msgstr "evaluation"
 
 #: ../EvasysPlugin.class.php:405
 msgid "Übertragen"
-msgstr ""
+msgstr "Transfer"
 
 #: ../EvasysPlugin.class.php:512
 msgid "Evaluationsart"
-msgstr ""
+msgstr "Evaluation type"
 
 #: ../EvasysPlugin.class.php:513
 msgid "Eval-Zeitraum"
-msgstr ""
+msgstr "Evaluation period"
 
 #: ../EvasysPlugin.class.php:514
 msgid "Evaluation beantragt"
-msgstr ""
+msgstr "Evaluation requested"
 
 #: ../EvasysPlugin.class.php:515
 msgid "Eval: Beantragte Lehrende (Emails)"
-msgstr ""
+msgstr "Evaluation: requested lecturers (Emails)"
 
 #: ../EvasysPlugin.class.php:516
+#, fuzzy
 msgid "Rückläufer"
-msgstr ""
+msgstr "Return rate"
 
 #: ../EvasysPlugin.class.php:519
 msgid "Teilevaluation"
-msgstr ""
+msgstr "Partial evaluation"
 
 #: ../EvasysPlugin.class.php:612
 #, php-format
