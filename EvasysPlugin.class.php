@@ -143,6 +143,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $widget->addElement(new SelectElement(
                 'transferred',
                 dgettext("evasys", "Beantragt und nach EvaSys übetragen"),
+                _("Beantragt und nach EvaSys übertragen"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
