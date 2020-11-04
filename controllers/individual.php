@@ -22,8 +22,8 @@ class IndividualController extends PluginController
         $this->semester = Request::option("semester_id")
             ? Semester::find(Request::option("semester_id"))
             : Semester::findCurrent();
-        $this->profiles = EvasysCourseProfile::findBySQL("
-            by_dozent = '1'
+        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN seminare ON (seminare.Seminar_id = evasys_course_profiles.seminar_id)
+            WHERE by_dozent = '1'
             AND applied = '1'
             AND semester_id = :semester_id
             ORDER BY mkdate DESC
@@ -38,8 +38,8 @@ class IndividualController extends PluginController
     public function more_action()
     {
         $semester_id = Request::option("semester_id", Semester::findCurrent()->id);
-        $this->profiles = EvasysCourseProfile::findBySQL("
-            by_dozent = '1'
+        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN seminare ON (seminare.Seminar_id = evasys_course_profiles.seminar_id)
+            WHERE by_dozent = '1'
             AND applied = '1'
             ORDER BY mkdate DESC
             LIMIT ".Request::int("offset", 0).", ".($this->max_list_items + 1)."
