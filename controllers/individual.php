@@ -111,7 +111,7 @@ class IndividualController extends PluginController
                     $user['nachname'],
                     $user['email'],
                     $user['home'],
-                    $user->institute_memberships[0] ? $user->institute_memberships[0]->institute->fakultaet['name'] : "", //Fachbereich
+                    $user->institute_memberships[0] ? $user->institute_memberships[0]->institute->faculty['name'] : "", //Fachbereich
                     $user->institute_memberships[0] ? $user->institute_memberships[0]->institute['name'] : "", //Institut,
                     $user->institute_memberships[0] ? $user->institute_memberships[0]->institute['strasse'] : "", //Straße&Nr
                     $user->institute_memberships[0] ? $user->institute_memberships[0]->institute['plz'] : "",
