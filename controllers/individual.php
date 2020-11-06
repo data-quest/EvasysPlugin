@@ -66,8 +66,8 @@ class IndividualController extends PluginController
     public function csv_action()
     {
         $semester_id = Request::option("semester_id", Semester::findCurrent()->id);
-        $this->profiles = EvasysCourseProfile::findBySQL("
-            by_dozent = '1'
+        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN seminare ON (seminare.Seminar_id = evasys_course_profiles.seminar_id)
+            WHERE by_dozent = '1'
             AND applied = '1'
             AND semester_id = :semester_id
             ORDER BY mkdate DESC
