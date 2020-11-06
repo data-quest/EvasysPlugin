@@ -406,7 +406,7 @@ class EvasysSeminar extends SimpleORMap
                 'PeriodIdType' => "PERIODDATE",
                 'SurveyType' => array(
                     'm_chSurveyType' => ($profile['mode'] === "paper" && !Config::get()->EVASYS_FORCE_ONLINE)
-                        ? "s"  // d = Deckblatt, s = Selbstdruck
+                        ? $profile->getPresetAttribute("paper_mode") // d = Deckblatt, s = Selbstdruck
                         : "o", // o = online+TAN
                                // was für Losungsbasiert?
                     'm_sDescription' => ""

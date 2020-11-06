@@ -84,6 +84,26 @@
                   class="default_value">(<?= $default_value ? htmlReady($default_value) : _("Kein Standardwert") ?>)</span>
         <? endif ?>
 
+        <label>
+            <?= _("Papierverfahren (nur bei Papierevaluationen)") ?>
+            <select name="data[paper_mode]">
+                <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
+                <option value=""></option>
+                <? endif ?>
+                <option value="s"<?= $profile['paper_mode'] === "s" ? " selected" : "" ?>>
+                    <?= _("Selbstdruckverfahren") ?>
+                </option>
+                <option value="d"<?= $profile['paper_mode'] === "d" ? " selected" : "" ?>>
+                    <?= _("Deckblattverfahren") ?>
+                </option>
+            </select>
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("paper_mode") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value === "d" ? _("Deckblattverfahren") : _("Selbstdruckverfahren") ?>)</span>
+        <? endif ?>
+
         <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
         <label>
             <?= _("Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit Leerzeichen getrennt)") ?>

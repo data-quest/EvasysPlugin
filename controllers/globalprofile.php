@@ -125,6 +125,7 @@ class GlobalprofileController extends PluginController
             $data['adminedit_end'] = $data['adminedit_end'] ? strtotime($data['adminedit_end']) : null;
             $data['form_id'] = $data['form_id'] ?: null;
             $data['mode'] = $data['mode'] ?: null;
+            $data['paper_mode'] = $data['paper_mode'] ?: ($this->profile_type === "global" ? "s" : null);
             $data['antrag_begin'] = $data['antrag_begin'] ? strtotime($data['antrag_begin']) : null;
             $data['antrag_end'] = $data['antrag_end'] ? strtotime($data['antrag_end']) : null;
             $data['antrag_info'] = $data['antrag_info'] ?: null;
