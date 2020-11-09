@@ -152,6 +152,19 @@
                   class="default_value">(<?= $default_value ? $strings[$default_value] : _("Kein Standardwert") ?>)</span>
         <? endif ?>
 
+        <label>
+            <?= _("Berichte erst x Tage nach Ablauf der Evaluation anzeigen") ?>
+            <input type="number"
+                   name="data[extended_report_offset]"
+                   value="<?= htmlReady($profile['extended_report_offset'] !== null ? $profile['extended_report_offset'] : $profile->getParentsDefaultValue("extended_report_offset")) ?>"
+                   >
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("extended_report_offset") ?>
+            <span title="<?= _("Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= _("Standardwert").": " . $default_value ?: _("Kein Standardwert") ?>)</span>
+        <? endif ?>
+
     </fieldset>
 
     <fieldset class="forms_for_types">
