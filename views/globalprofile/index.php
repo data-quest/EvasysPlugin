@@ -17,8 +17,12 @@
             <? endif ?>
         </legend>
         <label>
-            <?= dgettext("evasys", "Beginn") ?>
-            <input type="text" name="data[begin]" value="<?= $profile['begin'] ? date("d.m.Y H:i", $profile['begin']) : "" ?>" class="datepicker">
+            <?= (dgettext("evasys","Beginn") ?>
+            <input type="text"
+                   name="data[begin]"
+                   value="<?= $profile['begin'] ? date("d.m.Y H:i", $profile['begin']) : "" ?>"
+                   data-datetime-picker
+                   id="evasys_eval_begin">
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("begin") ?>
@@ -27,8 +31,11 @@
         <? endif ?>
 
         <label>
-            <?= dgettext("evasys", "Ende") ?>
-            <input type="text" name="data[end]" value="<?= $profile['end'] ? date("d.m.Y H:i", $profile['end']) : "" ?>" class="datepicker">
+            <?= (dgettext("evasys","Ende") ?>
+            <input type="text"
+                   name="data[end]"
+                   value="<?= $profile['end'] ? date("d.m.Y H:i", $profile['end']) : "" ?>"
+                   data-datetime-picker='{">=":"#evasys_eval_begin"}'>
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("end") ?>
@@ -38,13 +45,20 @@
 
         <? if (is_a($profile, "EvasysGlobalProfile")) : ?>
             <label>
-                <?= dgettext("evasys", "Beginn Bearbeitungszeitraum der Admins") ?>
-                <input type="text" name="data[adminedit_begin]" value="<?= $profile['adminedit_begin'] ? date("d.m.Y H:i", $profile['adminedit_begin']) : "" ?>" class="datepicker">
+                <?= (dgettext("evasys","Beginn Bearbeitungszeitraum der Admins") ?>
+                <input type="text"
+                       name="data[adminedit_begin]"
+                       value="<?= $profile['adminedit_begin'] ? date("d.m.Y H:i", $profile['adminedit_begin']) : "" ?>"
+                       data-datetime-picker
+                       id="evasys_admin_begin">
             </label>
 
             <label>
-                <?= dgettext("evasys", "Ende Bearbeitungszeitraum der Admins") ?>
-                <input type="text" name="data[adminedit_end]" value="<?= $profile['adminedit_end'] ? date("d.m.Y H:i", $profile['adminedit_end']) : "" ?>" class="datepicker">
+                <?= (dgettext("evasys","Ende Bearbeitungszeitraum der Admins") ?>
+                <input type="text"
+                       name="data[adminedit_end]"
+                       value="<?= $profile['adminedit_end'] ? date("d.m.Y H:i", $profile['adminedit_end']) : "" ?>"
+                       data-datetime-picker='{">=":"#evasys_admin_begin"}'>
             </label>
         <? endif ?>
 
@@ -82,6 +96,26 @@
             <? $default_value = $profile->getParentsDefaultValue("mode") ?>
             <span title="<?= dgettext("evasys", "Standardwert, wenn nichts eingetragen ist.") ?>"
                   class="default_value">(<?= $default_value ? htmlReady($default_value) : dgettext("evasys", "Kein Standardwert") ?>)</span>
+        <? endif ?>
+
+        <label>
+            <?= (dgettext("evasys","Papierverfahren (nur bei Papierevaluationen)") ?>
+            <select name="data[paper_mode]">
+                <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
+                <option value=""></option>
+                <? endif ?>
+                <option value="s"<?= $profile['paper_mode'] === "s" ? " selected" : "" ?>>
+                    <?= (dgettext("evasys","Selbstdruckverfahren") ?>
+                </option>
+                <option value="d"<?= $profile['paper_mode'] === "d" ? " selected" : "" ?>>
+                    <?= (dgettext("evasys","Deckblattverfahren") ?>
+                </option>
+            </select>
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("paper_mode") ?>
+            <span title="<?= (dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value === "d" ? (dgettext("evasys","Deckblattverfahren") : (dgettext("evasys","Selbstdruckverfahren") ?>)</span>
         <? endif ?>
 
         <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
@@ -130,6 +164,19 @@
             <? $default_value = $profile->getParentsDefaultValue("reports_after_evaluation") ?>
             <span title="<?= dgettext("evasys", "Standardwert, wenn nichts eingetragen ist.") ?>"
                   class="default_value">(<?= $default_value ? $strings[$default_value] : dgettext("evasys", "Kein Standardwert") ?>)</span>
+        <? endif ?>
+
+        <label>
+            <?= (dgettext("evasys","Berichte erst x Tage nach Ablauf der Evaluation anzeigen") ?>
+            <input type="number"
+                   name="data[extended_report_offset]"
+                   value="<?= htmlReady($profile['extended_report_offset'] !== null ? $profile['extended_report_offset'] : $profile->getParentsDefaultValue("extended_report_offset")) ?>"
+                   >
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("extended_report_offset") ?>
+            <span title="<?= (dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= (dgettext("evasys","Standardwert").": " . $default_value ?: (dgettext("evasys","Kein Standardwert") ?>)</span>
         <? endif ?>
 
     </fieldset>
@@ -225,8 +272,12 @@
         <legend><?= ucfirst(EvasysMatching::wording("freiwillige Evaluationen")) ?></legend>
 
         <label>
-            <?= dgettext("evasys", "Beginn der Antragsfrist") ?>
-            <input type="text" name="data[antrag_begin]" value="<?= $profile['antrag_begin'] ? date("d.m.Y H:i", $profile['antrag_begin']) : "" ?>" class="datepicker">
+            <?= (dgettext("evasys","Beginn der Antragsfrist") ?>
+            <input type="text"
+                   name="data[antrag_begin]"
+                   value="<?= $profile['antrag_begin'] ? date("d.m.Y H:i", $profile['antrag_begin']) : "" ?>"
+                   data-datetime-picker
+                   id="evasys_free_begin">
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("antrag_begin") ?>
@@ -235,8 +286,11 @@
         <? endif ?>
 
         <label>
-            <?= dgettext("evasys", "Ende der Antragsfrist") ?>
-            <input type="text" name="data[antrag_end]" value="<?= $profile['antrag_end'] ? date("d.m.Y H:i", $profile['antrag_end']) : "" ?>" class="datepicker">
+            <?= (dgettext("evasys","Ende der Antragsfrist") ?>
+            <input type="text"
+                   name="data[antrag_end]"
+                   value="<?= $profile['antrag_end'] ? date("d.m.Y H:i", $profile['antrag_end']) : "" ?>"
+                   data-datetime-picker='{">=":"#evasys_free_begin"}'>
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("antrag_end") ?>
@@ -258,7 +312,6 @@
 
     <script>
         jQuery(function () {
-            jQuery("input.datepicker").datetimepicker();
             jQuery(".forms_for_types .select2").select2({
                 "closeOnSelect": false,
                 "width": 'resolve'

@@ -25,6 +25,10 @@ class EvasysForm extends SimpleORMap
         if (Config::get()->EVASYS_CACHE && ((time() - $_SESSION['EVASYS_ALL_FORMS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE)) {
             return true;
         }
+        if (!class_exists("SoapClient")) {
+            PageLayout::postError(_("SoapClient existiert nicht."));
+            return;
+        }
         $soap = EvasysSoap::get();
 
         $forms = $soap->__soapCall("GetFormsInfoByParams", array(
@@ -76,7 +80,7 @@ class EvasysForm extends SimpleORMap
     {
         //doesn't look for table evasys_profiles_semtype_forms yet :
         $statement = DBManager::get()->prepare("
-            SELECT COUNT(*) 
+            SELECT COUNT(*)
             FROM (
                 SELECT evasys_course_profiles.course_profile_id
                 FROM seminare
@@ -86,10 +90,10 @@ class EvasysForm extends SimpleORMap
                     LEFT JOIN evasys_institute_profiles AS fakultaet_profiles ON (heimat.fakultaets_id = fakultaet_profiles.institut_id AND fakultaet_profiles.semester_id = evasys_course_profiles.semester_id)
                     LEFT JOIN evasys_global_profiles ON (evasys_global_profiles.semester_id = evasys_course_profiles.semester_id)
                 WHERE evasys_course_profiles.applied = '1'
-                    AND (evasys_course_profiles.form_id = :form_id 
-                        OR (evasys_course_profiles.form_id IS NULL 
-                            AND (evasys_institute_profiles.form_id = :form_id 
-                                OR (evasys_course_profiles.form_id IS NULL 
+                    AND (evasys_course_profiles.form_id = :form_id
+                        OR (evasys_course_profiles.form_id IS NULL
+                            AND (evasys_institute_profiles.form_id = :form_id
+                                OR (evasys_course_profiles.form_id IS NULL
                                     AND (fakultaet_profiles.form_id = :form_id
                                         OR (fakultaet_profiles.form_id IS NULL
                                             AND evasys_global_profiles.form_id = :form_id

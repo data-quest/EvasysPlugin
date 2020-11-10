@@ -94,6 +94,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             NotificationCenter::addObserver($this, "addTransferredFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addRecentEvalCoursesFilterToSidebar", "SidebarWillRender");
+            NotificationCenter::addObserver($this, "addFormFilterToSidebar", "SidebarWillRender");
+            NotificationCenter::addObserver($this, "addPaperOnlineFilterToSidebar", "SidebarWillRender");
+            NotificationCenter::addObserver($this, "addMainphaseFilterToSidebar", "SidebarWillRender");
         }
         if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin")) {
             if (Navigation::hasItem("/course/admin/evaluation")) {
@@ -113,8 +116,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addRecentEvalCoursesFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addTransferredFilter", "AdminCourseFilterWillQuery");
+        NotificationCenter::addObserver($this, "addFormFilter", "AdminCourseFilterWillQuery");
+        NotificationCenter::addObserver($this, "addPaperOnlineFilter", "AdminCourseFilterWillQuery");
+        NotificationCenter::addObserver($this, "addMainphaseFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "removeEvasysCourse", "CourseDidDelete");
     }
+
+    //Transferred Filter:
 
     public function addTransferredFilterToSidebar()
     {
@@ -147,53 +155,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
         }
-    }
-
-    public function addNonfittingDatesFilterToSidebar()
-    {
-        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
-                || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"))) {
-            $widget = new OptionsWidget();
-            $widget->setTitle(dgettext("evasys", "Zeiten im Evaluationszeitraum"));
-            $widget->addCheckbox(
-                dgettext("evasys", "Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"),
-                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
-                PluginEngine::getURL($this, array(), "toggle_nonfittingdates_filter")
-            );
-            Sidebar::Get()->insertWidget($widget, "editmode", "filter_nonfittingdates");
-        }
-    }
-
-    public function addRecentEvalCoursesFilterToSidebar()
-    {
-        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
-            || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"))) {
-            $widget = new OptionsWidget();
-            $widget->setTitle(dgettext("evasys", "Ausreißer-Filter"));
-            $widget->addCheckbox(
-                dgettext("evasys", "Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen."),
-                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"),
-                PluginEngine::getURL($this, array(), "toggle_recentevalcourses_filter")
-            );
-            Sidebar::Get()->insertWidget($widget, "editmode", "filter_recentevalcourses");
-        }
-    }
-
-    /**
-     * Toggle the filter in the sidebar of the admin-page and redirect there
-     */
-    public function toggle_nonfittingdates_filter_action()
-    {
-        $oldvalue = (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES");
-        $GLOBALS['user']->cfg->store("EVASYS_FILTER_NONFITTING_DATES", $oldvalue ? 0 : 1);
-        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
-    }
-
-    public function toggle_recentevalcourses_filter_action()
-    {
-        $oldvalue = (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES");
-        $GLOBALS['user']->cfg->store("EVASYS_FILTER_RECENT_EVAL_COURSES", $oldvalue ? 0 : 1);
-        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
     }
 
     public function change_transferred_filter_action()
@@ -238,6 +199,33 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
     }
 
+    //Nonfitting-dates filter
+
+    public function addNonfittingDatesFilterToSidebar()
+    {
+        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
+                || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"))) {
+            $widget = new OptionsWidget();
+            $widget->setTitle((dgettext("evasys","Zeiten im Evaluationszeitraum"));
+            $widget->addCheckbox(
+                (dgettext("evasys","Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
+                PluginEngine::getURL($this, array(), "toggle_nonfittingdates_filter")
+            );
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_nonfittingdates");
+        }
+    }
+
+    /**
+     * Toggle the filter in the sidebar of the admin-page and redirect there
+     */
+    public function toggle_nonfittingdates_filter_action()
+    {
+        $oldvalue = (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES");
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_NONFITTING_DATES", $oldvalue ? 0 : 1);
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
     public function addNonfittingDatesFilter($event, $filter)
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
@@ -280,6 +268,30 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
     }
 
+    //Recent evaluations filter
+
+    public function addRecentEvalCoursesFilterToSidebar()
+    {
+        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
+            || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"))) {
+            $widget = new OptionsWidget();
+            $widget->setTitle((dgettext("evasys","Ausreißer-Filter"));
+            $widget->addCheckbox(
+                (dgettext("evasys","Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen."),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"),
+                PluginEngine::getURL($this, array(), "toggle_recentevalcourses_filter")
+            );
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_recentevalcourses");
+        }
+    }
+
+    public function toggle_recentevalcourses_filter_action()
+    {
+        $oldvalue = (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES");
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_RECENT_EVAL_COURSES", $oldvalue ? 0 : 1);
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
     public function addRecentEvalCoursesFilter($event, $filter)
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
@@ -296,6 +308,182 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
     }
 
+    //Form filter:
+
+    public function addFormFilterToSidebar()
+    {
+        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
+            || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID"))) {
+            $widget = new SelectWidget((dgettext("evasys","Fragebogen-Filter"), PluginEngine::getURL($this, array(), "change_form_filter"), "form_id", "post");
+            $widget->addElement(new SelectElement(
+                '',
+                ""
+            ));
+            foreach (EvasysForm::findBySQL("`active` = '1' ORDER BY name ASC") as $form) {
+                $widget->addElement(new SelectElement(
+                    $form->getId(),
+                    $form['name'],
+                    $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID") === $form->getId(),
+                    $form['description']
+                ));
+            }
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_form");
+        }
+    }
+
+    public function change_form_filter_action()
+    {
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_FORM_ID", Request::get("form_id"));
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
+    public function addFormFilter($event, $filter)
+    {
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID")) {
+            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "
+                seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                    AND evasys_course_profiles.semester_id = :evasys_semester_id
+                "
+            );
+            $filter->settings['query']['joins']['evasys_institute_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id
+                    AND evasys_institute_profiles.semester_id = :evasys_semester_id"
+            );
+            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'table' => "evasys_institute_profiles",
+                'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id
+                    AND evasys_fakultaet_profiles.semester_id = :evasys_semester_id"
+            );
+            $filter->settings['query']['joins']['evasys_global_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "evasys_global_profiles.semester_id = :evasys_semester_id"
+            );
+
+            $filter->settings['query']['where']['evasys_form_filter'] = "IFNULL(evasys_course_profiles.form_id, IFNULL(evasys_institute_profiles.form_id, IFNULL(evasys_fakultaet_profiles.form_id, evasys_global_profiles.form_id))) = :evasys_form_id";
+            $filter->settings['parameter']['evasys_form_id'] = $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID");
+            $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
+        }
+    }
+
+    //Filter for online/paper evaluation
+
+    public function addPaperOnlineFilterToSidebar()
+    {
+        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
+            || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID"))) {
+            $widget = new SelectWidget((dgettext("evasys","Evaluationsart"), PluginEngine::getURL($this, array(), "change_paperonline_filter"), "paperonline", "post");
+            $widget->addElement(new SelectElement(
+                '',
+                ""
+            ));
+            $widget->addElement(new SelectElement(
+                "online",
+                (dgettext("evasys","Online-Evaluationen"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE") === "online"
+            ));
+            $widget->addElement(new SelectElement(
+                "paper",
+                (dgettext("evasys","Papier-Evaluationen"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE") === "paper"
+            ));
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_paperonline");
+        }
+    }
+
+    public function change_paperonline_filter_action()
+    {
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_PAPER_ONLINE", Request::get("paperonline"));
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
+    public function addPaperOnlineFilter($event, $filter)
+    {
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE")) {
+            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "
+                seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                    AND evasys_course_profiles.semester_id = :evasys_semester_id
+                "
+            );
+            $filter->settings['query']['joins']['evasys_institute_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id
+                    AND evasys_institute_profiles.semester_id = :evasys_semester_id"
+            );
+            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'table' => "evasys_institute_profiles",
+                'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id
+                    AND evasys_fakultaet_profiles.semester_id = :evasys_semester_id"
+            );
+            $filter->settings['query']['joins']['evasys_global_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "evasys_global_profiles.semester_id = :evasys_semester_id"
+            );
+
+            $filter->settings['query']['where']['evasys_paperonline_filter'] = "IFNULL(evasys_course_profiles.mode, IFNULL(evasys_institute_profiles.mode, IFNULL(evasys_fakultaet_profiles.mode, evasys_global_profiles.mode))) = :evasys_mode";
+            $filter->settings['parameter']['evasys_mode'] = $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE");
+            $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
+        }
+    }
+
+    //Filter for main-phase
+
+    public function addMainphaseFilterToSidebar()
+    {
+        if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
+            || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE"))) {
+            $widget = new SelectWidget((dgettext("evasys","Hauptphasen-Filter"), PluginEngine::getURL($this, array(), "change_mainphase_filter"), "mainphase", "post");
+            $widget->addElement(new SelectElement(
+                '',
+                ""
+            ));
+            $widget->addElement(new SelectElement(
+                "mainphase",
+                (dgettext("evasys","Veranstaltungen in der Hauptphase"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "mainphase"
+            ));
+            $widget->addElement(new SelectElement(
+                "nonmainphase",
+                (dgettext("evasys","Veranstaltungen außerhalb der Hauptphase"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "nonmainphase"
+            ));
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_mainphase");
+        }
+    }
+
+    public function change_mainphase_filter_action()
+    {
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_MAINPHASE", Request::get("mainphase"));
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
+    public function addMainphaseFilter($event, $filter)
+    {
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE")) {
+            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "
+                seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                    AND evasys_course_profiles.semester_id = :evasys_semester_id
+                "
+            );
+            if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "nonmainphase") {
+                $filter->settings['query']['where']['evasys_mainphase_filter'] = "evasys_course_profiles.`begin` IS NOT NULL";
+            } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "mainphase") {
+                $filter->settings['query']['where']['evasys_mainphase_filter'] = "evasys_course_profiles.`begin` IS NULL";
+            }
+            $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
+        }
+    }
 
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {

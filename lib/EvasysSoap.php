@@ -23,7 +23,11 @@ class EvasysSoap
                 'cache_wsdl' => ($GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE']))
                     ? WSDL_CACHE_DISK
                     : WSDL_CACHE_NONE,
-                'features' => SOAP_SINGLE_ELEMENT_ARRAYS
+                'features' => SOAP_SINGLE_ELEMENT_ARRAYS/*,
+                'ssl' => [
+                    'verify_peer' => false,
+                    'verify_peer_name' => false
+                ]*/
             ));
             $file = strtolower(substr($evasys_wsdl, strrpos($evasys_wsdl, "/") + 1));
             $soapHeaders = new SoapHeader($file, 'Header', array(

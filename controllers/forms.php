@@ -15,7 +15,11 @@ class FormsController extends PluginController
     public function index_action() {
         Navigation::activateItem("/admin/evasys/forms");
         PageLayout::setTitle($this->plugin->getDisplayName());
-        $this->forms = EvasysForm::findAll();
+        try {
+            $this->forms = EvasysForm::findAll();
+        } catch (Exception $e) {
+            PageLayout::postError($e->getMessage());
+        }
     }
 
     public function edit_action($form_id) {

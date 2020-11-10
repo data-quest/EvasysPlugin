@@ -22,8 +22,8 @@ class IndividualController extends PluginController
         $this->semester = Request::option("semester_id")
             ? Semester::find(Request::option("semester_id"))
             : Semester::findCurrent();
-        $this->profiles = EvasysCourseProfile::findBySQL("
-            by_dozent = '1'
+        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN seminare ON (seminare.Seminar_id = evasys_course_profiles.seminar_id)
+            WHERE by_dozent = '1'
             AND applied = '1'
             AND semester_id = :semester_id
             ORDER BY mkdate DESC
@@ -38,8 +38,8 @@ class IndividualController extends PluginController
     public function more_action()
     {
         $semester_id = Request::option("semester_id", Semester::findCurrent()->id);
-        $this->profiles = EvasysCourseProfile::findBySQL("
-            by_dozent = '1'
+        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN seminare ON (seminare.Seminar_id = evasys_course_profiles.seminar_id)
+            WHERE by_dozent = '1'
             AND applied = '1'
             ORDER BY mkdate DESC
             LIMIT ".Request::int("offset", 0).", ".($this->max_list_items + 1)."
@@ -66,8 +66,8 @@ class IndividualController extends PluginController
     public function csv_action()
     {
         $semester_id = Request::option("semester_id", Semester::findCurrent()->id);
-        $this->profiles = EvasysCourseProfile::findBySQL("
-            by_dozent = '1'
+        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN seminare ON (seminare.Seminar_id = evasys_course_profiles.seminar_id)
+            WHERE by_dozent = '1'
             AND applied = '1'
             AND semester_id = :semester_id
             ORDER BY mkdate DESC
@@ -111,7 +111,7 @@ class IndividualController extends PluginController
                     $user['nachname'],
                     $user['email'],
                     $user['home'],
-                    $user->institute_memberships[0] ? $user->institute_memberships[0]->institute->fakultaet['name'] : "", //Fachbereich
+                    $user->institute_memberships[0] ? $user->institute_memberships[0]->institute->faculty['name'] : "", //Fachbereich
                     $user->institute_memberships[0] ? $user->institute_memberships[0]->institute['name'] : "", //Institut,
                     $user->institute_memberships[0] ? $user->institute_memberships[0]->institute['strasse'] : "", //Straße&Nr
                     $user->institute_memberships[0] ? $user->institute_memberships[0]->institute['plz'] : "",

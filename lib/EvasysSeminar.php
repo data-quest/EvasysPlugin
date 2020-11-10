@@ -406,7 +406,7 @@ class EvasysSeminar extends SimpleORMap
                 'PeriodIdType' => "PERIODDATE",
                 'SurveyType' => array(
                     'm_chSurveyType' => ($profile['mode'] === "paper" && !Config::get()->EVASYS_FORCE_ONLINE)
-                        ? "s"  // d = Deckblatt, s = Selbstdruck
+                        ? $profile->getPresetAttribute("paper_mode") // d = Deckblatt, s = Selbstdruck
                         : "o", // o = online+TAN
                                // was für Losungsbasiert?
                     'm_sDescription' => ""
@@ -695,7 +695,8 @@ class EvasysSeminar extends SimpleORMap
             $seminar_id,
             $semester ? $semester->getId() : null
         );
-        if (($profile->getPresetAttribute("reports_after_evaluation") === "yes") && ($profile->getFinalEnd() > time())) {
+        $offset_days = $profile->getPresetAttribute("extended_report_offset");
+        if (($profile->getPresetAttribute("reports_after_evaluation") === "yes") && (($profile->getFinalEnd() + ($offset_days * 86400)) > time())) {
             return false;
         }
         return true;

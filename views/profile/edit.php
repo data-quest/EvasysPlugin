@@ -106,7 +106,12 @@
                     <?= dgettext("evasys", "Evaluationsbeginn") ?>
                     <? $begin = $profile->getFinalBegin() ?>
                     <? if ($editable) : ?>
-                    <input type="text" name="data[begin]" value="<?= $begin ? date("d.m.Y H:i", $begin) : "" ?>" class="datepicker evasys_begin">
+                    <input type="text"
+                           name="data[begin]"
+                           value="<?= $begin ? date("d.m.Y H:i", $begin) : "" ?>"
+                           data-datetime-picker='{">=":"today"}'
+                           id="evasys_eval_begin"
+                           class="datepicker evasys_begin">
                     <? else : ?>
                     <div>
                         <?= $begin ? date("d.m.Y H:i", $begin) : "" ?>
@@ -118,7 +123,11 @@
                     <?= dgettext("evasys", "Evaluationsende") ?>
                     <? $end = $profile->getFinalEnd() ?>
                     <? if ($editable) : ?>
-                    <input type="text" name="data[end]" value="<?= $end ? date("d.m.Y H:i", $end) : "" ?>" class="datepicker evasys_end">
+                    <input type="text"
+                           name="data[end]"
+                           value="<?= $end ? date("d.m.Y H:i", $end) : "" ?>"
+                           data-datetime-picker='{">=":"#evasys_eval_begin"}'
+                           class="datepicker evasys_end">
                     <? else : ?>
                         <div>
                             <?= $end ? date("d.m.Y H:i", $end) : "" ?>
@@ -341,7 +350,6 @@
         <? if ($editable) : ?>
             <script>
                 jQuery(function () {
-                    jQuery("input.datepicker").datetimepicker();
                     <? if ($editable && count($teachers) > 1) : ?>
                     jQuery(".evasys_teachers").sortable({
                         "axis": "y",
