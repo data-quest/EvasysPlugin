@@ -114,7 +114,7 @@ class GlobalprofileController extends PluginController
             if (Request::submitted("delete")
                     && ($this->profile->semester['beginn'] > Semester::findCurrent()->beginn)) {
                 $this->profile->delete();
-                PageLayout::postSuccess(_("Einstellungen des Semesters wurden gelöscht."));
+                PageLayout::postSuccess(dgettext("evasys", "Einstellungen des Semesters wurden gelöscht."));
                 $this->redirect($this->profile_type."profile/index");
                 return;
             }
@@ -201,7 +201,7 @@ class GlobalprofileController extends PluginController
                 'profile_type' => $this->profile_type
             ));
 
-            PageLayout::postSuccess(_("Einstellungen wurden gespeichert"));
+            PageLayout::postSuccess(dgettext("evasys", "Einstellungen wurden gespeichert"));
         }
         $this->redirect($this->profile_type."profile/index");
     }
@@ -211,12 +211,12 @@ class GlobalprofileController extends PluginController
         if ($this->profile_type === "institute") {
             throw new Exception("Not available.");
         }
-        PageLayout::setTitle(_("Standardwerte für neues Semester erstellen"));
+        PageLayout::setTitle(dgettext("evasys", "Standardwerte für neues Semester erstellen"));
         if (Request::isPost()) {
             set_time_limit(60*60*2);
             $old_profile = Request::option("copy_from") ? EvasysGlobalProfile::find(Request::option("copy_from")) : null;
             EvasysGlobalProfile::copy(Request::option("semester_id"), $old_profile);
-            PageLayout::postSuccess(_("Neues Semester angelegt"));
+            PageLayout::postSuccess(dgettext("evasys", "Neues Semester angelegt"));
             $this->redirect(PluginEngine::getURL($this->plugin, array('semester_id' => Request::option("semester_id")), $this->profile_type."profile/index"));
         }
         $this->semesters = Semester::getAll();

@@ -6,7 +6,7 @@
     <fieldset>
 
         <legend>
-            <?= _("Reihenfolge per Drag & Drop festlegen") ?>
+            <?= dgettext("evasys", "Reihenfolge per Drag & Drop festlegen") ?>
         </legend>
 
         <div style="padding-left: 6px;">
@@ -34,7 +34,7 @@
     </fieldset>
 
     <div data-dialog-button>
-        <?= \Studip\Button::create(_("Speichern")) ?>
+        <?= \Studip\Button::create(dgettext("evasys", "Speichern")) ?>
     </div>
 </form>
 

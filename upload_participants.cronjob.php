@@ -7,7 +7,7 @@ class EvasysUploadParticipantsJob extends CronJob
      */
     public static function getName()
     {
-        return _('EvaSys: Teilnehmer erneut hochladen');
+        return dgettext("evasys", 'EvaSys: Teilnehmer erneut hochladen');
     }
 
     /**
@@ -15,7 +15,7 @@ class EvasysUploadParticipantsJob extends CronJob
      */
     public static function getDescription()
     {
-        return _('Gleicht alle in den nächten 28 Stunden startenden Evaluationen nochmal mit dem EvaSys-Server ab und lädt zum Beispiel die aktuelle Teilnehmerliste automatisch mit hoch.');
+        return dgettext("evasys", 'Gleicht alle in den nächten 28 Stunden startenden Evaluationen nochmal mit dem EvaSys-Server ab und lädt zum Beispiel die aktuelle Teilnehmerliste automatisch mit hoch.');
     }
 
     /**

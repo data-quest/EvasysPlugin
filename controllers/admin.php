@@ -81,12 +81,12 @@ class AdminController extends PluginController
                             $evasys_seminar[$course_id]->store();
                         }
                     }
-                    PageLayout::postMessage(MessageBox::success(sprintf(_("%s Veranstaltungen mit EvaSys synchronisiert."), count($activate))));
+                    PageLayout::postMessage(MessageBox::success(sprintf(dgettext("evasys", "%s Veranstaltungen mit EvaSys synchronisiert."), count($activate))));
                 } else {
-                    PageLayout::postMessage(MessageBox::error(_("Fehler beim Synchronisieren mit EvaSys. ").$success));
+                    PageLayout::postMessage(MessageBox::error(dgettext("evasys", "Fehler beim Synchronisieren mit EvaSys. ").$success));
                 }
             } else {
-                PageLayout::postMessage(MessageBox::info(_("Veranstaltungen abgewählt. Keine Synchronisation erfolgt.")));
+                PageLayout::postMessage(MessageBox::info(dgettext("evasys", "Veranstaltungen abgewählt. Keine Synchronisation erfolgt.")));
             }
         }
         $this->redirect(URLHelper::getURL("dispatch.php/admin/courses/index"));
@@ -119,17 +119,17 @@ class AdminController extends PluginController
     protected function getViewFilters()
     {
         $views = array(
-            'number'        => _('Nr.'),
-            'name'          => _('Name'),
-            'type'          => _('Veranstaltungstyp'),
-            'room_time'     => _('Raum/Zeit'),
-            'semester'      => _('Semester'),
-            'teachers'      => _('Lehrende'),
-            'members'       => _('Teilnehmende'),
-            'waiting'       => _('Personen auf Warteliste'),
-            'preliminary'   => _('Vorläufige Anmeldungen'),
-            'contents'      => _('Inhalt'),
-            'last_activity' => _('Letzte Aktivität'),
+            'number'        => dgettext("evasys", 'Nr.'),
+            'name'          => dgettext("evasys", 'Name'),
+            'type'          => dgettext("evasys", 'Veranstaltungstyp'),
+            'room_time'     => dgettext("evasys", 'Raum/Zeit'),
+            'semester'      => dgettext("evasys", 'Semester'),
+            'teachers'      => dgettext("evasys", 'Lehrende'),
+            'members'       => dgettext("evasys", 'Teilnehmende'),
+            'waiting'       => dgettext("evasys", 'Personen auf Warteliste'),
+            'preliminary'   => dgettext("evasys", 'Vorläufige Anmeldungen'),
+            'contents'      => dgettext("evasys", 'Inhalt'),
+            'last_activity' => dgettext("evasys", 'Letzte Aktivität'),
         );
         foreach (PluginManager::getInstance()->getPlugins("AdminCourseContents") as $plugin) {
             foreach ($plugin->adminAvailableContents() as $index => $label) {

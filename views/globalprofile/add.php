@@ -6,11 +6,11 @@ $next_semester_id = Semester::findNext() ? Semester::findNext()->id : null;
 
     <fieldset>
         <legend>
-            <?= _("Standardwerte für ein neues Semester") ?>
+            <?= dgettext("evasys", "Standardwerte für ein neues Semester") ?>
         </legend>
 
         <label>
-            <?= _("Semester auswählen") ?>
+            <?= dgettext("evasys", "Semester auswählen") ?>
             <select name="semester_id">
                 <? foreach ($semesters as $semester) : ?>
                     <? if (!EvasysGlobalProfile::find($semester->getId())) : ?>
@@ -23,9 +23,9 @@ $next_semester_id = Semester::findNext() ? Semester::findNext()->id : null;
         </label>
 
         <label>
-            <?= _("Standardwerte aus welchem Semester übernehmen") ?>
+            <?= dgettext("evasys", "Standardwerte aus welchem Semester übernehmen") ?>
             <select name="copy_from">
-                <option value=""><?= _("Keine Werte kopieren") ?></option>
+                <option value=""><?= dgettext("evasys", "Keine Werte kopieren") ?></option>
                 <? foreach (EvasysGlobalProfile::findBySQL("1=1 ORDER BY begin DESC") as $profile) : ?>
                     <option value="<?= htmlReady($profile->getId()) ?>"<?= ($profile->getId() === $current_semester_id) ? " selected" : "" ?>>
                         <?= htmlReady($profile->semester['name']) ?>
@@ -37,7 +37,7 @@ $next_semester_id = Semester::findNext() ? Semester::findNext()->id : null;
     </fieldset>
 
     <div data-dialog-button>
-        <?= \Studip\Button::create(_("Erstellen")) ?>
+        <?= \Studip\Button::create(dgettext("evasys", "Erstellen")) ?>
     </div>
 
 </form>

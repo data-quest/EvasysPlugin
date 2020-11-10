@@ -7,11 +7,11 @@
 
 
     <table class="default nohover">
-        <caption><?= sprintf(_("Bearbeiten von %s Veranstaltungen"), count($ids)) ?></caption>
+        <caption><?= sprintf(dgettext("evasys", "Bearbeiten von %s Veranstaltungen"), count($ids)) ?></caption>
         <thead>
             <tr>
-                <th width="50%"><?= _("Zu verändernde Eigenschaft auswählen") ?></th>
-                <th width="50%"><?= _("Neuen Wert festlegen") ?></th>
+                <th width="50%"><?= dgettext("evasys", "Zu verändernde Eigenschaft auswählen") ?></th>
+                <th width="50%"><?= dgettext("evasys", "Neuen Wert festlegen") ?></th>
             </tr>
         </thead>
         <tbody>
@@ -19,7 +19,7 @@
             <td>
                 <label>
                     <input type="checkbox" name="change[]" value="applied" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= _("Veranstaltungen sollen evaluiert werden.") ?>
+                    <?= dgettext("evasys", "Veranstaltungen sollen evaluiert werden.") ?>
                 </label>
             </td>
             <td>
@@ -27,14 +27,14 @@
                         onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
                     <option value="">
                         <? if ($values['applied'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
-                            <?= _("Unterschiedliche Werte") ?>
+                            <?= dgettext("evasys", "Unterschiedliche Werte") ?>
                         <? endif ?>
                     </option>
                     <option value="0"<?= !$values['applied'] ? " selected" : "" ?>>
-                        <?= _("Nein") ?>
+                        <?= dgettext("evasys", "Nein") ?>
                     </option>
                     <option value="1"<?= $values['applied'] == 1 ? " selected" : "" ?>>
-                        <?= _("Ja") ?>
+                        <?= dgettext("evasys", "Ja") ?>
                     </option>
                 </select>
             </td>
@@ -44,7 +44,7 @@
             <td>
                 <label>
                     <input type="checkbox" name="change[]" value="split" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= _("Lehrende einzeln evaluieren?") ?>
+                    <?= dgettext("evasys", "Lehrende einzeln evaluieren?") ?>
                 </label>
             </td>
             <td>
@@ -52,14 +52,14 @@
                         onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
                     <option value="">
                         <? if ($values['split'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
-                            <?= _("Unterschiedliche Werte") ?>
+                            <?= dgettext("evasys", "Unterschiedliche Werte") ?>
                         <? endif ?>
                     </option>
                     <option value="0"<?= !$values['split'] ? " selected" : "" ?>>
-                        <?= _("Nein") ?>
+                        <?= dgettext("evasys", "Nein") ?>
                     </option>
                     <option value="1"<?= $values['split'] == 1 ? " selected" : "" ?>>
-                        <?= _("Ja") ?>
+                        <?= dgettext("evasys", "Ja") ?>
                     </option>
                 </select>
             </td>
@@ -69,13 +69,13 @@
             <td>
                 <label>
                     <input type="checkbox" name="change[]" value="begin" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= _("Evaluationsbeginn") ?>
+                    <?= dgettext("evasys", "Evaluationsbeginn") ?>
                 </label>
             </td>
             <td>
                 <input type="text"
                        name="begin"
-                       value="<?= is_numeric($values['begin']) ? date("d.m.Y H:i", $values['begin']) : ($values['begin'] ? _("Unterschiedliche Werte") : "") ?>"
+                       value="<?= is_numeric($values['begin']) ? date("d.m.Y H:i", $values['begin']) : ($values['begin'] ? dgettext("evasys", "Unterschiedliche Werte") : "") ?>"
                        class="datepicker"
                        data-datetime-picker='{">=":"today"}'
                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
@@ -85,13 +85,13 @@
             <td>
                 <label>
                     <input type="checkbox" name="change[]" value="end" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= _("Evaluationsende") ?>
+                    <?= dgettext("evasys", "Evaluationsende") ?>
                 </label>
             </td>
             <td>
                 <input type="text"
                        name="end"
-                       value="<?= is_numeric($values['end']) ? date("d.m.Y H:i", $values['end']) : ($values['end'] ? _("Unterschiedliche Werte") : "") ?>"
+                       value="<?= is_numeric($values['end']) ? date("d.m.Y H:i", $values['end']) : ($values['end'] ? dgettext("evasys", "Unterschiedliche Werte") : "") ?>"
                        class="datepicker"
                        data-datetime-picker='{">=":"today"}'
                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
@@ -101,7 +101,7 @@
             <td>
                 <label>
                     <input type="checkbox" name="change[]" value="form_id" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= _("Fragebogen") ?>
+                    <?= dgettext("evasys", "Fragebogen") ?>
                 </label>
             </td>
             <td>
@@ -110,7 +110,7 @@
                         onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
                     <option value="">
                         <? if ($values['form_id'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
-                            <?= _("Unterschiedliche Werte") ?>
+                            <?= dgettext("evasys", "Unterschiedliche Werte") ?>
                         <? endif ?>
                     </option>
                     <?
@@ -120,13 +120,13 @@
                     });
                     ?>
                     <? foreach ($forms as $form) : ?>
-                        <option value="<?= htmlReady($form->getId()) ?>"<?= $values['form_id'] == $form->getId() ? " selected" : "" ?><?= !in_array($form->getId(), $available_form_ids) ? " disabled title='"._("Fragebogen darf nicht allen ausgewählten Veranstaltungstypen zugewiesen werden.")."'" : "" ?>>
+                        <option value="<?= htmlReady($form->getId()) ?>"<?= $values['form_id'] == $form->getId() ? " selected" : "" ?><?= !in_array($form->getId(), $available_form_ids) ? " disabled title='".dgettext("evasys", "Fragebogen darf nicht allen ausgewählten Veranstaltungstypen zugewiesen werden.")."'" : "" ?>>
                             <?= htmlReady($form['name'].": ".$form['description']) ?>
                         </option>
                     <? endforeach ?>
                 </select>
                 <? else : ?>
-                    <?= _("Es gibt keinen Fragebogen, der bei allen ausgewählten Veranstaltungen erlaubt ist.") ?>
+                    <?= dgettext("evasys", "Es gibt keinen Fragebogen, der bei allen ausgewählten Veranstaltungen erlaubt ist.") ?>
                 <? endif ?>
             </td>
         </tr>
@@ -134,7 +134,7 @@
             <td>
                 <label>
                     <input type="checkbox" name="change[]" value="mode" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= _("Art der Evaluation") ?>
+                    <?= dgettext("evasys", "Art der Evaluation") ?>
                 </label>
             </td>
             <td>
@@ -142,14 +142,14 @@
                         onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
                     <option value="">
                         <? if ($values['mode'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
-                            <?= _("Unterschiedliche Werte") ?>
+                            <?= dgettext("evasys", "Unterschiedliche Werte") ?>
                         <? endif ?>
                     </option>
                     <option value="online"<?= $values['mode'] == "online" ? " selected" : "" ?>>
-                        <?= _("Online-Evaluation") ?>
+                        <?= dgettext("evasys", "Online-Evaluation") ?>
                     </option>
                     <option value="paper"<?= $values['mode'] == "paper" ? " selected" : "" ?>>
-                        <?= _("Papierbasierte Evaluation") ?>
+                        <?= dgettext("evasys", "Papierbasierte Evaluation") ?>
                     </option>
                 </select>
             </td>
@@ -206,8 +206,8 @@
     </script>
 
     <div data-dialog-button>
-        <?= \Studip\Button::create(_("Speichern"), "submit") ?>
-        <?= \Studip\LinkButton::create(_("Abbrechen"), URLHelper::getURL("dispatch.php/admin/courses")) ?>
+        <?= \Studip\Button::create(dgettext("evasys", "Speichern"), "submit") ?>
+        <?= \Studip\LinkButton::create(dgettext("evasys", "Abbrechen"), URLHelper::getURL("dispatch.php/admin/courses")) ?>
     </div>
 
 </form>

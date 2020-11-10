@@ -3,13 +3,13 @@
         <thead>
             <tr>
                 <th>
-                    <?= _("Veranstaltung") ?>
+                    <?= dgettext("evasys", "Veranstaltung") ?>
                 </th>
                 <th>
-                    <?= _("Evaluation bis") ?>
+                    <?= dgettext("evasys", "Evaluation bis") ?>
                 </th>
                 <th>
-                    <?= _("Rücklaufquote") ?>
+                    <?= dgettext("evasys", "Rücklaufquote") ?>
                 </th>
                 <? /*<th></th> */ ?>
             </tr>
@@ -42,11 +42,11 @@
                             <? $evasys_seminar = new EvasysSeminar($course->getId()) ?>
                             <? $pdf_link = $evasys_seminar->getPDFLink($survey->m_nSurveyId) ?>
                             <? if ($pdf_link) : ?>
-                                <a href="<?= htmlReady($pdf_link) ?>" target="_blank" title="<?= _("Ergebnisse ansehen") ?>">
+                                <a href="<?= htmlReady($pdf_link) ?>" target="_blank" title="<?= dgettext("evasys", "Ergebnisse ansehen") ?>">
                                     <?= Icon::create("file-pdf", "clickable")->asImg(20) ?>
                                 </a>
                             <? else : ?>
-                                <?= Icon::create("file-pdf", "inactive")->asImg(20, array('title' => _("Es liegen noch keine Ergebnisse vor."))) ?>
+                                <?= Icon::create("file-pdf", "inactive")->asImg(20, array('title' => dgettext("evasys", "Es liegen noch keine Ergebnisse vor."))) ?>
                             <? endif ?>
                         </td> */ ?>
                     </tr>
@@ -54,7 +54,7 @@
             <? else : ?>
                 <tr>
                     <td colspan="100" style="text-align: center;">
-                        <?= _("Keine laufenden Evaluationen") ?>
+                        <?= dgettext("evasys", "Keine laufenden Evaluationen") ?>
                     </td>
                 </tr>
             <? endif ?>

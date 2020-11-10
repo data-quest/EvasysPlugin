@@ -6,7 +6,7 @@ class PassiveaccountController extends PluginController
     public function index_action()
     {
         Navigation::activateItem("/profile/evasyspassiveaccount");
-        PageLayout::setTitle(_("EvaSys-Zugang"));
+        PageLayout::setTitle(dgettext("evasys", "EvaSys-Zugang"));
 
         $soap = EvasysSoap::get();
 

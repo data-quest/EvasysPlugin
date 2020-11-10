@@ -35,22 +35,22 @@
         <? endif ?>
         <div class="controls">
             <? if ($profile['applied'] && $profile['by_dozent']) : ?>
-                <?= Icon::create($plugin->getPluginURL()."/assets/f-circle_grey.svg")->asImg(20, array('title' => sprintf(_("Dies ist eine %s"), EvasysMatching::wording("freiwillige Evaluation")))) ?>
+                <?= Icon::create($plugin->getPluginURL()."/assets/f-circle_grey.svg")->asImg(20, array('title' => sprintf(dgettext("evasys", "Dies ist eine %s"), EvasysMatching::wording("freiwillige Evaluation")))) ?>
             <? endif ?>
 
             <? if (!$profile->hasDatesInEvalTimespan()) : ?>
-                <?= Icon::create("exclaim-circle", "status-red")->asImg(20, array('title' => _("Es gibt keinen Termin dieser Veranstaltung im gewünschten Evaluationszeitraum"))) ?>
+                <?= Icon::create("exclaim-circle", "status-red")->asImg(20, array('title' => dgettext("evasys", "Es gibt keinen Termin dieser Veranstaltung im gewünschten Evaluationszeitraum"))) ?>
             <? endif ?>
 
             <? if ($profile['transferred']) : ?>
                 <?= Icon::create($plugin->getPluginURL()."/assets/evasys-export_grey.svg", "inactive")->asImg(38, array(
-                        'title' => _("Veranstaltung wurde bereits übertragen."),
+                        'title' => dgettext("evasys", "Veranstaltung wurde bereits übertragen."),
                         'style' => "margin-top: -11px;"
                 )) ?>
             <? endif ?>
 
             <? if ($profile->isEditable()) : ?>
-                <a href="<?= PluginEngine::getLink($plugin, array('cid' => $course_id, 'semester_id' => $profile['semester_id']), "profile/edit/".$course_id) ?>" data-dialog title="<?= _("Evaluation beantragen oder bearbeiten") ?>">
+                <a href="<?= PluginEngine::getLink($plugin, array('cid' => $course_id, 'semester_id' => $profile['semester_id']), "profile/edit/".$course_id) ?>" data-dialog title="<?= dgettext("evasys", "Evaluation beantragen oder bearbeiten") ?>">
                     <?= Icon::create(($profile && $profile['applied']) ? "check-circle" : "radiobutton-unchecked", "clickable")->asImg(20) ?>
                 </a>
             <? else : ?>
