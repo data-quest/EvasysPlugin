@@ -1,16 +1,16 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <Jakob.Diel@hs-wismar.de>, 2020.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-26 14:09+0200\n"
+"POT-Creation-Date: 2020-11-10 16:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: April Suddendorf <EMAIL@ADDRESS>\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -20,11 +20,11 @@ msgstr ""
 
 #: ../views/matching/institutes.php:7
 msgid "Veranstaltungstypen"
-msgstr "Course types"
+msgstr ""
 
 #: ../views/matching/institutes.php:7
 msgid "Einrichtungen"
-msgstr "Institutes"
+msgstr ""
 
 #: ../views/matching/institutes.php:7
 msgid "Begriffe"
@@ -38,31 +38,31 @@ msgstr ""
 
 #: ../views/matching/institutes.php:12
 msgid "Name in EvaSys"
-msgstr "Name in EvaSys"
+msgstr ""
 
 #: ../views/matching/institutes.php:39 ../views/forms/index.php:42
 #: ../views/forms/sort.php:37 ../views/forms/edit.php:16
 #: ../views/config/edit_additionalfield.php:35
-#: ../views/globalprofile/index.php:8 ../views/globalprofile/index.php:275
-#: ../views/profile/bulkedit.php:207 ../views/profile/edit.php:360
+#: ../views/globalprofile/index.php:8 ../views/globalprofile/index.php:328
+#: ../views/profile/bulkedit.php:209 ../views/profile/edit.php:368
 msgid "Speichern"
 msgstr ""
 
 #: ../views/forms/index.php:4
 msgid "EvaSys-Fragebögen"
-msgstr "EvaSys questionaires"
+msgstr ""
 
 #: ../views/forms/index.php:11
 msgid "Überschrift"
-msgstr "Headline"
+msgstr ""
 
 #: ../views/forms/index.php:12
 msgid "Info"
-msgstr "Info"
+msgstr ""
 
 #: ../views/forms/sort.php:9
 msgid "Reihenfolge per Drag & Drop festlegen"
-msgstr "Change order by drag & drop"
+msgstr ""
 
 #: ../views/forms/edit.php:7
 msgid "Aktiv in Stud.IP"
@@ -70,7 +70,7 @@ msgstr ""
 
 #: ../views/forms/edit.php:11
 msgid "Info-Link"
-msgstr "Info link"
+msgstr ""
 
 #: ../views/widget/nothing.php:2
 msgid ""
@@ -80,11 +80,11 @@ msgstr ""
 
 #: ../views/widget/widget.php:6 ../views/individual/list.php:7
 msgid "Veranstaltung"
-msgstr "Course"
+msgstr ""
 
 #: ../views/widget/widget.php:9
 msgid "Evaluation bis"
-msgstr "Survey until"
+msgstr ""
 
 #: ../views/widget/widget.php:12
 msgid "Rücklaufquote"
@@ -100,7 +100,7 @@ msgstr ""
 
 #: ../views/config/edit_additionalfield.php:16
 msgid "Nur für papierbasierte Evaluationen"
-msgstr "Only for text based surveys"
+msgstr ""
 
 #: ../views/config/edit_additionalfield.php:21
 msgid "Text"
@@ -156,156 +156,178 @@ msgstr ""
 msgid "Beginn"
 msgstr ""
 
-#: ../views/globalprofile/index.php:25 ../views/globalprofile/index.php:35
-#: ../views/globalprofile/index.php:65 ../views/globalprofile/index.php:83
-#: ../views/globalprofile/index.php:100 ../views/globalprofile/index.php:110
-#: ../views/globalprofile/index.php:131 ../views/globalprofile/index.php:193
-#: ../views/globalprofile/index.php:233 ../views/globalprofile/index.php:243
-#: ../views/globalprofile/index.php:253
+#: ../views/globalprofile/index.php:29 ../views/globalprofile/index.php:42
+#: ../views/globalprofile/index.php:79 ../views/globalprofile/index.php:97
+#: ../views/globalprofile/index.php:117 ../views/globalprofile/index.php:134
+#: ../views/globalprofile/index.php:144 ../views/globalprofile/index.php:165
+#: ../views/globalprofile/index.php:178 ../views/globalprofile/index.php:240
+#: ../views/globalprofile/index.php:284 ../views/globalprofile/index.php:297
+#: ../views/globalprofile/index.php:307
 msgid "Standardwert, wenn nichts eingetragen ist."
 msgstr ""
 
-#: ../views/globalprofile/index.php:26 ../views/globalprofile/index.php:36
-#: ../views/globalprofile/index.php:66 ../views/globalprofile/index.php:84
-#: ../views/globalprofile/index.php:101 ../views/globalprofile/index.php:111
-#: ../views/globalprofile/index.php:132 ../views/globalprofile/index.php:234
-#: ../views/globalprofile/index.php:244 ../views/globalprofile/index.php:254
+#: ../views/globalprofile/index.php:30 ../views/globalprofile/index.php:43
+#: ../views/globalprofile/index.php:80 ../views/globalprofile/index.php:98
+#: ../views/globalprofile/index.php:135 ../views/globalprofile/index.php:145
+#: ../views/globalprofile/index.php:166 ../views/globalprofile/index.php:179
+#: ../views/globalprofile/index.php:285 ../views/globalprofile/index.php:298
+#: ../views/globalprofile/index.php:308
 msgid "Kein Standardwert"
 msgstr ""
 
-#: ../views/globalprofile/index.php:30
+#: ../views/globalprofile/index.php:34
 msgid "Ende"
 msgstr ""
 
-#: ../views/globalprofile/index.php:41
+#: ../views/globalprofile/index.php:48
 msgid "Beginn Bearbeitungszeitraum der Admins"
 msgstr ""
 
-#: ../views/globalprofile/index.php:46
+#: ../views/globalprofile/index.php:57
 msgid "Ende Bearbeitungszeitraum der Admins"
 msgstr ""
 
-#: ../views/globalprofile/index.php:52
+#: ../views/globalprofile/index.php:66
 msgid "Standardfragebogen (nur aktive werden angezeigt)"
 msgstr ""
 
-#: ../views/globalprofile/index.php:70 ../views/profile/bulkedit.php:135
-#: ../views/profile/edit.php:274
+#: ../views/globalprofile/index.php:84 ../views/profile/bulkedit.php:137
+#: ../views/profile/edit.php:283
 msgid "Art der Evaluation"
 msgstr ""
 
-#: ../views/globalprofile/index.php:74 ../views/profile/bulkedit.php:150
-#: ../views/profile/edit.php:284 ../views/profile/edit.php:289
+#: ../views/globalprofile/index.php:88 ../views/profile/bulkedit.php:152
+#: ../views/profile/edit.php:293 ../views/profile/edit.php:298
 msgid "Papierbasierte Evaluation"
 msgstr ""
 
-#: ../views/globalprofile/index.php:77 ../views/profile/bulkedit.php:147
-#: ../views/profile/edit.php:281 ../views/profile/edit.php:289
+#: ../views/globalprofile/index.php:91 ../views/profile/bulkedit.php:149
+#: ../views/profile/edit.php:290 ../views/profile/edit.php:298
 msgid "Online-Evaluation"
 msgstr ""
 
-#: ../views/globalprofile/index.php:89
+#: ../views/globalprofile/index.php:102
+msgid "Papierverfahren (nur bei Papierevaluationen)"
+msgstr ""
+
+#: ../views/globalprofile/index.php:108 ../views/globalprofile/index.php:118
+msgid "Selbstdruckverfahren"
+msgstr ""
+
+#: ../views/globalprofile/index.php:111 ../views/globalprofile/index.php:118
+msgid "Deckblattverfahren"
+msgstr ""
+
+#: ../views/globalprofile/index.php:123
 msgid ""
 "Weitere Emails, an die die Ergebnisse gesendet werden sollen (mit "
 "Leerzeichen getrennt)"
 msgstr ""
 
-#: ../views/globalprofile/index.php:95
+#: ../views/globalprofile/index.php:129
 msgid "Informationen für Lehrende zu den Evaluationsdaten"
 msgstr ""
 
-#: ../views/globalprofile/index.php:105
+#: ../views/globalprofile/index.php:139
 msgid "Infotext für Studierende über der Evaluation"
 msgstr ""
 
-#: ../views/globalprofile/index.php:114
+#: ../views/globalprofile/index.php:148
 msgid "Erst nach Ablauf der Evaluation"
 msgstr ""
 
-#: ../views/globalprofile/index.php:114
+#: ../views/globalprofile/index.php:148
 msgid "Sobald der Mindestrücklauf erreicht ist."
 msgstr ""
 
-#: ../views/globalprofile/index.php:116
+#: ../views/globalprofile/index.php:150
 msgid "PDF-Berichte bereitstellen"
 msgstr ""
 
-#: ../views/globalprofile/index.php:139
-msgid "Standardfragebögen nach Veranstaltungstypen"
-msgstr ""
-
-#: ../views/globalprofile/index.php:150
-msgid "Werte kopieren"
-msgstr ""
-
-#: ../views/globalprofile/index.php:153
-msgid "Werte hier einfügen"
-msgstr ""
-
-#: ../views/globalprofile/index.php:156
-msgid "Doch nicht kopieren"
-msgstr ""
-
-#: ../views/globalprofile/index.php:164
-msgid "Standardfragebogen"
+#: ../views/globalprofile/index.php:170
+msgid "Berichte erst x Tage nach Ablauf der Evaluation anzeigen"
 msgstr ""
 
 #: ../views/globalprofile/index.php:179
+msgid "Standardwert"
+msgstr ""
+
+#: ../views/globalprofile/index.php:186
+msgid "Standardfragebögen nach Veranstaltungstypen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:197
+msgid "Werte kopieren"
+msgstr ""
+
+#: ../views/globalprofile/index.php:200
+msgid "Werte hier einfügen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:203
+msgid "Doch nicht kopieren"
+msgstr ""
+
+#: ../views/globalprofile/index.php:211
+msgid "Standardfragebogen"
+msgstr ""
+
+#: ../views/globalprofile/index.php:226
 msgid "Verfügbar"
 msgstr ""
 
-#: ../views/globalprofile/index.php:204
+#: ../views/globalprofile/index.php:251
 msgid "Keine Standardwerte"
 msgstr ""
 
-#: ../views/globalprofile/index.php:212
+#: ../views/globalprofile/index.php:259
 msgid "Sortierung bearbeiten"
 msgstr ""
 
-#: ../views/globalprofile/index.php:228
+#: ../views/globalprofile/index.php:275
 msgid "Beginn der Antragsfrist"
 msgstr ""
 
-#: ../views/globalprofile/index.php:238
+#: ../views/globalprofile/index.php:289
 msgid "Ende der Antragsfrist"
 msgstr ""
 
-#: ../views/globalprofile/index.php:248
+#: ../views/globalprofile/index.php:302
 msgid "Informationstext"
 msgstr ""
 
-#: ../views/globalprofile/index.php:277
+#: ../views/globalprofile/index.php:330
 msgid "Löschen"
 msgstr ""
 
-#: ../views/globalprofile/index.php:277
+#: ../views/globalprofile/index.php:330
 msgid ""
 "Sollen die Einstellungen des gesamten Semesters wirklich gelöscht werden?"
 msgstr ""
 
-#: ../views/globalprofile/index.php:284
+#: ../views/globalprofile/index.php:337
 #, php-format
 msgid "Wählen Sie erst eine %s aus."
 msgstr ""
 
-#: ../views/globalprofile/index.php:290
+#: ../views/globalprofile/index.php:343
 msgid "Einrichtung"
 msgstr ""
 
-#: ../views/globalprofile/index.php:299
+#: ../views/globalprofile/index.php:352
 msgid "Alle"
 msgstr ""
 
-#: ../views/globalprofile/index.php:299
+#: ../views/globalprofile/index.php:352
 msgid "Alle meine Einrichtungen"
 msgstr ""
 
-#: ../views/globalprofile/index.php:319
+#: ../views/globalprofile/index.php:372
 #: ../views/evaluation/_survey_dozent.php:18 ../controllers/admin.php:126
 msgid "Semester"
 msgstr ""
 
-#: ../views/globalprofile/index.php:339
+#: ../views/globalprofile/index.php:392
 msgid "Neues Semester anlegen"
 msgstr ""
 
@@ -424,8 +446,8 @@ msgid "Veranstaltungen sollen evaluiert werden."
 msgstr ""
 
 #: ../views/profile/bulkedit.php:30 ../views/profile/bulkedit.php:55
-#: ../views/profile/bulkedit.php:78 ../views/profile/bulkedit.php:93
-#: ../views/profile/bulkedit.php:111 ../views/profile/bulkedit.php:143
+#: ../views/profile/bulkedit.php:78 ../views/profile/bulkedit.php:94
+#: ../views/profile/bulkedit.php:113 ../views/profile/bulkedit.php:145
 msgid "Unterschiedliche Werte"
 msgstr ""
 
@@ -445,27 +467,27 @@ msgstr ""
 msgid "Evaluationsbeginn"
 msgstr ""
 
-#: ../views/profile/bulkedit.php:87 ../views/profile/edit.php:118
+#: ../views/profile/bulkedit.php:88 ../views/profile/edit.php:123
 msgid "Evaluationsende"
 msgstr ""
 
-#: ../views/profile/bulkedit.php:102 ../EvasysPlugin.class.php:511
+#: ../views/profile/bulkedit.php:104 ../EvasysPlugin.class.php:699
 msgid "Fragebogen"
 msgstr ""
 
-#: ../views/profile/bulkedit.php:121
+#: ../views/profile/bulkedit.php:123
 msgid ""
 "Fragebogen darf nicht allen ausgewählten Veranstaltungstypen zugewiesen "
 "werden."
 msgstr ""
 
-#: ../views/profile/bulkedit.php:127
+#: ../views/profile/bulkedit.php:129
 msgid ""
 "Es gibt keinen Fragebogen, der bei allen ausgewählten Veranstaltungen "
 "erlaubt ist."
 msgstr ""
 
-#: ../views/profile/bulkedit.php:208
+#: ../views/profile/bulkedit.php:210
 msgid "Abbrechen"
 msgstr ""
 
@@ -501,60 +523,60 @@ msgid ""
 "Leerzeichen getrennt)"
 msgstr ""
 
-#: ../views/profile/edit.php:130
+#: ../views/profile/edit.php:139
 msgid ""
 "Kein Veranstaltungstermin befindet sich in dem vorgesehenen "
 "Evaluationszeitraum!"
 msgstr ""
 
-#: ../views/profile/edit.php:132
+#: ../views/profile/edit.php:141
 msgid "Anderen Termin auswählen"
 msgstr ""
 
-#: ../views/profile/edit.php:152
+#: ../views/profile/edit.php:161
 #, php-format
 msgid "Termin am %s aussuchen"
 msgstr ""
 
-#: ../views/profile/edit.php:181
+#: ../views/profile/edit.php:190
 msgid "Termin als Evaluationszeitraum auswählen"
 msgstr ""
 
-#: ../views/profile/edit.php:191
+#: ../views/profile/edit.php:200
 msgid "Keine möglichen Termine gefunden."
 msgstr ""
 
-#: ../views/profile/edit.php:205
+#: ../views/profile/edit.php:214
 msgid "Ausgewähler Fragebogen"
 msgstr ""
 
-#: ../views/profile/edit.php:326
+#: ../views/profile/edit.php:335
 msgid "Log"
 msgstr ""
 
-#: ../views/profile/edit.php:329
+#: ../views/profile/edit.php:338
 #, php-format
 msgid "Letzte Bearbeitung von %s am %s Uhr"
 msgstr ""
 
-#: ../views/profile/edit.php:329
+#: ../views/profile/edit.php:338
 msgid "unbekannt"
 msgstr ""
 
-#: ../views/profile/edit.php:332
+#: ../views/profile/edit.php:341
 #, php-format
 msgid "Diese Veranstaltung ist eine %s."
 msgstr ""
 
-#: ../views/profile/edit.php:336
+#: ../views/profile/edit.php:345
 msgid "Diese Veranstaltung wurde bereits an den Evaluationsserver übertragen."
 msgstr ""
 
-#: ../views/profile/edit.php:357
+#: ../views/profile/edit.php:365
 msgid "In Pflichtevaluation umwandeln"
 msgstr ""
 
-#: ../views/profile/edit.php:357
+#: ../views/profile/edit.php:365
 msgid "Wirklich in Pflichtevaluation umwandeln?"
 msgstr ""
 
@@ -683,7 +705,7 @@ msgstr ""
 msgid "Noch keine %s in diesem Semester."
 msgstr ""
 
-#: ../views/individual/list.php:46 ../EvasysPlugin.class.php:406
+#: ../views/individual/list.php:46 ../EvasysPlugin.class.php:594
 msgid "Bearbeiten"
 msgstr ""
 
@@ -703,12 +725,12 @@ msgstr ""
 msgid "Dieser Lehrende ist nicht für eine Evaluierung vorgesehen."
 msgstr ""
 
-#: ../views/individual/course.php:29 ../EvasysPlugin.class.php:555
+#: ../views/individual/course.php:29 ../EvasysPlugin.class.php:743
 msgid "Papier"
 msgstr ""
 
-#: ../views/individual/course.php:29 ../EvasysPlugin.class.php:553
-#: ../EvasysPlugin.class.php:555
+#: ../views/individual/course.php:29 ../EvasysPlugin.class.php:741
+#: ../EvasysPlugin.class.php:743
 msgid "Online"
 msgstr ""
 
@@ -802,20 +824,20 @@ msgstr ""
 msgid "Letzte Aktivität"
 msgstr ""
 
-#: ../controllers/forms.php:23
+#: ../controllers/forms.php:27
 msgid "Fragebogen bearbeiten"
 msgstr ""
 
-#: ../controllers/forms.php:30
+#: ../controllers/forms.php:34
 msgid "Fragebogen wurde gespeichert"
 msgstr ""
 
-#: ../controllers/forms.php:66
+#: ../controllers/forms.php:70
 #, php-format
 msgid "Fragebögen sortieren für Typ %s"
 msgstr ""
 
-#: ../controllers/forms.php:78
+#: ../controllers/forms.php:82
 msgid "Sortierung wurde gespeichert."
 msgstr ""
 
@@ -823,15 +845,15 @@ msgstr ""
 msgid "Einstellungen des Semesters wurden gelöscht."
 msgstr ""
 
-#: ../controllers/globalprofile.php:198
+#: ../controllers/globalprofile.php:204
 msgid "Einstellungen wurden gespeichert"
 msgstr ""
 
-#: ../controllers/globalprofile.php:208
+#: ../controllers/globalprofile.php:214
 msgid "Standardwerte für neues Semester erstellen"
 msgstr ""
 
-#: ../controllers/globalprofile.php:213
+#: ../controllers/globalprofile.php:219
 msgid "Neues Semester angelegt"
 msgstr ""
 
@@ -858,6 +880,10 @@ msgstr ""
 
 #: ../lib/EvasysCourseProfile.php:194
 msgid "Bearbeitung der Evaluationsdaten"
+msgstr ""
+
+#: ../lib/EvasysForm.php:29
+msgid "SoapClient existiert nicht."
 msgstr ""
 
 #: ../lib/EvasysSeminar.php:144 ../lib/EvasysSeminar.php:152
@@ -902,111 +928,135 @@ msgstr ""
 msgid "Standard-Evaluationsprofil"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:101
+#: ../EvasysPlugin.class.php:104
 msgid "Eigene Evaluationen"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:104 ../EvasysPlugin.class.php:321
-#: ../EvasysPlugin.class.php:341 ../EvasysPlugin.class.php:370
+#: ../EvasysPlugin.class.php:107 ../EvasysPlugin.class.php:509
+#: ../EvasysPlugin.class.php:529 ../EvasysPlugin.class.php:558
 msgid "Lehrveranst.-Evaluation"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:106
+#: ../EvasysPlugin.class.php:109
 msgid ""
 "Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, "
 "ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."
 msgstr ""
 
-#: ../EvasysPlugin.class.php:110 ../EvasysPlugin.class.php:391
+#: ../EvasysPlugin.class.php:113 ../EvasysPlugin.class.php:579
 msgid "EvaSys"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:123
+#: ../EvasysPlugin.class.php:131
 msgid "Transfer-Filter"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:130
+#: ../EvasysPlugin.class.php:138
 msgid "Beantragt"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:135
+#: ../EvasysPlugin.class.php:143
 msgid "Nicht beantragt"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:140
+#: ../EvasysPlugin.class.php:148
 msgid "Beantragt und noch nicht übertragen"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:145
+#: ../EvasysPlugin.class.php:153
 msgid "Beantragt und nach EvaSys übetragen"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:157
+#: ../EvasysPlugin.class.php:209
 msgid "Zeiten im Evaluationszeitraum"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:159
+#: ../EvasysPlugin.class.php:211
 msgid "Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:172
+#: ../EvasysPlugin.class.php:278
 msgid "Ausreißer-Filter"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:174
+#: ../EvasysPlugin.class.php:280
 msgid "Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen."
 msgstr ""
 
-#: ../EvasysPlugin.class.php:325
+#: ../EvasysPlugin.class.php:317
+msgid "Fragebogen-Filter"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:379 ../EvasysPlugin.class.php:700
+msgid "Evaluationsart"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:386
+msgid "Online-Evaluationen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:391
+msgid "Papier-Evaluationen"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:443
+msgid "Hauptphasen-Filter"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:450
+msgid "Veranstaltungen in der Hauptphase"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:455
+msgid "Veranstaltungen außerhalb der Hauptphase"
+msgstr ""
+
+#: ../EvasysPlugin.class.php:513
 msgid "Lehrveranstaltungsevaluationen"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:328
+#: ../EvasysPlugin.class.php:516
 msgid "Neue Evaluation"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:335
+#: ../EvasysPlugin.class.php:523
 #, php-format
 msgid "%s neue Evaluation"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:342
+#: ../EvasysPlugin.class.php:530
 msgid "Evaluationen"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:389
+#: ../EvasysPlugin.class.php:577
 msgid "Evaluation"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:405
+#: ../EvasysPlugin.class.php:593
 msgid "Übertragen"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:512
-msgid "Evaluationsart"
-msgstr ""
-
-#: ../EvasysPlugin.class.php:513
+#: ../EvasysPlugin.class.php:701
 msgid "Eval-Zeitraum"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:514
+#: ../EvasysPlugin.class.php:702
 msgid "Evaluation beantragt"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:515
+#: ../EvasysPlugin.class.php:703
 msgid "Eval: Beantragte Lehrende (Emails)"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:516
+#: ../EvasysPlugin.class.php:704
 msgid "Rückläufer"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:519
+#: ../EvasysPlugin.class.php:707
 msgid "Teilevaluation"
 msgstr ""
 
-#: ../EvasysPlugin.class.php:612
+#: ../EvasysPlugin.class.php:800
 #, php-format
 msgid "Veranstaltung %s existiert nicht mehr in EvaSys"
 msgstr ""

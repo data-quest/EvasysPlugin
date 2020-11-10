@@ -206,9 +206,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
                 || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"))) {
             $widget = new OptionsWidget();
-            $widget->setTitle((dgettext("evasys","Zeiten im Evaluationszeitraum"));
+            $widget->setTitle(dgettext("evasys","Zeiten im Evaluationszeitraum"));
             $widget->addCheckbox(
-                (dgettext("evasys","Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"),
+                (dgettext("evasys","Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
                 PluginEngine::getURL($this, array(), "toggle_nonfittingdates_filter")
             );
@@ -275,9 +275,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"))) {
             $widget = new OptionsWidget();
-            $widget->setTitle((dgettext("evasys","Ausreißer-Filter"));
+            $widget->setTitle(dgettext("evasys","Ausreißer-Filter"));
             $widget->addCheckbox(
-                (dgettext("evasys","Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen."),
+                (dgettext("evasys","Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen.")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"),
                 PluginEngine::getURL($this, array(), "toggle_recentevalcourses_filter")
             );
@@ -314,7 +314,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID"))) {
-            $widget = new SelectWidget((dgettext("evasys","Fragebogen-Filter"), PluginEngine::getURL($this, array(), "change_form_filter"), "form_id", "post");
+            $widget = new SelectWidget(dgettext("evasys","Fragebogen-Filter"), PluginEngine::getURL($this, array(), "change_form_filter"), "form_id", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
@@ -376,19 +376,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID"))) {
-            $widget = new SelectWidget((dgettext("evasys","Evaluationsart"), PluginEngine::getURL($this, array(), "change_paperonline_filter"), "paperonline", "post");
+            $widget = new SelectWidget(dgettext("evasys","Evaluationsart"), PluginEngine::getURL($this, array(), "change_paperonline_filter"), "paperonline", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
             ));
             $widget->addElement(new SelectElement(
                 "online",
-                (dgettext("evasys","Online-Evaluationen"),
+                (dgettext("evasys","Online-Evaluationen")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE") === "online"
             ));
             $widget->addElement(new SelectElement(
                 "paper",
-                (dgettext("evasys","Papier-Evaluationen"),
+                (dgettext("evasys","Papier-Evaluationen")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE") === "paper"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_paperonline");
@@ -440,19 +440,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE"))) {
-            $widget = new SelectWidget((dgettext("evasys","Hauptphasen-Filter"), PluginEngine::getURL($this, array(), "change_mainphase_filter"), "mainphase", "post");
+            $widget = new SelectWidget(dgettext("evasys","Hauptphasen-Filter"), PluginEngine::getURL($this, array(), "change_mainphase_filter"), "mainphase", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
             ));
             $widget->addElement(new SelectElement(
                 "mainphase",
-                (dgettext("evasys","Veranstaltungen in der Hauptphase"),
+                (dgettext("evasys","Veranstaltungen in der Hauptphase")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "mainphase"
             ));
             $widget->addElement(new SelectElement(
                 "nonmainphase",
-                (dgettext("evasys","Veranstaltungen außerhalb der Hauptphase"),
+                (dgettext("evasys","Veranstaltungen außerhalb der Hauptphase")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "nonmainphase"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_mainphase");

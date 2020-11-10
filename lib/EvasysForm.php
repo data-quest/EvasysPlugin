@@ -26,7 +26,7 @@ class EvasysForm extends SimpleORMap
             return true;
         }
         if (!class_exists("SoapClient")) {
-            PageLayout::postError((dgettext("evasys","SoapClient existiert nicht."));
+            PageLayout::postError(dgettext("evasys","SoapClient existiert nicht."));
             return;
         }
         $soap = EvasysSoap::get();

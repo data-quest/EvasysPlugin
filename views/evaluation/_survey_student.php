@@ -13,7 +13,7 @@
                 <div style="-webkit-overflow-scrolling: touch; overflow: scroll;">
                     <iframe
                         id="survey_<?= htmlReady($survey_data->TransactionNumber) ?>"
-                        style="width: 100%; height: 600px; border: 0px;"
+                        style="width: 100%; height: 90vh; border: 0px;"
                         frameborder="0"
                         allowfullscreen
                         src="<?= htmlReady(Config::get()->EVASYS_URI.'/indexstud.php?typ=html&user_tan='.urlencode($survey_data->TransactionNumber)) ?>">
@@ -22,7 +22,7 @@
             <? else : ?>
                 <iframe
                     id="survey_<?= htmlReady($survey_data->TransactionNumber) ?>"
-                    style="width: 100%; height: 600px; border: 0px;"
+                    style="width: 100%; height: 90vh; border: 0px;"
                     frameborder="0"
                     allowfullscreen
                     src="<?= htmlReady(Config::get()->EVASYS_URI.'/indexstud.php?typ=html&user_tan='.urlencode($survey_data->TransactionNumber)) ?>">

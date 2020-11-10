@@ -17,7 +17,7 @@
             <? endif ?>
         </legend>
         <label>
-            <?= (dgettext("evasys","Beginn") ?>
+            <?= dgettext("evasys","Beginn") ?>
             <input type="text"
                    name="data[begin]"
                    value="<?= $profile['begin'] ? date("d.m.Y H:i", $profile['begin']) : "" ?>"
@@ -31,7 +31,7 @@
         <? endif ?>
 
         <label>
-            <?= (dgettext("evasys","Ende") ?>
+            <?= dgettext("evasys","Ende") ?>
             <input type="text"
                    name="data[end]"
                    value="<?= $profile['end'] ? date("d.m.Y H:i", $profile['end']) : "" ?>"
@@ -45,7 +45,7 @@
 
         <? if (is_a($profile, "EvasysGlobalProfile")) : ?>
             <label>
-                <?= (dgettext("evasys","Beginn Bearbeitungszeitraum der Admins") ?>
+                <?= dgettext("evasys","Beginn Bearbeitungszeitraum der Admins") ?>
                 <input type="text"
                        name="data[adminedit_begin]"
                        value="<?= $profile['adminedit_begin'] ? date("d.m.Y H:i", $profile['adminedit_begin']) : "" ?>"
@@ -54,7 +54,7 @@
             </label>
 
             <label>
-                <?= (dgettext("evasys","Ende Bearbeitungszeitraum der Admins") ?>
+                <?= dgettext("evasys","Ende Bearbeitungszeitraum der Admins") ?>
                 <input type="text"
                        name="data[adminedit_end]"
                        value="<?= $profile['adminedit_end'] ? date("d.m.Y H:i", $profile['adminedit_end']) : "" ?>"
@@ -99,23 +99,23 @@
         <? endif ?>
 
         <label>
-            <?= (dgettext("evasys","Papierverfahren (nur bei Papierevaluationen)") ?>
+            <?= dgettext("evasys","Papierverfahren (nur bei Papierevaluationen)") ?>
             <select name="data[paper_mode]">
                 <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
                 <option value=""></option>
                 <? endif ?>
                 <option value="s"<?= $profile['paper_mode'] === "s" ? " selected" : "" ?>>
-                    <?= (dgettext("evasys","Selbstdruckverfahren") ?>
+                    <?= dgettext("evasys","Selbstdruckverfahren") ?>
                 </option>
                 <option value="d"<?= $profile['paper_mode'] === "d" ? " selected" : "" ?>>
-                    <?= (dgettext("evasys","Deckblattverfahren") ?>
+                    <?= dgettext("evasys","Deckblattverfahren") ?>
                 </option>
             </select>
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("paper_mode") ?>
-            <span title="<?= (dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
-                  class="default_value">(<?= $default_value === "d" ? (dgettext("evasys","Deckblattverfahren") : (dgettext("evasys","Selbstdruckverfahren") ?>)</span>
+            <span title="<?= dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= $default_value === "d" ? dgettext("evasys","Deckblattverfahren") : dgettext("evasys","Selbstdruckverfahren") ?>)</span>
         <? endif ?>
 
         <? if (is_a($profile, "EvasysInstituteProfile")) : ?>
@@ -167,7 +167,7 @@
         <? endif ?>
 
         <label>
-            <?= (dgettext("evasys","Berichte erst x Tage nach Ablauf der Evaluation anzeigen") ?>
+            <?= dgettext("evasys","Berichte erst x Tage nach Ablauf der Evaluation anzeigen") ?>
             <input type="number"
                    name="data[extended_report_offset]"
                    value="<?= htmlReady($profile['extended_report_offset'] !== null ? $profile['extended_report_offset'] : $profile->getParentsDefaultValue("extended_report_offset")) ?>"
@@ -175,8 +175,8 @@
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("extended_report_offset") ?>
-            <span title="<?= (dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
-                  class="default_value">(<?= (dgettext("evasys","Standardwert").": " . $default_value ?: (dgettext("evasys","Kein Standardwert") ?>)</span>
+            <span title="<?= dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
         <? endif ?>
 
     </fieldset>
@@ -272,7 +272,7 @@
         <legend><?= ucfirst(EvasysMatching::wording("freiwillige Evaluationen")) ?></legend>
 
         <label>
-            <?= (dgettext("evasys","Beginn der Antragsfrist") ?>
+            <?= dgettext("evasys","Beginn der Antragsfrist") ?>
             <input type="text"
                    name="data[antrag_begin]"
                    value="<?= $profile['antrag_begin'] ? date("d.m.Y H:i", $profile['antrag_begin']) : "" ?>"
@@ -286,7 +286,7 @@
         <? endif ?>
 
         <label>
-            <?= (dgettext("evasys","Ende der Antragsfrist") ?>
+            <?= dgettext("evasys","Ende der Antragsfrist") ?>
             <input type="text"
                    name="data[antrag_end]"
                    value="<?= $profile['antrag_end'] ? date("d.m.Y H:i", $profile['antrag_end']) : "" ?>"

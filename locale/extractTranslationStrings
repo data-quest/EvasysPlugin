@@ -6,7 +6,7 @@
 #
 
 LOCALE_RELATIVE_PATH="."
-TRANSLATIONFILES_RELAVITVE_PATHS="../views ../controllers ../assets ../lib ../EvasysPlugin.class.php"
+TRANSLATIONFILES_RELAVITVE_PATHS="../views ../controllers ../assets ../lib ../EvasysPlugin.class.php ..EvasysWidget.class.php"
 
 for language in en
 do
