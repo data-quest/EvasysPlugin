@@ -54,18 +54,18 @@ class EvasysUploadParticipantsJob extends CronJob
         $start = mktime(0, 0, 0, date("n"), date("j") + 1); // 0 Uhr des nächsten Tages
         $end = $start + 86400; // 0 Uhr des übernächsten Tages
         $statement = DBManager::get()->prepare("
-            SELECT `evasys_course_profiles`.`Seminar_id`
+            SELECT `evasys_course_profiles`.`seminar_id`
             FROM `evasys_course_profiles`
-                LEFT JOIN seminare ON (`evasys_course_profiles`.`Seminar_id` = `seminare`.`Seminar_id`)
-                LEFT JOIN evasys_institute_profiles ON (`evasys_institute_profiles`.`institut_id` = `seminare`.`Institut_id` 
+                LEFT JOIN seminare ON (`evasys_course_profiles`.`seminar_id` = `seminare`.`Seminar_id`)
+                LEFT JOIN evasys_institute_profiles ON (`evasys_institute_profiles`.`institut_id` = `seminare`.`Institut_id`
                         AND evasys_institute_profiles.semester_id = `evasys_course_profiles`.`semester_id`)
                 LEFT JOIN `Institute` ON (`seminare`.`Institut_id` = `Institute`.`Institut_id`)
-                LEFT JOIN `evasys_institute_profiles` AS `evasys_fakultaet_profiles` ON (`evasys_fakultaet_profiles`.`institut_id` = `Institute`.`fakultaets_id` 
+                LEFT JOIN `evasys_institute_profiles` AS `evasys_fakultaet_profiles` ON (`evasys_fakultaet_profiles`.`institut_id` = `Institute`.`fakultaets_id`
                         AND `evasys_fakultaet_profiles`.`semester_id` = `evasys_course_profiles`.`semester_id`)
                 LEFT JOIN evasys_global_profiles ON (`evasys_global_profiles`.`semester_id` = `evasys_course_profiles`.`semester_id`)
             WHERE `evasys_course_profiles`.`applied` = '1'
                 AND `evasys_course_profiles`.`transferred` = '1'
-                AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :start 
+                AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :start
                 AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :end
         ");
         $statement->execute(array(

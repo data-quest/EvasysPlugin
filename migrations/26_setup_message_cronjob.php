@@ -1,15 +1,13 @@
 <?php
 
-class SetupUploadCronjob extends Migration {
+class SetupMessageCronjob extends Migration {
 
     function up()
     {
         $new_job = array(
-            'filename'    => 'public/plugins_packages/data-quest/EvasysPlugin/upload_participants.cronjob.php',
-            'class'       => 'EvasysUploadParticipantsJob',
-            'priority'    => 'normal',
-            'minute'      => '0',
-            'hour'        => '20'
+            'filename'    => 'public/plugins_packages/data-quest/EvasysPlugin/send_messages.cronjob.php',
+            'class'       => 'EvasysSendMessagesJob',
+            'priority'    => 'normal'
         );
 
         $query = "INSERT IGNORE INTO `cronjobs_tasks`
@@ -19,10 +17,10 @@ class SetupUploadCronjob extends Migration {
 
         $query = "INSERT IGNORE INTO `cronjobs_schedules`
                     (`schedule_id`, `task_id`, `parameters`, `priority`,
-                     `type`, `minute`, `hour`, `active`, `mkdate`, `chdate`,
+                     `type`, `active`, `mkdate`, `chdate`,
                      `last_result`)
-                  VALUES (:schedule_id, :task_id, '[]', :priority, 'periodic',
-                          :minute, :hour, '1', UNIX_TIMESTAMP(), UNIX_TIMESTAMP(),
+                  VALUES (:schedule_id, :task_id, '[]', :priority, 'periodic', '1',
+                          UNIX_TIMESTAMP(), UNIX_TIMESTAMP(),
                           NULL)";
         $schedule_statement = DBManager::get()->prepare($query);
 
@@ -39,9 +37,7 @@ class SetupUploadCronjob extends Migration {
         $schedule_statement->execute(array(
             ':schedule_id' => $schedule_id,
             ':task_id'     => $task_id,
-            ':priority'    => $new_job['priority'],
-            ':minute'      => $new_job['minute'],
-            ':hour'        => $new_job['hour']
+            ':priority'    => $new_job['priority']
         ));
     }
 
