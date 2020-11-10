@@ -77,6 +77,7 @@
                        name="begin"
                        value="<?= is_numeric($values['begin']) ? date("d.m.Y H:i", $values['begin']) : ($values['begin'] ? _("Unterschiedliche Werte") : "") ?>"
                        class="datepicker"
+                       data-datetime-picker='{">=":"today"}'
                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
             </td>
         </tr>
@@ -92,6 +93,7 @@
                        name="end"
                        value="<?= is_numeric($values['end']) ? date("d.m.Y H:i", $values['end']) : ($values['end'] ? _("Unterschiedliche Werte") : "") ?>"
                        class="datepicker"
+                       data-datetime-picker='{">=":"today"}'
                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
             </td>
         </tr>

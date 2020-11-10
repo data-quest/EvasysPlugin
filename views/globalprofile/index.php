@@ -18,7 +18,11 @@
         </legend>
         <label>
             <?= _("Beginn") ?>
-            <input type="text" name="data[begin]" value="<?= $profile['begin'] ? date("d.m.Y H:i", $profile['begin']) : "" ?>" class="datepicker">
+            <input type="text"
+                   name="data[begin]"
+                   value="<?= $profile['begin'] ? date("d.m.Y H:i", $profile['begin']) : "" ?>"
+                   data-datetime-picker
+                   id="evasys_eval_begin">
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("begin") ?>
@@ -28,7 +32,10 @@
 
         <label>
             <?= _("Ende") ?>
-            <input type="text" name="data[end]" value="<?= $profile['end'] ? date("d.m.Y H:i", $profile['end']) : "" ?>" class="datepicker">
+            <input type="text"
+                   name="data[end]"
+                   value="<?= $profile['end'] ? date("d.m.Y H:i", $profile['end']) : "" ?>"
+                   data-datetime-picker='{">=":"#evasys_eval_begin"}'>
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("end") ?>
@@ -39,12 +46,19 @@
         <? if (is_a($profile, "EvasysGlobalProfile")) : ?>
             <label>
                 <?= _("Beginn Bearbeitungszeitraum der Admins") ?>
-                <input type="text" name="data[adminedit_begin]" value="<?= $profile['adminedit_begin'] ? date("d.m.Y H:i", $profile['adminedit_begin']) : "" ?>" class="datepicker">
+                <input type="text"
+                       name="data[adminedit_begin]"
+                       value="<?= $profile['adminedit_begin'] ? date("d.m.Y H:i", $profile['adminedit_begin']) : "" ?>"
+                       data-datetime-picker
+                       id="evasys_admin_begin">
             </label>
 
             <label>
                 <?= _("Ende Bearbeitungszeitraum der Admins") ?>
-                <input type="text" name="data[adminedit_end]" value="<?= $profile['adminedit_end'] ? date("d.m.Y H:i", $profile['adminedit_end']) : "" ?>" class="datepicker">
+                <input type="text"
+                       name="data[adminedit_end]"
+                       value="<?= $profile['adminedit_end'] ? date("d.m.Y H:i", $profile['adminedit_end']) : "" ?>"
+                       data-datetime-picker='{">=":"#evasys_admin_begin"}'>
             </label>
         <? endif ?>
 
@@ -259,7 +273,11 @@
 
         <label>
             <?= _("Beginn der Antragsfrist") ?>
-            <input type="text" name="data[antrag_begin]" value="<?= $profile['antrag_begin'] ? date("d.m.Y H:i", $profile['antrag_begin']) : "" ?>" class="datepicker">
+            <input type="text"
+                   name="data[antrag_begin]"
+                   value="<?= $profile['antrag_begin'] ? date("d.m.Y H:i", $profile['antrag_begin']) : "" ?>"
+                   data-datetime-picker
+                   id="evasys_free_begin">
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("antrag_begin") ?>
@@ -269,7 +287,10 @@
 
         <label>
             <?= _("Ende der Antragsfrist") ?>
-            <input type="text" name="data[antrag_end]" value="<?= $profile['antrag_end'] ? date("d.m.Y H:i", $profile['antrag_end']) : "" ?>" class="datepicker">
+            <input type="text"
+                   name="data[antrag_end]"
+                   value="<?= $profile['antrag_end'] ? date("d.m.Y H:i", $profile['antrag_end']) : "" ?>"
+                   data-datetime-picker='{">=":"#evasys_free_begin"}'>
         </label>
         <? if ($this->controller->profile_type === "institute") : ?>
             <? $default_value = $profile->getParentsDefaultValue("antrag_end") ?>
@@ -291,7 +312,6 @@
 
     <script>
         jQuery(function () {
-            jQuery("input.datepicker").datetimepicker();
             jQuery(".forms_for_types .select2").select2({
                 "closeOnSelect": false,
                 "width": 'resolve'
