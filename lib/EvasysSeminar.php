@@ -174,6 +174,7 @@ class EvasysSeminar extends SimpleORMap
                     );
                     if (!$profile->isNew()) {
                         $profile['transferred'] = 0;
+                        $profile['chdate'] = time();
                         $profile->store();
                     }
                 }
@@ -220,8 +221,10 @@ class EvasysSeminar extends SimpleORMap
                         Course::find($course_id)->name
                     ), array($status->StatusMessage));
                     $profile['transferred'] = 0;
+                    $profile['chdate'] = time();
                 } else {
                     $profile['transferred'] = 1;
+                    $profile['chdate'] = time();
                 }
                 if (!$profile->isNew()) {
                     foreach ($status->SurveyStatusList->SurveyStatusArray as $survey_status) {
@@ -235,7 +238,7 @@ class EvasysSeminar extends SimpleORMap
                     }
                     $profile['surveys']['form_id'] = $profile->getFinalFormId();
                 }
-                $success = $profile->store();
+                $profile->store();
             }
             return true;
         }
@@ -642,10 +645,13 @@ class EvasysSeminar extends SimpleORMap
                 && (time() - $_SESSION['EVASYS_SURVEY_PDF_LINK_EXPIRE'][$survey_id] < 60 * Config::get()->EVASYS_CACHE)) {
             return $_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id];
         }
+
+        $user_language = getUserLanguage($GLOBALS['user']->id);
+
         $soap = EvasysSoap::get();
         $link = $soap->__soapCall("GetPDFReport", array(
             'nSurveyId' => $survey_id,
-            //'nLanguageID' => 1 //SystemLanguage 1= 2=
+            'nLanguageID' => 16 //$user_language === "en_GB" ? 2 : 1 //SystemLanguage 1= 2=
         ));
         $_SESSION['EVASYS_SURVEY_PDF_LINK_EXPIRE'][$survey_id] = time();
         if (is_a($link, "SoapFault")) {
