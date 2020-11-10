@@ -85,7 +85,7 @@ Sidebar::Get()->setImage("sidebar/evaluation-sidebar.png");
 if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
     $actions = new ActionsWidget();
     $actions->addLink(
-        _("QR-Code für Studierende anzeigen"),
+        dgettext("evasys", "QR-Code für Studierende anzeigen"),
         PluginEngine::getLink($plugin, array(), "show#tab-".$GLOBALS['user']->id),
         Icon::create("code-qr", "clickable"),
         array('onClick' => "STUDIP.EvaSys.showQR(); return false;")
@@ -96,7 +96,7 @@ if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
         $publish = $evasys_seminar->publishingAllowed($GLOBALS['user']->id);
         $option = new OptionsWidget();
         $option->addCheckbox(
-            _("Veröffentlichung der Ergebnisse an Studenten erlauben."),
+            dgettext("evasys", "Veröffentlichung der Ergebnisse an Studenten erlauben."),
             $publish,
             PluginEngine::getURL($plugin, array('dozent_vote' => "y"), "evaluation/toggle_publishing"),
             PluginEngine::getURL($plugin, array('dozent_vote' => "n"), "evaluation/toggle_publishing")

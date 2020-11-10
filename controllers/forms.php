@@ -24,14 +24,14 @@ class FormsController extends PluginController
 
     public function edit_action($form_id) {
         Navigation::activateItem("/admin/evasys/forms");
-        PageLayout::setTitle(_("Fragebogen bearbeiten"));
+        PageLayout::setTitle(dgettext("evasys", "Fragebogen bearbeiten"));
         $this->form = EvasysForm::find($form_id);
         if (Request::isPost()) {
             $data = Request::getArray("data");
             $data['active'] || $data['active'] = 0;
             $this->form->setData($data);
             $this->form->store();
-            PageLayout::postSuccess(_("Fragebogen wurde gespeichert"));
+            PageLayout::postSuccess(dgettext("evasys", "Fragebogen wurde gespeichert"));
         }
     }
 
@@ -67,7 +67,7 @@ class FormsController extends PluginController
         } else {
             //
         }
-        PageLayout::setTitle(sprintf(_("Fragebögen sortieren für Typ %s"), $GLOBALS['SEM_TYPE'][$this->sem_type]['name']));
+        PageLayout::setTitle(sprintf(dgettext("evasys", "Fragebögen sortieren für Typ %s"), $GLOBALS['SEM_TYPE'][$this->sem_type]['name']));
         $this->forms = EvasysProfileSemtypeForm::findBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '0' ORDER BY position ASC", array(
             'profile_type' => $this->profile_type,
             'sem_type' => $this->sem_type,
@@ -79,7 +79,7 @@ class FormsController extends PluginController
                 $form['position'] = $positions[$form['form_id']];
                 $form->store();
             }
-            PageLayout::postSuccess(_("Sortierung wurde gespeichert."));
+            PageLayout::postSuccess(dgettext("evasys", "Sortierung wurde gespeichert."));
             $this->forms = EvasysProfileSemtypeForm::findBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '0' ORDER BY position ASC", array(
                 'profile_type' => $this->profile_type,
                 'sem_type' => $this->sem_type,

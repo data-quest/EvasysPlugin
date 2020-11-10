@@ -32,7 +32,7 @@ class LogsController extends PluginController
 
     public function details_action($id)
     {
-        PageLayout::setTitle(_("Logeintrag anzeigen"));
+        PageLayout::setTitle(dgettext("evasys", "Logeintrag anzeigen"));
         $this->log = EvasysSoapLog::find($id);
     }
 

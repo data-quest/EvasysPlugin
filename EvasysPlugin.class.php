@@ -38,6 +38,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function __construct()
     {
+        bindtextdomain("evasys", __DIR__."/locale");
         parent::__construct();
 
         //The user must be root
@@ -45,27 +46,27 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), Config::get()->EVASYS_ENABLE_PROFILES ? "globalprofile" : "forms/index"));
             Navigation::addItem("/admin/evasys", $nav);
             if (Config::get()->EVASYS_ENABLE_PROFILES) {
-                $nav = new Navigation(_("Standardwerte"), PluginEngine::getURL($this, array(), "globalprofile"));
+                $nav = new Navigation(dgettext("evasys", "Standardwerte"), PluginEngine::getURL($this, array(), "globalprofile"));
                 Navigation::addItem("/admin/evasys/globalprofile", clone $nav);
-                $nav = new Navigation(sprintf(_("Standardwerte der %s"), EvasysMatching::wording("Einrichtungen")), PluginEngine::getURL($this, array(), "instituteprofile"));
+                $nav = new Navigation(sprintf(dgettext("evasys", "Standardwerte der %s"), EvasysMatching::wording("Einrichtungen")), PluginEngine::getURL($this, array(), "instituteprofile"));
                 Navigation::addItem("/admin/evasys/instituteprofile", clone $nav);
-                $nav = new Navigation(_("Freie Felder"), PluginEngine::getURL($this, array(), "config/additionalfields"));
+                $nav = new Navigation(dgettext("evasys", "Freie Felder"), PluginEngine::getURL($this, array(), "config/additionalfields"));
                 Navigation::addItem("/admin/evasys/additionalfields", clone $nav);
-                $nav = new Navigation(_("Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
+                $nav = new Navigation(dgettext("evasys", "Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
                 Navigation::addItem("/admin/evasys/forms", clone $nav);
                 $nav = new Navigation(ucfirst(EvasysMatching::wording("freiwillige Evaluationen")), PluginEngine::getURL($this, array(), "individual/list"));
                 Navigation::addItem("/admin/evasys/individual", clone $nav);
-                $nav = new Navigation(_("Logs"), PluginEngine::getURL($this, array(), "logs/index"));
+                $nav = new Navigation(dgettext("evasys", "Logs"), PluginEngine::getURL($this, array(), "logs/index"));
                 Navigation::addItem("/admin/evasys/logs", clone $nav);
             }
-            $nav = new Navigation(_("Matching Veranstaltungstypen"), PluginEngine::getURL($this, array(), "matching/seminartypes"));
+            $nav = new Navigation(dgettext("evasys", "Matching Veranstaltungstypen"), PluginEngine::getURL($this, array(), "matching/seminartypes"));
             Navigation::addItem("/admin/evasys/matchingtypes", clone $nav);
-            $nav = new Navigation(_("Matching Einrichtungen"), PluginEngine::getURL($this, array(), "matching/institutes"));
+            $nav = new Navigation(dgettext("evasys", "Matching Einrichtungen"), PluginEngine::getURL($this, array(), "matching/institutes"));
             Navigation::addItem("/admin/evasys/matchinginstitutes", clone $nav);
-            $nav = new Navigation(_("Begrifflichkeiten"), PluginEngine::getURL($this, array(), "matching/wording"));
+            $nav = new Navigation(dgettext("evasys", "Begrifflichkeiten"), PluginEngine::getURL($this, array(), "matching/wording"));
             Navigation::addItem("/admin/evasys/wording", clone $nav);
         } elseif (Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS && Navigation::hasItem("/admin/institute")) {
-            $nav = new Navigation(_("Standard-Evaluationsprofil"), PluginEngine::getURL($this, array(), "instituteprofile"));
+            $nav = new Navigation(dgettext("evasys", "Standard-Evaluationsprofil"), PluginEngine::getURL($this, array(), "instituteprofile"));
             if (!self::isAdmin()) {
                 $nav->setEnabled(false);
             }
@@ -100,16 +101,16 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin")) {
             if (Navigation::hasItem("/course/admin/evaluation")) {
                 $nav = Navigation::getItem("/course/admin/evaluation");
-                $nav->setTitle(_("Eigene Evaluationen"));
+                $nav->setTitle(dgettext("evasys", "Eigene Evaluationen"));
             }
 
-            $nav = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
+            $nav = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
             $nav->setImage(Icon::create("checkbox-checked", "clickable"));
-            $nav->setDescription(_("Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."));
+            $nav->setDescription(dgettext("evasys", "Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."));
             Navigation::addItem("/course/admin/evasys", $nav);
         }
         if (Config::get()->EVASYS_ENABLE_PASSIVE_ACCOUNT && $GLOBALS['perm']->get_perm() === "dozent") {
-            $tab = new Navigation(_("EvaSys"), PluginEngine::getURL($this, array(), "passiveaccount/index"));
+            $tab = new Navigation(dgettext("evasys", "EvaSys"), PluginEngine::getURL($this, array(), "passiveaccount/index"));
             Navigation::addItem("/profile/evasyspassiveaccount", $tab);
         }
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
@@ -127,29 +128,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin"
                 || $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
-            $widget = new SelectWidget(_("Transfer-Filter"), PluginEngine::getURL($this, array(), "change_transferred_filter"), "transferstatus", "post");
+            $widget = new SelectWidget(dgettext("evasys", "Transfer-Filter"), PluginEngine::getURL($this, array(), "change_transferred_filter"), "transferstatus", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
             ));
             $widget->addElement(new SelectElement(
                 'applied',
-                _("Beantragt"),
+                dgettext("evasys", "Beantragt"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "applied"
             ));
             $widget->addElement(new SelectElement(
                 'notapplied',
-                _("Nicht beantragt"),
+                dgettext("evasys", "Nicht beantragt"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "notapplied"
             ));
             $widget->addElement(new SelectElement(
                 'nottransferred',
-                _("Beantragt und noch nicht übertragen"),
+                dgettext("evasys", "Beantragt und noch nicht übertragen"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred"
             ));
             $widget->addElement(new SelectElement(
                 'transferred',
-                _("Beantragt und nach EvaSys übertragen"),
+                dgettext("evasys", "Beantragt und nach EvaSys übetragen"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
@@ -205,9 +206,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
                 || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"))) {
             $widget = new OptionsWidget();
-            $widget->setTitle(_("Zeiten im Evaluationszeitraum"));
+            $widget->setTitle(dgettext("evasys","Zeiten im Evaluationszeitraum"));
             $widget->addCheckbox(
-                _("Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben"),
+                (dgettext("evasys","Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
                 PluginEngine::getURL($this, array(), "toggle_nonfittingdates_filter")
             );
@@ -274,9 +275,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"))) {
             $widget = new OptionsWidget();
-            $widget->setTitle(_("Ausreißer-Filter"));
+            $widget->setTitle(dgettext("evasys","Ausreißer-Filter"));
             $widget->addCheckbox(
-                _("Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen."),
+                (dgettext("evasys","Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen.")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"),
                 PluginEngine::getURL($this, array(), "toggle_recentevalcourses_filter")
             );
@@ -313,7 +314,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID"))) {
-            $widget = new SelectWidget(_("Fragebogen-Filter"), PluginEngine::getURL($this, array(), "change_form_filter"), "form_id", "post");
+            $widget = new SelectWidget(dgettext("evasys","Fragebogen-Filter"), PluginEngine::getURL($this, array(), "change_form_filter"), "form_id", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
@@ -375,19 +376,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID"))) {
-            $widget = new SelectWidget(_("Evaluationsart"), PluginEngine::getURL($this, array(), "change_paperonline_filter"), "paperonline", "post");
+            $widget = new SelectWidget(dgettext("evasys","Evaluationsart"), PluginEngine::getURL($this, array(), "change_paperonline_filter"), "paperonline", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
             ));
             $widget->addElement(new SelectElement(
                 "online",
-                _("Online-Evaluationen"),
+                (dgettext("evasys","Online-Evaluationen")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE") === "online"
             ));
             $widget->addElement(new SelectElement(
                 "paper",
-                _("Papier-Evaluationen"),
+                (dgettext("evasys","Papier-Evaluationen")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE") === "paper"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_paperonline");
@@ -439,19 +440,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE"))) {
-            $widget = new SelectWidget(_("Hauptphasen-Filter"), PluginEngine::getURL($this, array(), "change_mainphase_filter"), "mainphase", "post");
+            $widget = new SelectWidget(dgettext("evasys","Hauptphasen-Filter"), PluginEngine::getURL($this, array(), "change_mainphase_filter"), "mainphase", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
             ));
             $widget->addElement(new SelectElement(
                 "mainphase",
-                _("Veranstaltungen in der Hauptphase"),
+                (dgettext("evasys","Veranstaltungen in der Hauptphase")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "mainphase"
             ));
             $widget->addElement(new SelectElement(
                 "nonmainphase",
-                _("Veranstaltungen außerhalb der Hauptphase"),
+                (dgettext("evasys","Veranstaltungen außerhalb der Hauptphase")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "nonmainphase"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_mainphase");
@@ -505,28 +506,28 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
 
         if ($activated) {
-            $tab = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
             if ($profile && $profile['split']) {
                 $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
             }
-            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Lehrveranstaltungsevaluationen")));
+            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => dgettext("evasys", "Lehrveranstaltungsevaluationen")));
             if (!Config::get()->EVASYS_NO_RED_ICONS) {
                 if (Config::get()->EVASYS_RED_ICONS_STOP_UNTIL > time()) {
-                    $tab->setImage(Icon::create("evaluation", "new"), array('title' => _("Neue Evaluation")));
+                    $tab->setImage(Icon::create("evaluation", "new"), array('title' => dgettext("evasys", "Neue Evaluation")));
                 } else {
                     $number = 0;
                     foreach ($evasys_seminars as $evasys_seminar) {
                         $number += $evasys_seminar->getEvaluationStatus();
                     }
                     if ($number > 0) {
-                        $tab->setImage(Icon::create("evaluation", "new"), ['title' => sprintf(_("%s neue Evaluation"), $number)]);
+                        $tab->setImage(Icon::create("evaluation", "new"), ['title' => sprintf(dgettext("evasys", "%s neue Evaluation"), $number)]);
                     }
                 }
             }
             return $tab;
         } elseif($profile && $profile['applied'] && $GLOBALS['perm']->have_studip_perm("dozent", $course_id)) {
-            $tab = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".$course_id));
-            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => _("Evaluationen")));
+            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".$course_id));
+            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => dgettext("evasys", "Evaluationen")));
             return $tab;
         }
     }
@@ -554,7 +555,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             }
         }
         if ($activated) {
-            $tab = new Navigation(_("Lehrveranst.-Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
+            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
             if ($profile && $profile['split']) {
                 $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
             }
@@ -573,9 +574,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getDisplayName() {
         if (Navigation::hasItem("/course") && Navigation::getItem("/course")->isActive()) {
-            return Context::getHeaderLine().": "._("Evaluation");
+            return Context::getHeaderLine().": ".dgettext("evasys", "Evaluation");
         } else {
-            return _("EvaSys");
+            return dgettext("evasys", "EvaSys");
         }
     }
 
@@ -589,8 +590,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function useMultimode()
     {
         return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
-            ? _("Übertragen")
-            : _("Bearbeiten");
+            ? dgettext("evasys", "Übertragen")
+            : dgettext("evasys", "Bearbeiten");
     }
 
     public function getAdminCourseActionTemplate($course_id, $values = null, $semester = null)
@@ -695,15 +696,15 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function adminAvailableContents() {
         $array = array(
-            'form' => _("Fragebogen"),
-            'mode' => _("Evaluationsart"),
-            'timespan' => _("Eval-Zeitraum"),
-            'applied' => _("Evaluation beantragt"),
-            'lehrende_emails' => _('Eval: Beantragte Lehrende (Emails)'),
-            'ruecklauf' => _("Rückläufer")
+            'form' => dgettext("evasys", "Fragebogen"),
+            'mode' => dgettext("evasys", "Evaluationsart"),
+            'timespan' => dgettext("evasys", "Eval-Zeitraum"),
+            'applied' => dgettext("evasys", "Evaluation beantragt"),
+            'lehrende_emails' => dgettext("evasys", 'Eval: Beantragte Lehrende (Emails)'),
+            'ruecklauf' => dgettext("evasys", "Rückläufer")
         );
         if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES) {
-            $array['split'] = _("Teilevaluation");
+            $array['split'] = dgettext("evasys", "Teilevaluation");
         }
         return $array;
     }
@@ -737,9 +738,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     return "";
                 }
                 if (Config::get()->EVASYS_FORCE_ONLINE) {
-                    return _("Online");
+                    return dgettext("evasys", "Online");
                 }
-                return $profile->getFinalMode() === "online" ? _("Online") : _("Papier");
+                return $profile->getFinalMode() === "online" ? dgettext("evasys", "Online") : dgettext("evasys", "Papier");
             case "timespan":
                 if (!$profile || !$profile['applied']) {
                     return "";
@@ -796,7 +797,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     );
                     if (is_a($evasys_surveys_object, "SoapFault")) {
                         if ($evasys_surveys_object->getMessage() === "ERR_312") {
-                            PageLayout::postError(sprintf(_("Veranstaltung %s existiert nicht mehr in EvaSys"), htmlReady($course['name'])));
+                            PageLayout::postError(sprintf(dgettext("evasys", "Veranstaltung %s existiert nicht mehr in EvaSys"), htmlReady($course['name'])));
                         } else {
                             PageLayout::postError("SOAP-error: " . $evasys_surveys_object->getMessage());
                         }

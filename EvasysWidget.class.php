@@ -23,7 +23,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
         if (!Config::get()->EVASYS_ENABLE_PROFILES) {
             $tf = new Flexi_TemplateFactory(__DIR__."/views");
             $widget = $tf->open("widget/nothing");
-            $widget->title = _("Lehrevaluationen");
+            $widget->title = dgettext("evasys", "Lehrevaluationen");
             return $widget;
         } else {
 
@@ -127,7 +127,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
 
             $tf = new Flexi_TemplateFactory(__DIR__ . "/views");
             $widget = $tf->open("widget/widget");
-            $widget->title = _("Lehrveranstaltungsevaluationen");
+            $widget->title = dgettext("evasys", "Lehrveranstaltungsevaluationen");
             $widget->courses = $courses;
             //$widget->surveys = $surveys;
             $widget->plugin = $this;

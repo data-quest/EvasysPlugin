@@ -4,15 +4,15 @@
       class="default">
     <label>
         <input type="checkbox" name="data[active]" value="1" <?= $form['active'] ? " checked" : "" ?>>
-        <?= _("Aktiv in Stud.IP") ?>
+        <?= dgettext("evasys", "Aktiv in Stud.IP") ?>
     </label>
 
     <label>
-        <?= _("Info-Link") ?>
+        <?= dgettext("evasys", "Info-Link") ?>
         <input type="text" name="data[link]" value="<?= htmlReady($form['link']) ?>">
     </label>
 
     <div data-dialog-button>
-        <?= \Studip\Button::create(_("Speichern")) ?>
+        <?= \Studip\Button::create(dgettext("evasys", "Speichern")) ?>
     </div>
 </form>

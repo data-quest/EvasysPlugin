@@ -12,9 +12,9 @@
             <li>
                 <?= htmlReady($dozent['fullname']) ?>
                 <? if (!$teachers || in_array($dozent['user_id'], $teachers)) : ?>
-                    <?= Icon::create("check-circle", "info")->asImg(16, array('class' => "text-bottom", 'title' => _("Dieser Lehrende soll evaluiert werden."))) ?>
+                    <?= Icon::create("check-circle", "info")->asImg(16, array('class' => "text-bottom", 'title' => dgettext("evasys", "Dieser Lehrende soll evaluiert werden."))) ?>
                 <? else : ?>
-                    <?= Icon::create("radiobutton-unchecked", "info")->asImg(16, array('class' => "text-bottom", 'title' => _("Dieser Lehrende ist nicht für eine Evaluierung vorgesehen."))) ?>
+                    <?= Icon::create("radiobutton-unchecked", "info")->asImg(16, array('class' => "text-bottom", 'title' => dgettext("evasys", "Dieser Lehrende ist nicht für eine Evaluierung vorgesehen."))) ?>
                 <? endif ?>
             </li>
             <? endforeach ?>
@@ -26,7 +26,7 @@
         <?= date("d.m.Y H:i", $begin)." - ".date(floor($begin / 86400) === floor($end / 86400) ? "H.i" : "d.m.Y H:i", $end) ?>
     </td>
     <? if (!Config::get()->EVASYS_FORCE_ONLINE) : ?>
-        <td><?= $profile['mode'] === "paper" ? _("Papier") : _("Online")  ?></td>
+        <td><?= $profile['mode'] === "paper" ? dgettext("evasys", "Papier") : dgettext("evasys", "Online")  ?></td>
     <? endif ?>
     <td class="actions">
         <?= $this->render_partial("admin/_admin_checkbox", array(

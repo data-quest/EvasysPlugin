@@ -4,12 +4,12 @@
 
     <table class="default">
         <caption>
-            <?= $action === "seminartypes" ? _("Veranstaltungstypen") : ($action === "institutes" ? _("Einrichtungen") : _("Begriffe")) ?>
+            <?= $action === "seminartypes" ? dgettext("evasys", "Veranstaltungstypen") : ($action === "institutes" ? dgettext("evasys", "Einrichtungen") : dgettext("evasys", "Begriffe")) ?>
         </caption>
         <thead>
             <tr>
-                <th><?= _("Name") ?></th>
-                <th><?= _("Name in EvaSys") ?></th>
+                <th><?= dgettext("evasys", "Name") ?></th>
+                <th><?= dgettext("evasys", "Name in EvaSys") ?></th>
             </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@
         <tfoot>
             <tr>
                 <td colspan="100">
-                    <?= \Studip\Button::create(_("Speichern")) ?>
+                    <?= \Studip\Button::create(dgettext("evasys", "Speichern")) ?>
                 </td>
             </tr>
         </tfoot>

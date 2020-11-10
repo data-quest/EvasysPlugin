@@ -107,7 +107,7 @@ class EvasysCourseProfile extends SimpleORMap {
                 if ($user_id !== $GLOBALS['user']->id) {
                     $link = URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], array('cid' => $this['seminar_id']));
                     $message = sprintf(
-                            _("%s hat eine Lehrevaluation für die Veranstaltung %s beantragt. Sie können die Evaluationsdaten hier einsehen:"),
+                            dgettext("evasys", "%s hat eine Lehrevaluation für die Veranstaltung %s beantragt. Sie können die Evaluationsdaten hier einsehen:"),
                             get_fullname($GLOBALS['user']->id),
                             $this->course->name
                         ) . "\n\n" . $link;
@@ -120,7 +120,7 @@ class EvasysCourseProfile extends SimpleORMap {
                         "",
                         "",
                         sprintf(
-                            _("Lehrevaluation für Veranstaltung %s wurde von %s beantragt"),
+                            dgettext("evasys", "Lehrevaluation für Veranstaltung %s wurde von %s beantragt"),
                             $this->course->name,
                             get_fullname($user_id)
                         ),
@@ -178,7 +178,7 @@ class EvasysCourseProfile extends SimpleORMap {
                         $messaging = new messaging();
                         $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                         $message = sprintf(
-                            _("%s hat gerade die Lehrevaluationsdaten der Veranstaltung %s verändert. Die geänderten Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
+                            dgettext("evasys", "%s hat gerade die Lehrevaluationsdaten der Veranstaltung %s verändert. Die geänderten Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
                             get_fullname($GLOBALS['user']->id),
                             $this->course['name'],
                             URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], array('cid' => $profile['seminar_id']), true)
@@ -191,7 +191,7 @@ class EvasysCourseProfile extends SimpleORMap {
                             "",
                             "",
                             "",
-                            _("Bearbeitung der Evaluationsdaten"),
+                            dgettext("evasys", "Bearbeitung der Evaluationsdaten"),
                             true,
                             "normal",
                             array("Lehrevaluation")
