@@ -51,11 +51,11 @@ class EvasysSendMessagesJob extends CronJob
     public function execute($last_result, $parameters = array())
     {
         $statement = DBManager::get()->prepare("
-            SELECT cronjob_schedules.last_execution
-            FROM cronjob_schedules
-                LEFT JOIN cronjob_tasks USING (task_id)
-            WHERE cronjob_tasks.`class` = :self
-            ORDER BY cronjob_schedules.last_execution DESC
+            SELECT cronjobs_schedules.last_execution
+            FROM cronjobs_schedules
+                LEFT JOIN cronjobs_tasks USING (task_id)
+            WHERE cronjobs_tasks.`class` = :self
+            ORDER BY cronjobs_schedules.last_execution DESC
             LIMIT 1
         ");
         $statement->execute([
@@ -94,8 +94,13 @@ class EvasysSendMessagesJob extends CronJob
 
         $messaging = new messaging();
 
+        $sent_messages = 0;
+        $coures_count = 0;
+
         while ($course_data = $fetch_profiles->fetch(PDO::FETCH_ASSOC)) {
             $profile = EvasysCourseProfile::buildExisting($course_data);
+
+            $coures_count++;
 
             $fetch_members = DBManager::get()->prepare("
                 SELECT seminar_user.user_id
@@ -155,12 +160,12 @@ class EvasysSendMessagesJob extends CronJob
                         false
                     );
                     restoreLanguage();
+                    $sent_messages++;
                 }
             }
-
-
-
-
         }
+
+        echo "Courses started: ".$coures_count."\n";
+        echo "Mesages sent: ".$sent_messages;
     }
 }
