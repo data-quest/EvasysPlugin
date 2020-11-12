@@ -136,7 +136,7 @@
                 </label>
 
                 <? if (!$profile->hasDatesInEvalTimespan()) : ?>
-                    <?= MessageBox::error(dgettext("evasys", "Kein Veranstaltungstermin befindet sich in dem vorgesehenen Evaluationszeitraum!")) ?>
+                    <?= MessageBox::warning(dgettext("evasys", "Im angegebenen Zeitraum befinden sich keine Veranstaltungstermine. Das wäre aber zu empfehlen.")) ?>
                     <? if (!empty($profile->course->dates) && $editable) : ?>
                         <?= dgettext("evasys", "Anderen Termin auswählen") ?>
                         <?
