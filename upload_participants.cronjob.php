@@ -63,8 +63,7 @@ class EvasysUploadParticipantsJob extends CronJob
                 LEFT JOIN `evasys_institute_profiles` AS `evasys_fakultaet_profiles` ON (`evasys_fakultaet_profiles`.`institut_id` = `Institute`.`fakultaets_id`
                         AND `evasys_fakultaet_profiles`.`semester_id` = `evasys_course_profiles`.`semester_id`)
                 LEFT JOIN evasys_global_profiles ON (`evasys_global_profiles`.`semester_id` = `evasys_course_profiles`.`semester_id`)
-            WHERE `evasys_course_profiles`.`applied` = '1'
-                AND `evasys_course_profiles`.`transferred` = '1'
+            WHERE `evasys_course_profiles`.`transferred` = '1'
                 AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :start
                 AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :end
         ");
