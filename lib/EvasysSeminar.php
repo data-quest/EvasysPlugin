@@ -651,7 +651,7 @@ class EvasysSeminar extends SimpleORMap
         $soap = EvasysSoap::get();
         $link = $soap->__soapCall("GetPDFReport", array(
             'nSurveyId' => $survey_id,
-            'nLanguageID' => 16 //$user_language === "en_GB" ? 2 : 1 //SystemLanguage 1= 2=
+            //'nLanguageID' => 16 //$user_language === "en_GB" ? 2 : 1 //SystemLanguage 1= 2=
         ));
         $_SESSION['EVASYS_SURVEY_PDF_LINK_EXPIRE'][$survey_id] = time();
         if (is_a($link, "SoapFault")) {
