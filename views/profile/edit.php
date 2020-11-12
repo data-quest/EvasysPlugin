@@ -9,7 +9,7 @@
           <?= Request::isDialog() ? "data-dialog" : "" ?>
           class="default">
 
-        <? if ($editable && !EvasysPlugin::isAdmin($profile['seminar_id']) && !EvasysPlugin::isRoot()) : ?>
+        <? if ($editable && !Request::isDialog()) : ?>
             <? $antrag_info = $profile->getAntragInfo() ?>
             <? if (trim($antrag_info)) : ?>
             <fieldset style="padding-top: 10px;">
