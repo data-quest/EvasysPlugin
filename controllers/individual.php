@@ -93,6 +93,7 @@ class IndividualController extends PluginController
             "Teilnehmer",
             "Hinweise",
             "Fragebogen",
+            "Befragungsart",
             "Weitere Empfänger"
         );
         $data = array();
@@ -125,6 +126,7 @@ class IndividualController extends PluginController
                     $profile->getFinalTeilnehmer(),
                     $profile['hinweis'],
                     EvasysForm::find($profile->getFinalFormId())->name,
+                    $profile['mode'] === "paper" ? _("Papierbasiert") : _("Online"),
                     implode("|", $profile->getFinalResultsEmails())
                 );
             }
