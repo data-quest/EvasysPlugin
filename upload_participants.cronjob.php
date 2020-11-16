@@ -35,7 +35,14 @@ class EvasysUploadParticipantsJob extends CronJob
      */
     public static function getParameters()
     {
-        return array();
+        return [
+            'prevent_paper' => [
+                'type'        => 'boolean',
+                'default'     => "0",
+                'status'      => 'optional',
+                'description' => _('Wenn diese Option gewählt ist, werden keine papierbasierten Evaluationen mit übertragen.')
+            ]
+        ];
     }
 
     /**
@@ -53,7 +60,7 @@ class EvasysUploadParticipantsJob extends CronJob
     {
         $start = mktime(0, 0, 0, date("n"), date("j") + 1); // 0 Uhr des nächsten Tages
         $end = $start + 86400; // 0 Uhr des übernächsten Tages
-        $statement = DBManager::get()->prepare("
+        $sql = "
             SELECT `evasys_course_profiles`.`seminar_id`
             FROM `evasys_course_profiles`
                 LEFT JOIN seminare ON (`evasys_course_profiles`.`seminar_id` = `seminare`.`Seminar_id`)
@@ -66,7 +73,11 @@ class EvasysUploadParticipantsJob extends CronJob
             WHERE `evasys_course_profiles`.`transferred` = '1'
                 AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :start
                 AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :end
-        ");
+        ";
+        if ($parameters['prevent_paper']) {
+            $sql .= " AND `evasys_course_profiles`.`mode` = 'online'";
+        }
+        $statement = DBManager::get()->prepare($sql);
         $statement->execute(array(
             'start' => $start,
             'end' => $end
