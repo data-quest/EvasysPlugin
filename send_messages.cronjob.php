@@ -50,21 +50,13 @@ class EvasysSendMessagesJob extends CronJob
      */
     public function execute($last_result, $parameters = array())
     {
-        $statement = DBManager::get()->prepare("
-            SELECT cronjobs_schedules.last_execution
-            FROM cronjobs_schedules
-                LEFT JOIN cronjobs_tasks USING (task_id)
-            WHERE cronjobs_tasks.`class` = :self
-            ORDER BY cronjobs_schedules.last_execution DESC
-            LIMIT 1
-        ");
-        $statement->execute([
-            'self' => get_called_class()
-        ]);
-        $last_execution = $statement->fetch(PDO::FETCH_COLUMN, 0);
+        $last_execution = Config::get()->EVASYS_SEND_MESSAGES_LAST_EXECUTION;
+
         if (!$last_execution || $last_execution < time() - 86400) {
             $last_execution = time() - 86400;
         }
+
+        Config::get()->store("EVASYS_SEND_MESSAGES_LAST_EXECUTION", time());
 
         $fetch_profiles = DBManager::get()->prepare("
             SELECT `evasys_course_profiles`.*
