@@ -353,18 +353,42 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id
                     AND evasys_institute_profiles.semester_id = :evasys_semester_id"
             );
+            $filter->settings['query']['joins']['evasys_profiles_semtype_forms'] = array(
+                'join' => "LEFT JOIN",
+                'on' => "evasys_profiles_semtype_forms.profile_id = evasys_institute_profiles.institute_profile_id
+                    AND evasys_profiles_semtype_forms.profile_type = 'institute'
+                    AND evasys_profiles_semtype_forms.sem_type = seminare.status
+                    AND evasys_profiles_semtype_forms.`standard` = '1'"
+            );
             $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = array(
                 'join' => "LEFT JOIN",
                 'table' => "evasys_institute_profiles",
                 'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id
                     AND evasys_fakultaet_profiles.semester_id = :evasys_semester_id"
             );
+            $filter->settings['query']['joins']['evasys_profiles_semtype_forms_fakultaet'] = array(
+                'table' => "evasys_profiles_semtype_forms",
+                'join' => "LEFT JOIN",
+                'on' => "evasys_profiles_semtype_forms_fakultaet.profile_id = evasys_fakultaet_profiles.institute_profile_id
+                    AND evasys_profiles_semtype_forms_fakultaet.profile_type = 'institute'
+                    AND evasys_profiles_semtype_forms_fakultaet.sem_type = seminare.status
+                    AND evasys_profiles_semtype_forms_fakultaet.`standard` = '1'"
+            );
             $filter->settings['query']['joins']['evasys_global_profiles'] = array(
                 'join' => "LEFT JOIN",
                 'on' => "evasys_global_profiles.semester_id = :evasys_semester_id"
             );
+            $filter->settings['query']['joins']['evasys_profiles_semtype_forms_global'] = array(
+                'table' => "evasys_profiles_semtype_forms",
+                'join' => "LEFT JOIN",
+                'on' => "evasys_profiles_semtype_forms_global.profile_id = evasys_global_profiles.semester_id
+                    AND evasys_profiles_semtype_forms_global.profile_type = 'global'
+                    AND evasys_profiles_semtype_forms_global.sem_type = seminare.status
+                    AND evasys_profiles_semtype_forms_global.`standard` = '1'"
+            );
 
-            $filter->settings['query']['where']['evasys_form_filter'] = "IFNULL(evasys_course_profiles.form_id, IFNULL(evasys_institute_profiles.form_id, IFNULL(evasys_fakultaet_profiles.form_id, evasys_global_profiles.form_id))) = :evasys_form_id";
+
+            $filter->settings['query']['where']['evasys_form_filter'] = "IFNULL(evasys_course_profiles.form_id, IFNULL(evasys_profiles_semtype_forms.form_id, IFNULL(evasys_profiles_semtype_forms_fakultaet.form_id, IFNULL(evasys_profiles_semtype_forms_global.form_id, IFNULL(evasys_institute_profiles.form_id, IFNULL(evasys_fakultaet_profiles.form_id, evasys_global_profiles.form_id)))))) = :evasys_form_id";
             $filter->settings['parameter']['evasys_form_id'] = $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID");
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
         }
