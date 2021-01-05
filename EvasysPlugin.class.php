@@ -43,7 +43,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         //The user must be root
         if (self::isRoot()) {
-            $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), Config::get()->EVASYS_ENABLE_PROFILES ? "globalprofile" : "forms/index"));
+            $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), Config::get()->EVASYS_ENABLE_PROFILES ? "globalprofile" : "matching/seminartypes"));
             Navigation::addItem("/admin/evasys", $nav);
             if (Config::get()->EVASYS_ENABLE_PROFILES) {
                 $nav = new Navigation(dgettext("evasys", "Standardwerte"), PluginEngine::getURL($this, array(), "globalprofile"));
@@ -588,15 +588,18 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
     }
 
-    public function getNotificationObjects($course_id, $since, $user_id) {
+    public function getNotificationObjects($course_id, $since, $user_id)
+    {
         return null;
     }
 
-    public function getInfoTemplate($course_id) {
+    public function getInfoTemplate($course_id)
+    {
         return null;
     }
 
-    public function getDisplayName() {
+    public function getDisplayName()
+    {
         if (Navigation::hasItem("/course") && Navigation::getItem("/course")->isActive()) {
             return Context::getHeaderLine().": ".dgettext("evasys", "Evaluation");
         } else {
@@ -718,7 +721,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         parent::perform($unconsumed_path);
     }
 
-    public function adminAvailableContents() {
+    public function adminAvailableContents()
+    {
         $array = array(
             'form' => dgettext("evasys", "Fragebogen"),
             'mode' => dgettext("evasys", "Evaluationsart"),

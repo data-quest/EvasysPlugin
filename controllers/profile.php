@@ -50,7 +50,7 @@ class ProfileController extends PluginController {
             $this->profile['seminar_id'] = $course_id;
             $this->profile['semester_id'] = Semester::findCurrent()->id;
         }
-        if (Request::isPost() && $this->profile->isEditable()) {
+        if (Request::isPost() && $this->profile->isEditable() && Request::getArray("data") && count(Request::getArray("data"))) {
             $data = Request::getArray("data");
             $this->profile['applied'] = $data['applied'] ?: 0;
             if ($this->profile['applied'] && !EvasysPlugin::isAdmin($course_id) && !EvasysPlugin::isRoot()) {
