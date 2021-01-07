@@ -518,7 +518,7 @@ class EvasysSeminar extends SimpleORMap
                 'CourseUid' => $id,
                 'CourseName' => mb_substr($course['name'], 0, 199),
                 'CourseCode' => $id,
-                'CourseType' => EvasysMatching::semtypeName($course->status),
+                'CourseType' => mb_substr(EvasysMatching::semtypeName($course->status), 0, 49),
                 'CourseProgramOfStudy' => implode(' | ', $studienbereiche),
                 'CourseEnrollment' => 0, // ?
                 'CustomFieldsJSON' => json_encode($custom_fields),
