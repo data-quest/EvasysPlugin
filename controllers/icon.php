@@ -11,12 +11,12 @@ class IconController extends PluginController {
             if ($number > 0) break;
         }
         
-        $icon = Icon::create("evaluation", ($number > 0)?"new":"inactive")->asImagePath();
-        $fp = fopen($icon, 'rb');
-        header("Content-Type: svg/xml");
-        header("Content-Length: " . filesize($icon));
+        $icon_url = Icon::create("evaluation", ($number > 0)?"new":"inactive")->asImagePath();
+        $icon_path = $GLOBALS['STUDIP_BASE_PATH'] . '/public' . parse_url($icon_url, PHP_URL_PATH);
 
-        fpassthru($fp);
+        header("Content-Type: image/svg+xml");
+        readfile($icon_path);
+
         exit;
     }
 

@@ -327,7 +327,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     $tab->setImage(Icon::create("evaluation", "new"), array('title' => _("Neue Evaluation")));
                 } else {
 
-                    $tab->setImage(null, ['style' => 'background-image: ' . PluginEngine::getLink($this, array(), "icon/get/" . $course_id) ,'title' => _("Evaluationen")]);
+                    $icon_link = PluginEngine::getLink($this, array(), "icon/get/" . $course_id);
+                    $tab->setImage(
+                        Icon::create("evaluation", "inactive"),
+                        [
+                            'onload' => 'if(this.src != \'' . $icon_link .'\'){ this.src = \'' . $icon_link .'\';}',
+                            'title' => _("Evaluationen")
+                        ]);
 
                 }
             }
