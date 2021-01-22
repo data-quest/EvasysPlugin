@@ -122,24 +122,20 @@ class EvasysSendMessagesJob extends CronJob
                         'cid' => $profile['seminar_id']
                     ]);
 
-                    $message = Config::get()->EVASYS_REMINDER_MESSAGE;
+                    $message = (string) Config::get()->EVASYS_REMINDER_MESSAGE;
                     $message = str_ireplace(
                         ["{{url}}", "{{coursename}}"],
                         [$url, $course->name],
                         $message
                     );
 
-                    $subject = Config::get()->EVASYS_REMINDER_MESSAGE_SUBJECT;
+                    $subject = (string) Config::get()->EVASYS_REMINDER_MESSAGE_SUBJECT;
                     $subject = str_ireplace(
                         ["{{url}}", "{{coursename}}"],
                         [$url, $course->name],
                         $subject
                     );
 
-                    $subject = dgettext(
-                        "evasys",
-                        "Neue Evaluation: %s"
-                    );
                     $messaging->insert_message(
                         $message,
                         $user['username'],
