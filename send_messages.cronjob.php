@@ -116,27 +116,30 @@ class EvasysSendMessagesJob extends CronJob
                 if ($user) {
                     setTempLanguage($user['user_id']);
 
-                    $message = dgettext(
-                        "evasys",
-                        "Für die Veranstaltung %s ist eine Evaluation freigeschaltet worden. Sie können hier daran teilnehmen: %s"
-                    );
+
                     $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
-                    $message = sprintf(
-                        $message,
-                        $course->name,
-                        URLHelper::getURL("plugins.php/evasysplugin/evaluation/show", [
-                            'cid' => $profile['seminar_id']
-                        ])
+                    $url = URLHelper::getURL("plugins.php/evasysplugin/evaluation/show", [
+                        'cid' => $profile['seminar_id']
+                    ]);
+
+                    $message = Config::get()->EVASYS_REMINDER_MESSAGE;
+                    $message = str_ireplace(
+                        ["{{url}}", "{{coursename}}"],
+                        [$url, $course->name],
+                        $message
                     );
+
+                    $subject = Config::get()->EVASYS_REMINDER_MESSAGE_SUBJECT;
+                    $subject = str_ireplace(
+                        ["{{url}}", "{{coursename}}"],
+                        [$url, $course->name],
+                        $subject
+                    );
+
                     $subject = dgettext(
                         "evasys",
                         "Neue Evaluation: %s"
                     );
-                    $subject = sprintf(
-                        $subject,
-                        $course->name
-                    );
-                    URLHelper::setBaseURL($oldbase);
                     $messaging->insert_message(
                         $message,
                         $user['username'],
@@ -152,6 +155,7 @@ class EvasysSendMessagesJob extends CronJob
                         false
                     );
                     restoreLanguage();
+                    URLHelper::setBaseURL($oldbase);
                     $sent_messages++;
                 }
             }

@@ -52,6 +52,8 @@ class GlobalprofileController extends PluginController
         }
         $this->con = $this->profile_type."profile";
 
+        var_dump(Config::get()->EVASYS_REMINDER_MESSAGE);
+
         if ($this->profile) {
 
             $statement = DBManager::get()->prepare("

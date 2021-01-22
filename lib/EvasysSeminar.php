@@ -649,6 +649,7 @@ class EvasysSeminar extends SimpleORMap
         $user_language = getUserLanguage($GLOBALS['user']->id);
 
         $soap = EvasysSoap::get();
+        //GetFormTranslations pro form_id liefert eine SystemLanguage (SystemLanguageAbbreviation ist beispielsweise en_GB de_edu, en_edu)
         $link = $soap->__soapCall("GetPDFReport", array(
             'nSurveyId' => $survey_id,
             //'nLanguageID' => 16 //$user_language === "en_GB" ? 2 : 1 //SystemLanguage 1= 2=
