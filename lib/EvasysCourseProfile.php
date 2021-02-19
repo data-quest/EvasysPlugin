@@ -63,7 +63,7 @@ class EvasysCourseProfile extends SimpleORMap {
         $old_values = $this->content_db;
         $applied = !$old_values['applied'] && $this['applied'];
         $is_dozent = DBManager::get()->prepare("
-            SELECT 1 
+            SELECT 1
             FROM seminar_user
             WHERE seminar_user.Seminar_id = :seminar_id
                 AND user_id = :user_id
@@ -122,7 +122,7 @@ class EvasysCourseProfile extends SimpleORMap {
                         sprintf(
                             dgettext("evasys", "Lehrevaluation für Veranstaltung %s wurde von %s beantragt"),
                             $this->course->name,
-                            get_fullname($user_id)
+                            get_fullname($GLOBALS['user']->id)
                         ),
                         true,
                         "normal",
@@ -244,11 +244,11 @@ class EvasysCourseProfile extends SimpleORMap {
             ));
 
             $statement = DBManager::get()->prepare("
-                SELECT form_id 
+                SELECT form_id
                 FROM evasys_profiles_semtype_forms
-                WHERE profile_type = :profile_type 
-                    AND profile_id = :profile_id 
-                    AND sem_type = :sem_type 
+                WHERE profile_type = :profile_type
+                    AND profile_id = :profile_id
+                    AND sem_type = :sem_type
                     AND standard = '0'
             ");
             $statement->execute(array(
@@ -284,11 +284,11 @@ class EvasysCourseProfile extends SimpleORMap {
                 ));
 
                 $statement = DBManager::get()->prepare("
-                    SELECT form_id 
+                    SELECT form_id
                     FROM evasys_profiles_semtype_forms
-                    WHERE profile_type = :profile_type 
-                        AND profile_id = :profile_id 
-                        AND sem_type = :sem_type 
+                    WHERE profile_type = :profile_type
+                        AND profile_id = :profile_id
+                        AND sem_type = :sem_type
                         AND standard = '0'
                 ");
                 $statement->execute(array(
@@ -323,11 +323,11 @@ class EvasysCourseProfile extends SimpleORMap {
             ));
 
             $statement = DBManager::get()->prepare("
-                SELECT form_id 
+                SELECT form_id
                 FROM evasys_profiles_semtype_forms
-                WHERE profile_type = :profile_type 
-                    AND profile_id = :profile_id 
-                    AND sem_type = :sem_type 
+                WHERE profile_type = :profile_type
+                    AND profile_id = :profile_id
+                    AND sem_type = :sem_type
                     AND standard = '0'
             ");
             $statement->execute(array(
@@ -362,11 +362,11 @@ class EvasysCourseProfile extends SimpleORMap {
         $sem_type = $this->course->status;
         if ($inst_profile) {
             $statement = DBManager::get()->prepare("
-                SELECT form_id 
+                SELECT form_id
                 FROM evasys_profiles_semtype_forms
-                WHERE profile_type = :profile_type 
-                    AND profile_id = :profile_id 
-                    AND sem_type = :sem_type 
+                WHERE profile_type = :profile_type
+                    AND profile_id = :profile_id
+                    AND sem_type = :sem_type
                     AND standard = '0'
                 ORDER BY position ASC
             ");
@@ -385,11 +385,11 @@ class EvasysCourseProfile extends SimpleORMap {
             $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id, $this['semester_id']);
             if ($inst_profile) { //Do the same thing with this profile:
                 $statement = DBManager::get()->prepare("
-                    SELECT form_id 
+                    SELECT form_id
                     FROM evasys_profiles_semtype_forms
-                    WHERE profile_type = :profile_type 
-                        AND profile_id = :profile_id 
-                        AND sem_type = :sem_type 
+                    WHERE profile_type = :profile_type
+                        AND profile_id = :profile_id
+                        AND sem_type = :sem_type
                         AND standard = '0'
                     ORDER BY position ASC
                 ");
@@ -408,11 +408,11 @@ class EvasysCourseProfile extends SimpleORMap {
         if ($global_profile) {
 
             $statement = DBManager::get()->prepare("
-                SELECT form_id 
+                SELECT form_id
                 FROM evasys_profiles_semtype_forms
-                WHERE profile_type = :profile_type 
-                    AND profile_id = :profile_id 
-                    AND sem_type = :sem_type 
+                WHERE profile_type = :profile_type
+                    AND profile_id = :profile_id
+                    AND sem_type = :sem_type
                     AND standard = '0'
                 ORDER BY position ASC
             ");
@@ -428,9 +428,9 @@ class EvasysCourseProfile extends SimpleORMap {
         }
 
         $statement = DBManager::get()->prepare("
-            SELECT form_id 
+            SELECT form_id
             FROM evasys_forms
-            WHERE active = '1' 
+            WHERE active = '1'
             ORDER BY name ASC
         ");
         $statement->execute();
