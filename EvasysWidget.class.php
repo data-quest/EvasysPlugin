@@ -75,7 +75,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
 
                 if (!$_SESSION['EVASYS_MY_IDS']) {
                     //fetch user_id for dozent GetUser
-                    $evasys_user_object = $soap->__soapCall("GetUserIdsByParams", array(
+                    $evasys_user_object = $soap->soapCall("GetUserIdsByParams", array(
                         'Params' => array('Email' => $user['email'])
                     ));
                     if (is_a($evasys_user_object, "SoapFault")) {
@@ -89,7 +89,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
                     $ids = $_SESSION['EVASYS_MY_IDS'];
                 }
 
-                $evasys_surveys_object = $soap->__soapCall("GetSurveyIDsByParams", array(
+                $evasys_surveys_object = $soap->soapCall("GetSurveyIDsByParams", array(
                     'Params' => array(
                         'Instructors' => array("Strings" => $ids),
                         'Name' => "%",
