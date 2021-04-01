@@ -92,4 +92,31 @@ class FormsController extends PluginController
             'profile_id' => $this->profile_id
         ));
     }
+
+    public function fetch_forms_languages_action()
+    {
+        $forms = EvasysForm::findBySQL("`active` = '1'");
+        foreach ($forms as $form) {
+            $soap = EvasysSoap::get();
+
+            $forms = $soap->__soapCall("GetFormTranslations", array(
+                'Params' => array(
+                    'FormId' => $form->getId()
+                )
+            ));
+            if (is_a($forms, "SoapFault")) {
+                if ($forms->getMessage() === "ERR_225") {
+                    //gibt keine Übersetzungen
+                    echo "gibt nix";
+                } else {
+                    echo "hö?";
+                }
+            } else {
+                var_dump($forms); die();
+            }
+
+
+        }
+        die();
+    }
 }

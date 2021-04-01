@@ -46,3 +46,12 @@
     </table>
 
 </form>
+
+<?
+$actions = new ActionsWidget();
+$actions->addLink(
+    _("Sprachinformationen abholen"),
+    PluginEngine::getURL($plugin, [], "forms/fetch_forms_languages"),
+    Icon::create("wizard", "clickable")
+);
+Sidebar::Get()->addWidget($actions);

@@ -13,7 +13,7 @@ class EvasysSoapLog extends SimpleORMap
 
     public function cbCleanUp()
     {
-        if (mt_rand(1,00) < 5) {
+        if (mt_rand(1, 100) < 5) {
              DbManager::get()->exec("DELETE FROM evasys_soap_logs WHERE mkdate < UNIX_TIMESTAMP() - 86400 * 10");
         }
     }

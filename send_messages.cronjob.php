@@ -53,6 +53,7 @@ class EvasysSendMessagesJob extends CronJob
         $last_execution = Config::get()->EVASYS_SEND_MESSAGES_LAST_EXECUTION;
 
         if (!$last_execution || $last_execution < time() - 86400) {
+            //if we do this for the first time, we use the last 24 hours:
             $last_execution = time() - 86400;
         }
 
@@ -72,6 +73,7 @@ class EvasysSendMessagesJob extends CronJob
                 AND `evasys_course_profiles`.`transferred` = '1'
                 AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :now
                 AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :last_execution
+                AND IFNULL(`evasys_course_profiles`.`mode`, IFNULL(evasys_institute_profiles.`mode`, IFNULL(evasys_fakultaet_profiles.`mode`, evasys_global_profiles.`mode`))) = 'online'
             GROUP BY `evasys_course_profiles`.`seminar_id`
         ");
         $fetch_profiles->execute([
