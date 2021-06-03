@@ -160,6 +160,6 @@ class EvasysSendMessagesJob extends CronJob
         }
 
         echo "Courses started: ".$coures_count."\n";
-        echo "Mesages sent: ".$sent_messages;
+        echo "Messages sent: ".$sent_messages;
     }
 }

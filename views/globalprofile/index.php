@@ -179,6 +179,35 @@
                   class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
         <? endif ?>
 
+        <label>
+            <?= dgettext("evasys","Berichte per Mail von EvaSys verschicken") ?>
+            <select name="data[send_report]">
+                <? if ($this->controller->profile_type === "institute") : ?>
+                    <option value=""></option>
+                <? endif ?>
+                <option value="yes"<?= $profile['send_report'] == "yes" ? " selected" : "" ?>><?= dgettext("evasys","Ja") ?></option>
+                <option value="no"<?= $profile['send_report'] == "no" ? " selected" : "" ?>><?= dgettext("evasys","Nein") ?></option>
+            </select>
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("send_report") ?>
+            <span title="<?= dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
+        <? endif ?>
+
+        <label>
+            <?= dgettext("evasys","Berichte (und Ende) der Befragung um x Sekunden verzögern") ?>
+            <input type="number"
+                   min="0"
+                   name="data[send_report_delay]"
+                   value="<?= htmlReady($profile['send_report_delay']) ?>">
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("send_report_delay") ?>
+            <span title="<?= dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
+        <? endif ?>
+
     </fieldset>
 
     <fieldset class="forms_for_types">

@@ -129,6 +129,8 @@ class GlobalprofileController extends PluginController
             $data['antrag_begin'] = $data['antrag_begin'] ? strtotime($data['antrag_begin']) : null;
             $data['antrag_end'] = $data['antrag_end'] ? strtotime($data['antrag_end']) : null;
             $data['antrag_info'] = $data['antrag_info'] ?: null;
+            $data['send_report'] = $data['send_report'] ?: null;
+            $data['send_report_delay'] = $data['send_report_delay'] ?: null;
             $data['user_id'] = $GLOBALS['user']->id;
             if ($this->profile_type === "institute") {
                 if ($this->profile->global_profile['extended_report_offset'] == $data['extended_report_offset']) {
