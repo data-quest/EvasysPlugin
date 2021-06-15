@@ -62,10 +62,9 @@ class EvasysSeminar extends SimpleORMap
         }
         $_SESSION['EVASYS_SEMINARS_STATUS'] = array();
         $soap = EvasysSoap::get();
-        $old_default_socket_timeout = ini_get("default_socket_timeout");
         $start_time = microtime(true);
-        ini_set("default_socket_timeout", 10);
-        $evasys_sem_object = $soap->__soapCall("GetEvaluationSummaryByParticipant", array($user['email']));
+        // soapCall with socket timeout of 10
+        $evasys_sem_object = $soap->soapCall("GetEvaluationSummaryByParticipant", array($user['email']), null, null, null, 10);
         $end_time = microtime(true);
         if (is_a($evasys_sem_object, "SoapFault")) {
             if ($end_time - $start_time >= 10) {
@@ -116,7 +115,6 @@ class EvasysSeminar extends SimpleORMap
                 }
             }
         }
-        ini_set("default_socket_timeout", $old_default_socket_timeout);
         $_SESSION['EVASYS_STATUS_EXPIRE'] = time();
         $new = 0;
         foreach ($seminar_ids as $seminar_id) {
@@ -155,7 +153,7 @@ class EvasysSeminar extends SimpleORMap
                         }
                     }
                     //try to delete a course-evaluation if we have a split course
-                    $soap->__soapCall("DeleteCourse", array(
+                    $soap->soapCall("DeleteCourse", array(
                         'CourseId' => $seminar->getExportedId(),
                         'IdType' => "PUBLIC"
                     ));
@@ -164,7 +162,7 @@ class EvasysSeminar extends SimpleORMap
             } elseif($part[0] === "delete") {
                 //we need to delete the course from evasys
                 foreach ($part[1] as $seminar_id) {
-                    $soap->__soapCall("DeleteCourse", array(
+                    $soap->soapCall("DeleteCourse", array(
                         'CourseId' => $seminar_id,
                         'IdType' => "PUBLIC"
                     ));
@@ -188,7 +186,7 @@ class EvasysSeminar extends SimpleORMap
             array('CourseCreators' => $courses),
             true
         );
-        $evasys_sem_object = $soap->__soapCall("InsertCourses", $sessionlist);
+        $evasys_sem_object = $soap->soapCall("InsertCourses", $sessionlist);
         if (is_a($evasys_sem_object, "SoapFault")) {
             if (method_exists($evasys_sem_object, "getMessage")) {
                 if ($evasys_sem_object->getMessage() == "Not Found") {
@@ -385,7 +383,7 @@ class EvasysSeminar extends SimpleORMap
                                 : false;
                             if ($survey_id) {
                                 $soap = EvasysSoap::get();
-                                $soap->__soapCall("DeleteSurvey", array(
+                                $soap->soapCall("DeleteSurvey", array(
                                     'SurveyId' => (int) $survey_id
                                 ));
                             }
@@ -580,7 +578,7 @@ class EvasysSeminar extends SimpleORMap
         $user = new User($user_id);
 
 
-        $surveys = $soap->__soapCall("GetPswdsByParticipant", array(
+        $surveys = $soap->soapCall("GetPswdsByParticipant", array(
             'UserMailAddress' => $user->email,
             'CourseCode' => (strlen($this['Seminar_id']) > 32) ? $this['Seminar_id'] : $this->getExportedId()
         ));
@@ -616,7 +614,7 @@ class EvasysSeminar extends SimpleORMap
         }
 
         $soap = EvasysSoap::get();
-        $course = $soap->__soapCall("GetCourse", array(
+        $course = $soap->soapCall("GetCourse", array(
             'CourseId' => (strlen($id) > 32) ? $id : $this->getExportedId(),
             'IdType' => "EXTERNAL", //the CourseUid from the export
             'IncludeSurveys' => 1
@@ -651,7 +649,7 @@ class EvasysSeminar extends SimpleORMap
 
         $soap = EvasysSoap::get();
         //GetFormTranslations pro form_id liefert eine SystemLanguage (SystemLanguageAbbreviation ist beispielsweise en_GB de_edu, en_edu)
-        $link = $soap->__soapCall("GetPDFReport", array(
+        $link = $soap->soapCall("GetPDFReport", array(
             'nSurveyId' => $survey_id,
             //'nLanguageID' => 16 //$user_language === "en_GB" ? 2 : 1 //SystemLanguage 1= 2=
         ));

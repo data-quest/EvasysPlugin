@@ -816,7 +816,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $soap = EvasysSoap::get();
 
                 foreach (array_keys($active_seminar_ids) as $course_code) {
-                    $evasys_surveys_object = $soap->__soapCall("GetCourse", array(
+                    $evasys_surveys_object = $soap->soapCall("GetCourse", array(
                             'CourseId' => $course_code,
                             'IdType' => "PUBLIC",
                             'IncludeSurveys' => true,
@@ -923,7 +923,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
         foreach ($seminar_ids as $seminar_id) {
             $soap = EvasysSoap::get();
-            $soap->__soapCall("DeleteCourse", array(
+            $soap->soapCall("DeleteCourse", array(
                 'CourseId' => $seminar_id,
                 'IdType' => "PUBLIC"
             ));

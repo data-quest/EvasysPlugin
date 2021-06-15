@@ -31,7 +31,7 @@ class EvasysForm extends SimpleORMap
         }
         $soap = EvasysSoap::get();
 
-        $forms = $soap->__soapCall("GetFormsInfoByParams", array(
+        $forms = $soap->soapCall("GetFormsInfoByParams", array(
             'Params' => array(
                 'Users' => array("1"), //1 is for admin
                 'IncludeDeactivatedForms' => false,
