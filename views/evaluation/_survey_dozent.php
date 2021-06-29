@@ -71,10 +71,6 @@
             </table>
         <? endforeach ?>
 
-        <? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
-            <?= dgettext("evasys", "Zum Administrieren dieser Evaluation melden Sie sich bitte in EvaSys an oder wenden Sie sich an Ihren Administrator.") ?>
-        <? endif ?>
-
     </div>
 <? endif ?>
 
