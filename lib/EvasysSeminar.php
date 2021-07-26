@@ -64,7 +64,15 @@ class EvasysSeminar extends SimpleORMap
         $soap = EvasysSoap::get();
         $start_time = microtime(true);
         // soapCall with socket timeout of 10
-        $evasys_sem_object = $soap->soapCall("GetEvaluationSummaryByParticipant", array($user['email']), null, null, null, 10);
+        $output_headers = null;
+        $evasys_sem_object = $soap->soapCall(
+            "GetEvaluationSummaryByParticipant",
+            array($user['email']),
+            null,
+            null,
+            $output_headers,
+            10
+        );
         $end_time = microtime(true);
         if (is_a($evasys_sem_object, "SoapFault")) {
             if ($end_time - $start_time >= 10) {
