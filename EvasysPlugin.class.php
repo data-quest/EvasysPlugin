@@ -122,6 +122,11 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         NotificationCenter::addObserver($this, "removeEvasysCourse", "CourseDidDelete");
     }
 
+    public function isActivatableForContext(Range $context)
+    {
+        return $context->getRangeType() === 'course';
+    }
+
     //Transferred Filter:
 
     public function addTransferredFilterToSidebar()
