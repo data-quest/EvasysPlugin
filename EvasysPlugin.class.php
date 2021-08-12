@@ -98,7 +98,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             NotificationCenter::addObserver($this, "addPaperOnlineFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addMainphaseFilterToSidebar", "SidebarWillRender");
         }
-        if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin")) {
+        if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin") && Context::isCourse()) {
             if (Navigation::hasItem("/course/admin/evaluation")) {
                 $nav = Navigation::getItem("/course/admin/evaluation");
                 $nav->setTitle(dgettext("evasys", "Eigene Evaluationen"));
