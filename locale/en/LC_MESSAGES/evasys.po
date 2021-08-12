@@ -643,10 +643,6 @@ msgstr "Analysis of Evaluation"
 msgid "Ergebnisse als PDF"
 msgstr "Results as PDF"
 
-#: ../views/evaluation/_survey_dozent.php:75
-msgid "Zum Administrieren dieser Evaluation melden Sie sich bitte in EvaSys an oder wenden Sie sich an Ihren Administrator."
-msgstr "To administer this evaluation please log in to EvaSys or contact your administrator."
-
 #: ../views/evaluation/show.php:60 ../views/evaluation/split.php:88
 msgid "QR-Code für Studierende anzeigen"
 msgstr "Display QR-code for studens"

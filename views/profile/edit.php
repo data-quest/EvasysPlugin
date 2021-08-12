@@ -66,7 +66,9 @@
                                    <?= $profile->isEditable() ? "" : "disabled" ?>
                                    value="<?= htmlReady($teacher['user_id']) ?>"
                                    <?= count($teachers) === 1 || (!$profile['teachers'] && ($number == 0 || !Config::get()->EVASYS_SELECT_FIRST_TEACHER)) || ($profile['teachers'] && in_array($teacher['user_id'], $profile['teachers']->getArrayCopy())) ? " checked" : "" ?>>
-                            <span class="note">(<?= dgettext("evasys", "Wird auf dem Fragebogen genannt.") ?>)</span>
+                            <? if (!Config::get()->EVASYS_LEAVE_OUT_MENTIONING) : ?>
+                                <span class="note">(<?= dgettext("evasys", "Wird auf dem Fragebogen genannt.") ?>)</span>
+                            <? endif ?>
                         <? if ($editable && count($teachers) > 1) : ?>
                         </label>
                         <? endif ?>
@@ -338,7 +340,7 @@
             <?= MessageBox::info(sprintf(dgettext("evasys", "Letzte Bearbeitung von %s am %s Uhr"), ($last_author ? $last_author->getFullName() : ($profile['user_id'] ?: dgettext("evasys", "unbekannt"))), date("d.m.Y H:i", $profile['chdate'])) ) ?>
 
             <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id']))) : ?>
-                <?= MessageBox::info(sprintf(dgettext("evasys", "Diese Veranstaltung ist eine %s."), EvasysMatching::wording("freiwillige Evaluation"))) ?>
+                <?= MessageBox::info(sprintf(dgettext("evasys", "Evaluationsart: %s"), EvasysMatching::wording("freiwillige Evaluation"))) ?>
             <? endif ?>
 
             <? if ($profile['transferred']) : ?>

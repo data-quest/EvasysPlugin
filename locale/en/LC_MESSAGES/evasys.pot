@@ -652,12 +652,6 @@ msgstr ""
 msgid "Ergebnisse als PDF"
 msgstr ""
 
-#: ../views/evaluation/_survey_dozent.php:75
-msgid ""
-"Zum Administrieren dieser Evaluation melden Sie sich bitte in EvaSys an oder "
-"wenden Sie sich an Ihren Administrator."
-msgstr ""
-
 #: ../views/evaluation/show.php:60 ../views/evaluation/split.php:88
 msgid "QR-Code für Studierende anzeigen"
 msgstr ""
