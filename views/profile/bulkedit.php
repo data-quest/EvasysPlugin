@@ -68,7 +68,10 @@
         <tr>
             <td>
                 <label>
-                    <input type="checkbox" name="change[]" value="begin" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                    <input type="checkbox"
+                           name="change[]"
+                           value="begin"
+                           onChange="jQuery(this).closest('tr').toggleClass('active');">
                     <?= dgettext("evasys", "Evaluationsbeginn") ?>
                 </label>
             </td>
@@ -78,13 +81,16 @@
                        value="<?= is_numeric($values['begin']) ? date("d.m.Y H:i", $values['begin']) : ($values['begin'] ? dgettext("evasys", "Unterschiedliche Werte") : "") ?>"
                        class="datepicker"
                        data-datetime-picker='{">=":"today"}'
-                       onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                       onBlur="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
             </td>
         </tr>
         <tr>
             <td>
                 <label>
-                    <input type="checkbox" name="change[]" value="end" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                    <input type="checkbox"
+                           name="change[]"
+                           value="end"
+                           onChange="jQuery(this).closest('tr').toggleClass('active');">
                     <?= dgettext("evasys", "Evaluationsende") ?>
                 </label>
             </td>
@@ -94,7 +100,7 @@
                        value="<?= is_numeric($values['end']) ? date("d.m.Y H:i", $values['end']) : ($values['end'] ? dgettext("evasys", "Unterschiedliche Werte") : "") ?>"
                        class="datepicker"
                        data-datetime-picker='{">=":"today"}'
-                       onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                       onBlur="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
             </td>
         </tr>
         <tr>
