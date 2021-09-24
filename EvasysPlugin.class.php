@@ -72,11 +72,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             }
             Navigation::addItem("/admin/institute/instituteprofile", $nav);
         }
-        if (!Navigation::hasItem("/admin/evasys/individual") && Config::get()->EVASYS_ENABLE_PROFILES && RolePersistence::isAssignedRole($GLOBALS['user']->id, "Evasys-Admin")) {
-            if (!Navigation::hasItem("/admin/evasys")) {
-                $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), "individual/list"));
-                Navigation::addItem("/admin/evasys", $nav);
-            }
+        if (Navigation::hasItem("/admin/evasys") && !Navigation::hasItem("/admin/evasys/individual") && Config::get()->EVASYS_ENABLE_PROFILES && RolePersistence::isAssignedRole($GLOBALS['user']->id, "Evasys-Admin")) {
             $nav = new Navigation(ucfirst(EvasysMatching::wording("freiwillige Evaluationen")), PluginEngine::getURL($this, array(), "individual/list"));
             Navigation::addItem("/admin/evasys/individual", clone $nav);
         }
