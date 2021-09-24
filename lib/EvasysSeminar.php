@@ -230,6 +230,9 @@ class EvasysSeminar extends SimpleORMap
                     $profile['chdate'] = time();
                 } else {
                     $profile['transferred'] = 1;
+                    if (Config::get()->EVASYS_LOCK_AFTER_TRANSFER_FOR_ROLE) {
+                        $profile['locked'] = 1;
+                    }
                     $profile['chdate'] = time();
                 }
                 if (!$profile->isNew()) {

@@ -367,6 +367,10 @@
                     <?= \Studip\Button::create(dgettext("evasys", "In Pflichtevaluation umwandeln"), "unset_by_dozent", array('onclick' => "return window.confirm('".dgettext("evasys", "Wirklich in Pflichtevaluation umwandeln?")."');")) ?>
                 <? endif ?>
 
+                <? if (EvasysPlugin::isRoot() && $profile['locked']) : ?>
+                    <?= \Studip\Button::create(dgettext("evasys", "Entsperren"), 'unlock', array('onclick' => "return window.confirm('".dgettext("evasys", "Diese Veranstaltung wieder entsperren?")."');")) ?>
+                <? endif ?>
+
                 <?= \Studip\Button::create(dgettext("evasys", "Speichern")) ?>
             </div>
         <? else : ?>

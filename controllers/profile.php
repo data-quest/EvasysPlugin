@@ -92,6 +92,9 @@ class ProfileController extends PluginController {
             if (Request::submitted("unset_by_dozent") && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($course_id))) {
                 $this->profile['by_dozent'] = 0;
             }
+            if (Request::submitted('unlock') && EvasysPlugin::isRoot()) {
+                $this->profile['locked'] = 0;
+            }
 
             $this->profile->store();
 

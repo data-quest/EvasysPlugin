@@ -509,6 +509,10 @@ class EvasysCourseProfile extends SimpleORMap {
     {
         if (($GLOBALS['perm']->have_studip_perm("dozent", $this['seminar_id']) && !$GLOBALS['perm']->have_studip_perm("admin", $this['seminar_id']))
                 && !(EvasysPlugin::isAdmin($this['seminar_id']) || EvasysPlugin::isRoot())) {
+            //dozent
+            if (in_array(Config::get()->EVASYS_LOCK_AFTER_TRANSFER_FOR_ROLE, ['dozent', 'admin']) && $this['locked']) {
+                return false;
+            }
             if ($this['applied'] && !$this['by_dozent']) {
                 return false;
             }
@@ -521,8 +525,13 @@ class EvasysCourseProfile extends SimpleORMap {
                 return false;
             }
         } elseif(EvasysPlugin::isRoot()) {
+            //root:
             return true;
         } elseif(EvasysPlugin::isAdmin($this['seminar_id'])) {
+            //admin
+            if (Config::get()->EVASYS_LOCK_AFTER_TRANSFER_FOR_ROLE === 'admin' && $this['locked']) {
+                return false;
+            }
             $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
             return (
                 $global_profile['adminedit_begin']
