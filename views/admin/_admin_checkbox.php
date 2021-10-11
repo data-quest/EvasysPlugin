@@ -50,8 +50,18 @@
             <? endif ?>
 
             <? if ($profile->isEditable()) : ?>
-                <a href="<?= PluginEngine::getLink($plugin, array('cid' => $course_id, 'semester_id' => $profile['semester_id']), "profile/edit/".$course_id) ?>" data-dialog title="<?= dgettext("evasys", "Evaluation beantragen oder bearbeiten") ?>">
-                    <?= Icon::create(($profile && $profile['applied']) ? "check-circle" : "radiobutton-unchecked", "clickable")->asImg(20) ?>
+                <a href="<?= PluginEngine::getLink($plugin, array('cid' => $course_id, 'semester_id' => $profile['semester_id']), "profile/edit/".$course_id) ?>"
+                   data-dialog
+                   title="<?= dgettext("evasys", "Evaluation beantragen oder bearbeiten") ?>">
+                    <? if ($profile && $profile['applied']) : ?>
+                        <? if ($profile['transferred'] && $profile['transferdate'] < $profile['chdate']) : ?>
+                            <?= Icon::create("check-circle+new", "clickable")->asImg(20) ?>
+                        <? else : ?>
+                            <?= Icon::create("check-circle", "clickable")->asImg(20) ?>
+                        <? endif ?>
+                    <? else : ?>
+                        <?= Icon::create("radiobutton-unchecked", "clickable")->asImg(20) ?>
+                    <? endif ?>
                 </a>
             <? else : ?>
                 <?= Icon::create(($profile && $profile['applied']) ? "check-circle" : "radiobutton-unchecked", "inactive")->asImg(20) ?>

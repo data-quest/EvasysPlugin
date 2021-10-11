@@ -180,6 +180,7 @@ class EvasysSeminar extends SimpleORMap
                     );
                     if (!$profile->isNew()) {
                         $profile['transferred'] = 0;
+                        $profile['transferdate'] = time();
                         $profile['chdate'] = time();
                         $profile->store();
                     }
@@ -227,9 +228,11 @@ class EvasysSeminar extends SimpleORMap
                         Course::find($course_id)->name
                     ), array($status->StatusMessage));
                     $profile['transferred'] = 0;
+                    $profile['transferdate'] = time();
                     $profile['chdate'] = time();
                 } else {
                     $profile['transferred'] = 1;
+                    $profile['transferdate'] = time();
                     if (Config::get()->EVASYS_LOCK_AFTER_TRANSFER_FOR_ROLE) {
                         $profile['locked'] = 1;
                     }
@@ -505,7 +508,7 @@ class EvasysSeminar extends SimpleORMap
                     $ids[] = $id.$dozent_id;
                 }
                 return array("delete", $ids);
-            }  else {
+            } else {
                 return null;
             }
         } else {

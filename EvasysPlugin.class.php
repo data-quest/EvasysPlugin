@@ -88,6 +88,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             }
             PageLayout::addScript($this->getPluginURL() . "/assets/admin_area.js");
             NotificationCenter::addObserver($this, "addTransferredFilterToSidebar", "SidebarWillRender");
+            NotificationCenter::addObserver($this, "addTransferdateFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addRecentEvalCoursesFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addFormFilterToSidebar", "SidebarWillRender");
@@ -112,6 +113,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addRecentEvalCoursesFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addTransferredFilter", "AdminCourseFilterWillQuery");
+        NotificationCenter::addObserver($this, "addTransferdateFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addFormFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addPaperOnlineFilter", "AdminCourseFilterWillQuery");
         NotificationCenter::addObserver($this, "addMainphaseFilter", "AdminCourseFilterWillQuery");
@@ -197,6 +199,55 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $filter->settings['query']['where']['evasys_transferred']
                     = "(evasys_course_profiles.applied = '1' AND evasys_course_profiles.transferred = '0')";
             }
+        }
+    }
+
+    //add transferdate filter:
+
+    public function addTransferdateFilterToSidebar()
+    {
+        if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin"
+            || $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
+            $widget = new OptionsWidget(dgettext("evasys", "Transfer-Filter"));
+
+            $widget->addCheckbox(
+                dgettext("evasys", "Geänderte Veranstaltungen"),
+                (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERDATE"),
+                PluginEngine::getURL($this, array('transferdate' => 1), "change_transferdate_filter"),
+                PluginEngine::getURL($this, array('transferdate' => 0), "change_transferdate_filter")
+            );
+            Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferdate");
+        }
+    }
+
+    public function change_transferdate_filter_action()
+    {
+        $GLOBALS['user']->cfg->store("EVASYS_FILTER_TRANSFERDATE", Request::option("transferdate"));
+        header("Location: ".URLHelper::getURL("dispatch.php/admin/courses"));
+    }
+
+    public function addTransferdateFilter($event, $filter)
+    {
+        if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERDATE")) {
+            if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                    'join' => "LEFT JOIN",
+                    'on' => "
+                        seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                    "
+                );
+            } else {
+                $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                    'join' => "LEFT JOIN",
+                    'on' => "
+                        seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                            AND evasys_course_profiles.semester_id = :evasys_semester_id
+                    "
+                );
+                $filter->settings['parameter']['evasys_semester_id'] = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
+            }
+            $filter->settings['query']['where']['evasys_transferdate']
+                = "evasys_course_profiles.transferdate < evasys_course_profiles.chdate ";
         }
     }
 
