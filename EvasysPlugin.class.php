@@ -208,10 +208,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin"
             || $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
-            $widget = new OptionsWidget(dgettext("evasys", "Transfer-Filter"));
+            $widget = new OptionsWidget(dgettext("evasys", "Post-Transfer-Filter"));
 
             $widget->addCheckbox(
-                dgettext("evasys", "Geänderte Veranstaltungen"),
+                dgettext("evasys", "Nach Transfer veränderte Veranstaltungen"),
                 (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERDATE"),
                 PluginEngine::getURL($this, array('transferdate' => 1), "change_transferdate_filter"),
                 PluginEngine::getURL($this, array('transferdate' => 0), "change_transferdate_filter")

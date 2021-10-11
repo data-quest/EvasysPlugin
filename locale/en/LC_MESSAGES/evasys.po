@@ -1039,3 +1039,9 @@ msgstr "Partial evaluation"
 #, php-format
 msgid "Veranstaltung %s existiert nicht mehr in EvaSys"
 msgstr "Course %s does not exist in EvaSys anymore"
+
+msgid "Evaluationsdaten wurden nach Transfer noch einmal verändert."
+msgstr "The data of evaluation have been changed after the last transfer."
+
+msgid "Nach Transfer veränderte Veranstaltungen"
+msgstr "Courses that have been changed after the transfer to Evasys"

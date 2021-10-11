@@ -609,4 +609,9 @@ class EvasysCourseProfile extends SimpleORMap {
             return in_array($member['status'], array("autor", "user", "tutor"));
         }));
     }
+
+    public function isChangedAfterTransfer()
+    {
+        return $this['applied'] && $this['transferred'] && ($this['transferdate'] < $this['chdate']);
+    }
 }

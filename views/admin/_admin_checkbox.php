@@ -52,9 +52,9 @@
             <? if ($profile->isEditable()) : ?>
                 <a href="<?= PluginEngine::getLink($plugin, array('cid' => $course_id, 'semester_id' => $profile['semester_id']), "profile/edit/".$course_id) ?>"
                    data-dialog
-                   title="<?= dgettext("evasys", "Evaluation beantragen oder bearbeiten") ?>">
-                    <? if ($profile && $profile['applied']) : ?>
-                        <? if ($profile['transferred'] && $profile['transferdate'] < $profile['chdate']) : ?>
+                   title="<?= dgettext("evasys", "Evaluation beantragen oder bearbeiten").($profile->isChangedAfterTransfer() ? '. '.dgettext("evasys", "Evaluationsdaten wurden nach Transfer noch einmal verändert.") : '') ?>">
+                    <? if ($profile['applied']) : ?>
+                        <? if ($profile->isChangedAfterTransfer()) : ?>
                             <?= Icon::create("check-circle+new", "clickable")->asImg(20) ?>
                         <? else : ?>
                             <?= Icon::create("check-circle", "clickable")->asImg(20) ?>
