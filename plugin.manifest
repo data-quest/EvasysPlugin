@@ -2,6 +2,6 @@ pluginname=EvasysPlugin
 pluginclassname=EvasysPlugin
 pluginclassname=EvasysWidget
 origin=data-quest
-version=4.17.1
+version=4.17.2
 studipMinVersion=4.0
 studipMaxVersion=5.0.99

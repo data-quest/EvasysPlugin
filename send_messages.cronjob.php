@@ -126,15 +126,15 @@ class EvasysSendMessagesJob extends CronJob
 
                     $message = (string) Config::get()->EVASYS_REMINDER_MESSAGE;
                     $message = str_ireplace(
-                        ["{{url}}", "{{coursename}}"],
-                        [$url, $course->name],
+                        ["{{url}}", "{{coursename}}", "{{evaluationsende}}", "{{evaluationsbeginn}}"],
+                        [$url, $course->name, date("d.m.Y H:i", $profile->getFinalEnd()), date("d.m.Y H:i", $profile->getFinalBegin())],
                         $message
                     );
 
                     $subject = (string) Config::get()->EVASYS_REMINDER_MESSAGE_SUBJECT;
                     $subject = str_ireplace(
-                        ["{{url}}", "{{coursename}}"],
-                        [$url, $course->name],
+                        ["{{url}}", "{{coursename}}", "{{evaluationsende}}", "{{evaluationsbeginn}}"],
+                        [$url, $course->name, date("d.m.Y H:i", $profile->getFinalEnd()), date("d.m.Y H:i", $profile->getFinalBegin())],
                         $subject
                     );
 
