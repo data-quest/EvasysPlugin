@@ -75,7 +75,7 @@ class EvasysUploadParticipantsJob extends CronJob
                 AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :end
         ";
         if ($parameters['prevent_paper']) {
-            $sql .= " AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.`mode`, IFNULL(evasys_fakultaet_profiles.`mode`, evasys_global_profiles.`mode`))) = 'online'";
+            $sql .= " AND IFNULL(`evasys_course_profiles`.`mode`, IFNULL(evasys_institute_profiles.`mode`, IFNULL(evasys_fakultaet_profiles.`mode`, evasys_global_profiles.`mode`))) = 'online'";
         }
         $statement = DBManager::get()->prepare($sql);
         $statement->execute(array(
