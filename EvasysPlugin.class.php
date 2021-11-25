@@ -153,8 +153,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             ));
             $widget->addElement(new SelectElement(
                 'transferred',
-                dgettext("evasys", "Beantragt und nach EvaSys übetragen"),
+                dgettext("evasys", "Beantragt und nach EvaSys übertragen"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred"
+            ));
+            $widget->addElement(new SelectElement(
+                'changedtransferred',
+                dgettext("evasys", "Nach Übertragung verändert"),
+                $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "changedtransferred"
             ));
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
         }
@@ -198,6 +203,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "nottransferred") {
                 $filter->settings['query']['where']['evasys_transferred']
                     = "(evasys_course_profiles.applied = '1' AND evasys_course_profiles.transferred = '0')";
+            } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "changedtransferred") {
+                $filter->settings['query']['where']['evasys_transferred']
+                    = "(evasys_course_profiles.transferred = '1' AND evasys_course_profiles.transferdate < evasys_course_profiles.chdate)";
             }
         }
     }
