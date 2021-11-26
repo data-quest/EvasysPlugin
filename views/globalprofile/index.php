@@ -208,6 +208,20 @@
                   class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
         <? endif ?>
 
+        <label>
+            <?= dgettext("evasys","Profile sperren nach Transfer für Rolle") ?>
+            <select name="data[lockaftertransferforrole]">
+                <option value=""></option>
+                <option value="admin"<?= $profile['lockaftertransferforrole'] === 'admin' ? " selected" : "" ?>><?= dgettext("evasys","Admin") ?></option>
+                <option value="dozent"<?= $profile['lockaftertransferforrole'] === 'dozent' ? " selected" : "" ?>><?= dgettext("evasys","Lehrende") ?></option>
+            </select>
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("lockaftertransferforrole") ?>
+            <span title="<?= dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
+        <? endif ?>
+
     </fieldset>
 
     <fieldset class="forms_for_types">

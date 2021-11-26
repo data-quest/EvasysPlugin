@@ -131,6 +131,7 @@ class GlobalprofileController extends PluginController
             $data['antrag_info'] = $data['antrag_info'] ?: null;
             $data['send_report'] = $data['send_report'] ?: null;
             $data['send_report_delay'] = $data['send_report_delay'] ?: null;
+            $data['lockaftertransferforrole'] = $data['lockaftertransferforrole'] ?: null;
             $data['user_id'] = $GLOBALS['user']->id;
             if ($this->profile_type === "institute") {
                 if ($this->profile->global_profile['extended_report_offset'] == $data['extended_report_offset']) {

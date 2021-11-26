@@ -467,6 +467,11 @@ class EvasysCourseProfile extends SimpleORMap {
         return $this->getPresetAttribute("mode");
     }
 
+    public function lockAfterTransferForRole()
+    {
+        return $this->getPresetAttribute("lockaftertransferforrole");
+    }
+
     /**
      * Returns the given attribute finalized, which means that if the course-profile doesn't have this attribute set
      * we try to look at the institute-profile or the faculty-profile or the global profile and return the attribute
@@ -510,7 +515,7 @@ class EvasysCourseProfile extends SimpleORMap {
         if (($GLOBALS['perm']->have_studip_perm("dozent", $this['seminar_id']) && !$GLOBALS['perm']->have_studip_perm("admin", $this['seminar_id']))
                 && !(EvasysPlugin::isAdmin($this['seminar_id']) || EvasysPlugin::isRoot())) {
             //dozent
-            if (in_array(Config::get()->EVASYS_LOCK_AFTER_TRANSFER_FOR_ROLE, ['dozent', 'admin']) && $this['locked']) {
+            if ($this['locked'] && $this->lockAfterTransferForRole()) {
                 return false;
             }
             if ($this['applied'] && !$this['by_dozent']) {
@@ -529,7 +534,7 @@ class EvasysCourseProfile extends SimpleORMap {
             return true;
         } elseif(EvasysPlugin::isAdmin($this['seminar_id'])) {
             //admin
-            if (Config::get()->EVASYS_LOCK_AFTER_TRANSFER_FOR_ROLE === 'admin' && $this['locked']) {
+            if ($this['locked'] && $this->lockAfterTransferForRole() === "admin") {
                 return false;
             }
             $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
