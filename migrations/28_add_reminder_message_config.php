@@ -13,7 +13,7 @@ class AddReminderMessageConfig extends Migration
             'type' => "i18n",
             'range' => "global",
             'section' => "EVASYS_PLUGIN",
-            'description' => "Message text for reminder messages."
+            'description' => "Message text for reminder messages. Possible placeholders are: {{coursename}}, {{url}}, {{evaluationsbeginn}} and {{evaluationsende}}"
         ));
 
         $i18n_identifier = md5($field);
