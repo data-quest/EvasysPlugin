@@ -318,6 +318,7 @@
                 <? endif ?>
 
                 <? if ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') : ?>
+                    <? if ($editable) : ?>
                     <input type="hidden"
                            name="data[objection_to_publication]"
                            value="0">
@@ -328,13 +329,24 @@
                                value="1"<?= $profile['objection_to_publication'] ? ' checked' : '' ?>>
                         <?= dgettext("evasys", "Ich widerspreche der Weitergabe des Evaluationsberichts an meinen Fachbereich.") ?>
                     </label>
+                    <? elseif($profile['objection_to_publication']) : ?>
+                        <div>
+                            <input type="checkbox" readonly checked>
+                            <?= dgettext("evasys", "Ich widerspreche der Weitergabe des Evaluationsberichts an meinen Fachbereich.") ?>
+                        </div>
+                    <? endif ?>
 
+                    <? if ($editable) : ?>
                     <label>
                         <?= dgettext("evasys", "Begründung für den Widerspruch (notwendig)") ?>
                         <textarea id="objection_reason"
                                   <?= $profile['objection_to_publication'] ? 'required' : '' ?>
                                   name="data[objection_reason]"><?= htmlReady($profile['objection_reason']) ?></textarea>
                     </label>
+                    <? else : ?>
+                        <div><?= dgettext("evasys", "Begründung für den Widerspruch (notwendig)") ?></div>
+                        <div><?= htmlReady($profile['objection_reason']) ?></div>
+                    <? endif ?>
                 <? endif ?>
 
                 <? foreach (EvasysAdditionalField::findBySQL("`paper` = '0' ORDER BY position ASC, name ASC") as $field) : ?>
