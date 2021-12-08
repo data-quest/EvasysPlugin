@@ -794,6 +794,10 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES) {
             $array['split'] = dgettext("evasys", "Teilevaluation");
         }
+        if (EvasysGlobalProfile::findOneBySQL("`enable_objection_to_publication` = 'yes'")) {
+            $array['objection_to_publication'] = dgettext("evasys", "Widerspruch");
+            $array['objection_reason'] = dgettext("evasys", "Begründung des Widerspruchs");
+        }
         return $array;
     }
 
@@ -903,6 +907,14 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 }
 
                 return implode("\n", $results);
+            case 'objection_to_publication':
+                return $profile->getPresetAttribute('enable_objection_to_publication') === 'yes' && $profile['objection_to_publication']
+                    ? 1
+                    : 0;
+            case 'objection_reason':
+                return $profile->getPresetAttribute('enable_objection_to_publication') === 'yes' && $profile['objection_to_publication']
+                    ? $profile['objection_reason']
+                    : '';
         }
     }
 

@@ -493,7 +493,9 @@ class EvasysSeminar extends SimpleORMap
                         'CoursePeriodIdType' => "PERIODDATE",
                         'InstructorList' => $instructorlist,
                         'RoomName' => (string) $course->ort,
-                        'SubunitName' => (string) EvasysMatching::instituteName($course->institut_id),
+                        'SubunitName' => $profile['objection_to_publication'] && ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') && $profile->getPresetAttribute('objection_teilbereich')
+                            ? $profile->getPresetAttribute('objection_teilbereich')
+                            : (string) EvasysMatching::instituteName($course->institut_id),
                         'ParticipantList' => $participants,
                         'AnonymousParticipants' => true,
                         'SurveyCreatorList' => $surveys2,
@@ -544,7 +546,9 @@ class EvasysSeminar extends SimpleORMap
                 'CoursePeriodIdType' => "PERIODDATE",
                 'InstructorList' => $instructorlist,
                 'RoomName' => (string) $course->ort,
-                'SubunitName' => (string) EvasysMatching::instituteName($course->institut_id),
+                'SubunitName' => $profile['objection_to_publication'] && ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') && $profile->getPresetAttribute('objection_teilbereich')
+                    ? $profile->getPresetAttribute('objection_teilbereich')
+                    : (string) EvasysMatching::instituteName($course->institut_id),
                 'ParticipantList' => $participants,
                 'AnonymousParticipants' => true,
                 'SurveyCreatorList' => $surveys,

@@ -317,6 +317,26 @@
                     </div>
                 <? endif ?>
 
+                <? if ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') : ?>
+                    <input type="hidden"
+                           name="data[objection_to_publication]"
+                           value="0">
+                    <label>
+                        <input type="checkbox"
+                               name="data[objection_to_publication]"
+                               onchange="if ($(this).is(':checked')) { $('#objection_reason').attr('required', ''); } else { $('#objection_reason').removeAttr('required'); }"
+                               value="1"<?= $profile['objection_to_publication'] ? ' checked' : '' ?>>
+                        <?= dgettext("evasys", "Ich widerspreche der Weitergabe des Evaluationsberichts an meinen Fachbereich.") ?>
+                    </label>
+
+                    <label>
+                        <?= dgettext("evasys", "Begründung für den Widerspruch (notwendig)") ?>
+                        <textarea id="objection_reason"
+                                  <?= $profile['objection_to_publication'] ? 'required' : '' ?>
+                                  name="data[objection_reason]"><?= htmlReady($profile['objection_reason']) ?></textarea>
+                    </label>
+                <? endif ?>
+
                 <? foreach (EvasysAdditionalField::findBySQL("`paper` = '0' ORDER BY position ASC, name ASC") as $field) : ?>
                     <label>
                         <? $value = $field->valueFor("course", $profile->getId()) ?>

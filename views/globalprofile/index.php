@@ -222,6 +222,34 @@
                   class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
         <? endif ?>
 
+        <label>
+            <?= dgettext("evasys","Widerspruch erlauben bzw. auf Wunsch Veranstaltunf in besonderen Teilbereich verschieben") ?>
+            <select name="data[enable_objection_to_publication]">
+                <? if ($this->controller->profile_type === "institute") : ?>
+                <option value=""></option>
+                <? endif ?>
+                <option value="yes"<?= $profile['enable_objection_to_publication'] === 'yes' ? " selected" : "" ?>><?= dgettext("evasys","Ja") ?></option>
+                <option value="no"<?= $profile['enable_objection_to_publication'] === 'no' ? " selected" : "" ?>><?= dgettext("evasys","Nein") ?></option>
+            </select>
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("enable_objection_to_publication") ?>
+            <span title="<?= dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
+        <? endif ?>
+
+        <label>
+            <?= dgettext("evasys","Bei Widerspruch Veranstaltungen in folgenden Teilbereich verschieben") ?>
+            <input type="text"
+                   name="data[objection_teilbereich]"
+                   value="<?= htmlReady($profile['objection_teilbereich']) ?>">
+        </label>
+        <? if ($this->controller->profile_type === "institute") : ?>
+            <? $default_value = $profile->getParentsDefaultValue("objection_teilbereich") ?>
+            <span title="<?= dgettext("evasys","Standardwert, wenn nichts eingetragen ist.") ?>"
+                  class="default_value">(<?= dgettext("evasys","Standardwert").": " . $default_value ?: dgettext("evasys","Kein Standardwert") ?>)</span>
+        <? endif ?>
+
     </fieldset>
 
     <fieldset class="forms_for_types">
