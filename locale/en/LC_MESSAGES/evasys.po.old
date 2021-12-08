@@ -191,7 +191,7 @@ msgstr "Standard questionaire (only actives are displayed)"
 
 #: ../views/globalprofile/index.php:70 ../views/profile/bulkedit.php:135
 #: ../views/profile/edit.php:274
-msgid "Art der Evaluation"
+msgid "Modus der Evaluation"
 msgstr "Type of evaluation"
 
 #: ../views/globalprofile/index.php:74 ../views/profile/bulkedit.php:150

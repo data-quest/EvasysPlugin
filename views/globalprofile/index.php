@@ -81,11 +81,11 @@
         <? endif ?>
 
         <label>
-            <?= dgettext("evasys", "Art der Evaluation") ?>
+            <?= dgettext("evasys", "Modus der Evaluation") ?>
             <select name="data[mode]">
                 <option value=""></option>
                 <option value="paper"<?= $profile['mode'] === "paper" ? " selected" : "" ?>>
-                    <?= dgettext("evasys", "Papierbasierte Evaluation") ?>
+                    <?= dgettext("evasys", "Papier-Evaluation") ?>
                 </option>
                 <option value="online"<?= $profile['mode'] === "online" ? " selected" : "" ?>>
                     <?= dgettext("evasys", "Online-Evaluation") ?>

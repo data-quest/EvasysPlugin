@@ -140,7 +140,7 @@
             <td>
                 <label>
                     <input type="checkbox" name="change[]" value="mode" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= dgettext("evasys", "Art der Evaluation") ?>
+                    <?= dgettext("evasys", "Modus der Evaluation") ?>
                 </label>
             </td>
             <td>
@@ -155,7 +155,7 @@
                         <?= dgettext("evasys", "Online-Evaluation") ?>
                     </option>
                     <option value="paper"<?= $values['mode'] == "paper" ? " selected" : "" ?>>
-                        <?= dgettext("evasys", "Papierbasierte Evaluation") ?>
+                        <?= dgettext("evasys", "Papier-Evaluation") ?>
                     </option>
                 </select>
             </td>

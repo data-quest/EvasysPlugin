@@ -209,6 +209,43 @@
                         <? endif ?>
                 <? endif ?>
 
+                <? if (!Config::get()->EVASYS_FORCE_ONLINE) : ?>
+                    <label>
+                        <?= dgettext("evasys", "Modus der Evaluation") ?>
+                        <? if ($editable) : ?>
+                            <select name="data[mode]" onClick="jQuery('.evasys_paper').toggle(this.value === 'paper');" required>
+                                <? if (!in_array($profile->getFinalMode(), array("online", "paper"))) : ?>
+                                    <option value=""></option>
+                                <? endif ?>
+                                <option value="online"<?= $profile->getFinalMode() === "online" ? " selected" : "" ?>>
+                                    <?= dgettext("evasys", "Online-Evaluation") ?>
+                                </option>
+                                <option value="paper"<?= $profile->getFinalMode() === "paper" ? " selected" : "" ?>>
+                                    <?= dgettext("evasys", "Papier-Evaluation") ?>
+                                </option>
+                            </select>
+                        <? else : ?>
+                            <div>
+                                <?= $profile->getFinalMode() === "online" ? dgettext("evasys", "Online-Evaluation") : dgettext("evasys", "Papierbasierte Evaluation") ?>
+                            </div>
+                        <? endif ?>
+                    </label>
+
+                    <div class="evasys_paper" style="<?= $profile->getFinalMode() !== "paper" ? "display: none;" : "" ?>">
+                        <? foreach (EvasysAdditionalField::findBySQL("`paper` = '1' ORDER BY position ASC, name ASC") as $field) : ?>
+                            <label>
+                                <? $value = $field->valueFor("course", $profile->getId()) ?>
+                                <?= htmlReady($field['name']) ?>
+                                <? if ($field['type'] === "TEXT") : ?>
+                                    <input type="text" name="field[<?= $field->getId() ?>]" value="<?= htmlReady($value) ?>"<?= !$editable ? " readonly" : "" ?>>
+                                <? else : ?>
+                                    <textarea name="field[<?= $field->getId() ?>]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($value) ?></textarea>
+                                <? endif ?>
+                            </label>
+                        <? endforeach ?>
+                    </div>
+                <? endif ?>
+
                 <div style="margin-top: 10px;">
                     <table class="default nohover">
                         <thead>
@@ -279,43 +316,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                <? if (!Config::get()->EVASYS_FORCE_ONLINE) : ?>
-                    <label>
-                        <?= dgettext("evasys", "Art der Evaluation") ?>
-                        <? if ($editable) : ?>
-                        <select name="data[mode]" onClick="jQuery('.evasys_paper').toggle(this.value === 'paper');" required>
-                            <? if (!in_array($profile->getFinalMode(), array("online", "paper"))) : ?>
-                                <option value=""></option>
-                            <? endif ?>
-                            <option value="online"<?= $profile->getFinalMode() === "online" ? " selected" : "" ?>>
-                                <?= dgettext("evasys", "Online-Evaluation") ?>
-                            </option>
-                            <option value="paper"<?= $profile->getFinalMode() === "paper" ? " selected" : "" ?>>
-                                <?= dgettext("evasys", "Papierbasierte Evaluation") ?>
-                            </option>
-                        </select>
-                        <? else : ?>
-                            <div>
-                                <?= $profile->getFinalMode() === "online" ? dgettext("evasys", "Online-Evaluation") : dgettext("evasys", "Papierbasierte Evaluation") ?>
-                            </div>
-                        <? endif ?>
-                    </label>
-
-                    <div class="evasys_paper" style="<?= $profile->getFinalMode() !== "paper" ? "display: none;" : "" ?>">
-                        <? foreach (EvasysAdditionalField::findBySQL("`paper` = '1' ORDER BY position ASC, name ASC") as $field) : ?>
-                            <label>
-                                <? $value = $field->valueFor("course", $profile->getId()) ?>
-                                <?= htmlReady($field['name']) ?>
-                                <? if ($field['type'] === "TEXT") : ?>
-                                    <input type="text" name="field[<?= $field->getId() ?>]" value="<?= htmlReady($value) ?>"<?= !$editable ? " readonly" : "" ?>>
-                                <? else : ?>
-                                    <textarea name="field[<?= $field->getId() ?>]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($value) ?></textarea>
-                                <? endif ?>
-                            </label>
-                        <? endforeach ?>
-                    </div>
-                <? endif ?>
 
                 <? if ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') : ?>
                     <? if ($editable) : ?>
