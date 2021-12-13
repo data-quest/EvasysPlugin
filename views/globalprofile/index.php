@@ -223,7 +223,7 @@
         <? endif ?>
 
         <label>
-            <?= dgettext("evasys","Widerspruch erlauben bzw. auf Wunsch Veranstaltunf in besonderen Teilbereich verschieben") ?>
+            <?= dgettext("evasys","Widerspruch erlauben bzw. auf Wunsch Veranstaltung in gesonderten Teilbereich verschieben") ?>
             <select name="data[enable_objection_to_publication]">
                 <? if ($this->controller->profile_type === "institute") : ?>
                 <option value=""></option>

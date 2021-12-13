@@ -50,6 +50,14 @@ class ProfileController extends PluginController {
             $this->profile['seminar_id'] = $course_id;
             $this->profile['semester_id'] = Semester::findCurrent()->id;
         }
+        if (Request::isPost()) {
+            if (($this->profile->getPresetAttribute('enable_objection_to_publication') === 'yes') && $this->profile->getPresetAttribute('objection_teilbereich')) {
+                $data = Request::getArray("data");
+                $this->profile['objection_to_publication'] = $data['objection_to_publication'];
+                $this->profile['objection_reason'] = $data['objection_reason'];
+                $this->profile->store();
+            }
+        }
         if (Request::isPost() && $this->profile->isEditable() && Request::getArray("data") && count(Request::getArray("data"))) {
             $data = Request::getArray("data");
             $this->profile['applied'] = $data['applied'] ?: 0;
@@ -88,11 +96,6 @@ class ProfileController extends PluginController {
             }
 
             $this->profile['user_id'] = $GLOBALS['user']->id;
-
-            if (($this->profile->getPresetAttribute('enable_objection_to_publication') === 'yes') && $this->profile->getPresetAttribute('objection_teilbereich')) {
-                $this->profile['objection_to_publication'] = $data['objection_to_publication'];
-                $this->profile['objection_reason'] = $data['objection_reason'];
-            }
 
             if (Request::submitted("unset_by_dozent") && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($course_id))) {
                 $this->profile['by_dozent'] = 0;
