@@ -318,23 +318,36 @@
                 </div>
 
                 <? if ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') : ?>
-                    <input type="hidden"
-                           name="data[objection_to_publication]"
-                           value="0">
-                    <label>
-                        <input type="checkbox"
+                    <? if ($profile['locked'] && $GLOBALS['perm']->have_studip_perm($profile->lockAfterTransferForRole(), $profile['seminar_id'])) : ?>
+                        <input type="hidden"
                                name="data[objection_to_publication]"
-                               onchange="if ($(this).is(':checked')) { $('#objection_reason').attr('required', ''); } else { $('#objection_reason').removeAttr('required'); }"
-                               value="1"<?= $profile['objection_to_publication'] ? ' checked' : '' ?>>
-                        <?= dgettext("evasys", "Ich widerspreche der Weitergabe des Evaluationsberichts an meinen Fachbereich.") ?>
-                    </label>
+                               value="0">
+                        <label>
+                            <input type="checkbox"
+                                   name="data[objection_to_publication]"
+                                   onchange="if ($(this).is(':checked')) { $('#objection_reason').attr('required', ''); } else { $('#objection_reason').removeAttr('required'); }"
+                                   value="1"<?= $profile['objection_to_publication'] ? ' checked' : '' ?>>
+                            <?= dgettext("evasys", "Ich widerspreche der Weitergabe des Evaluationsergebnisse.") ?>
+                        </label>
 
-                    <label>
-                        <?= dgettext("evasys", "Begründung für den Widerspruch (notwendig)") ?>
-                        <textarea id="objection_reason"
-                                  <?= $profile['objection_to_publication'] ? 'required' : '' ?>
-                                  name="data[objection_reason]"><?= htmlReady($profile['objection_reason']) ?></textarea>
-                    </label>
+                        <label>
+                            <?= dgettext("evasys", "Begründung für den Widerspruch (notwendig)") ?>
+                            <textarea id="objection_reason"
+                                      <?= $profile['objection_to_publication'] ? 'required' : '' ?>
+                                      name="data[objection_reason]"><?= htmlReady($profile['objection_reason']) ?></textarea>
+                        </label>
+                    <? elseif($profile['objection_to_publication']) : ?>
+                        <label>
+                            <input type="checkbox" disabled="disabled" checked>
+                            <?= dgettext("evasys", "Ich widerspreche der Weitergabe des Evaluationsergebnisse.") ?>
+                        </label>
+
+                        <label>
+                            <?= dgettext("evasys", "Begründung für den Widerspruch (notwendig)") ?>
+                            <textarea id="objection_reason"
+                                      readonly><?= htmlReady($profile['objection_reason']) ?></textarea>
+                        </label>
+                    <? endif ?>
                 <? endif ?>
 
                 <? foreach (EvasysAdditionalField::findBySQL("`paper` = '0' ORDER BY position ASC, name ASC") as $field) : ?>
