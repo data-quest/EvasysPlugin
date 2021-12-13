@@ -419,7 +419,7 @@ class EvasysSeminar extends SimpleORMap
                 'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
                     ? $profile['surveys'][$this['Seminar_id']]
                     : "", //experimental
-                'PeriodId' => date("Y-m-d", $course['start_time']),
+                'PeriodId' => date("Y-m-d", $profile->getFinalBegin()),
                 'PeriodIdType' => "PERIODDATE",
                 'SurveyType' => array(
                     'm_chSurveyType' => ($profile['mode'] === "paper" && !Config::get()->EVASYS_FORCE_ONLINE)
