@@ -547,6 +547,26 @@ class EvasysCourseProfile extends SimpleORMap {
         return false;
     }
 
+    public function mayObjectToPublication()
+    {
+        if (($this->getPresetAttribute('enable_objection_to_publication') !== 'yes') || !$this->getPresetAttribute('objection_teilbereich')) {
+            return false;
+        }
+        if (!$this['locked'] || $this->isEditable()) {
+            return true;
+        }
+
+        $lock_for_role = $this->lockAfterTransferForRole();
+
+        if (!$lock_for_role) {
+            return true;
+        }
+        if ($GLOBALS['perm']->have_studip_perm("admin", $this['seminar_id'])) {
+            return $lock_for_role === 'dozent';
+        }
+        return false;
+    }
+
     public function getAntragInfo()
     {
         return $this->getPresetAttribute("antrag_info");

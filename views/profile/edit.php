@@ -318,7 +318,7 @@
                 </div>
 
                 <? if ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') : ?>
-                    <? if ($profile['locked'] && $GLOBALS['perm']->have_studip_perm($profile->lockAfterTransferForRole(), $profile['seminar_id'])) : ?>
+                    <? if ($profile->mayObjectToPublication()) : ?>
                         <input type="hidden"
                                name="data[objection_to_publication]"
                                value="0">
@@ -327,7 +327,7 @@
                                    name="data[objection_to_publication]"
                                    onchange="if ($(this).is(':checked')) { $('#objection_reason').attr('required', ''); } else { $('#objection_reason').removeAttr('required'); }"
                                    value="1"<?= $profile['objection_to_publication'] ? ' checked' : '' ?>>
-                            <?= dgettext("evasys", "Ich widerspreche der Weitergabe des Evaluationsergebnisse.") ?>
+                            <?= dgettext("evasys", "Ich widerspreche der Weitergabe der Evaluationsergebnisse.") ?>
                         </label>
 
                         <label>

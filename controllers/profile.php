@@ -51,9 +51,9 @@ class ProfileController extends PluginController {
             $this->profile['semester_id'] = Semester::findCurrent()->id;
         }
         if (Request::isPost()) {
-            if (($this->profile->getPresetAttribute('enable_objection_to_publication') === 'yes') && $this->profile->getPresetAttribute('objection_teilbereich')) {
+            if ($this->profile->mayObjectToPublication()) {
                 $data = Request::getArray("data");
-                $this->profile['objection_to_publication'] = $data['objection_to_publication'];
+                $this->profile['objection_to_publication'] = $data['objection_to_publication'] ? 1 : 0;
                 $this->profile['objection_reason'] = $data['objection_reason'];
                 $this->profile->store();
             }
