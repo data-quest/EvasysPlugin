@@ -605,7 +605,7 @@ class EvasysCourseProfile extends SimpleORMap {
 
     public function getFinalResultsEmails()
     {
-        $emails = $profile['results_email'];
+        $emails = $this['results_email'];
 
         $inst_profile = EvasysInstituteProfile::findByInstitute($this->course->home_institut->getId(), $this['semester_id']);
         if ($inst_profile) {
@@ -613,7 +613,7 @@ class EvasysCourseProfile extends SimpleORMap {
         }
         $fakultaet_id = $this->course->home_institut->fakultaets_id;
 
-        if ($fakultaet_id !== $institut_id) {
+        if ($fakultaet_id !== $inst_profile['institut_id']) {
             $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id, $this['semester_id']);
 
             if ($inst_profile['results_email']) {

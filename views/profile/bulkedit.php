@@ -68,6 +68,21 @@
         <tr>
             <td>
                 <label>
+                    <input type="checkbox" name="change[]" value="results_email" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                    <?= dgettext("evasys", "Weitere Berichtsempfänger hinzufügen") ?>
+                </label>
+            </td>
+            <td>
+                <input type="text"
+                       name="results_email"
+                       value=""
+                       placeholder="Emails mit Leerzeichen getrennt"
+                       onBlur="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <label>
                     <input type="checkbox"
                            name="change[]"
                            value="begin"

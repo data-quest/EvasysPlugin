@@ -64,9 +64,7 @@ class ProfileController extends PluginController {
             if ($this->profile['applied'] && !EvasysPlugin::isAdmin($course_id) && !EvasysPlugin::isRoot()) {
                 $this->profile['by_dozent'] = 1;
             }
-            $this->profile['teachers'] = $data['teachers']
-                ? $data['teachers']
-                : null;
+            $this->profile['teachers'] = $data['teachers'] ?: null;
             $this->profile['results_email'] = $data['results_email'] ?: null;
             $this->profile['split'] = $data['split'] ? 1 : 0;
             $this->profile['form_id'] = $data['form_id'] !== $this->profile->getPresetFormId() ? $data['form_id'] : null;
@@ -175,6 +173,18 @@ class ProfileController extends PluginController {
                 if (in_array("split", Request::getArray("change"))) {
                     if (Request::get("split") !== "") {
                         $profile['split'] = Request::int("split");
+                    }
+                }
+                if (in_array("results_email", Request::getArray("change"))) {
+                    if (trim(Request::get("results_email"))) {
+                        $emails = preg_split("/[\s,;]+/", Request::get("results_email"), -1, PREG_SPLIT_NO_EMPTY);
+                        foreach ($emails as $email) {
+                            if (stripos($profile['results_email'], $email) === false) {
+                                $profile['results_email'] = $profile['results_email']
+                                    . ($profile['results_email'] ? " " : "")
+                                    . $email;
+                            }
+                        }
                     }
                 }
                 if (in_array("begin", Request::getArray("change"))) {
