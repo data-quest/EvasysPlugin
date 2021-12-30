@@ -1001,4 +1001,50 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             ));
         }
     }
+
+    /**
+     * Find ocurrences of old userid in plugin's tables and update to new userid
+     *
+     * @param $old_id old user-id
+     * @param $new_id new user-id
+     */
+    public function updateUserIdInDB($old_id, $new_id)
+    {
+        // TODO can we check any constrains about what user_ids possibly can be in our tables?
+        // check if migrated user had role "dozent"
+        //User::find($new_id);
+
+
+        $course_profiles = EvasysCourseProfile::findBySQL("JSON_CONTAINS(teachers), '?'", ['"' . $old_id . '"']);
+        $seminars = EvasysSeminar::findBySQL("JSON_CONTAINS(publishing_allowed_by_dozent), '?'", ['"' . $old_id . '"']);
+        // reset json text entry with new_id
+        foreach ($course_profiles as $course_profile) {
+            $teachers = $course_profile->teachers;
+            preg_replace($teachers, $old_id, $new_id );
+            $course_profile->teachers = $teachers;
+        }
+
+        $course_profiles_of_user = EvasysCourseProfile::findByUser_id($old_id);
+        $global_profiles = EvasysGlobalProfile::findByUser_id($old_id);
+        $institute_profiles = EvasysInstituteProfile::findByUser_id($old_id);
+        $soap_log_entries = EvasysSoapLog::findByUser_id($old_id);
+
+        foreach ([$course_profiles_of_user, $global_profiles, $institute_profiles, $soap_log_entries] as $entries) {
+            updateUserIdInDBEntries($entries);
+        }
+
+    }
+
+    /**
+     * Helper function to update 'user_id' in specific DB entries
+     */
+    private function updateUserIdInDBEntries(array: $entries, $new_id)
+    {
+        //DBManager::get()->prepare("UPDATE");
+        foreach ($entries as $entry) {
+            $entry->user_id = $new_id;
+            $entry->store();
+        }
+
+    }
 }
