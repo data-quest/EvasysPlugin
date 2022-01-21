@@ -9,6 +9,17 @@
             <?= htmlReady($log['function']) ?>
         </a>
     </td>
+    <td>
+        <?
+        $user = User::find($log['user_id']);
+        if ($user) : ?>
+            <a href="<?= URLHelper::getLink('dispatch.php/user', ['username' => $user['username']]) ?>">
+                <?= Avatar::getAvatar($log['user_id'])->getImageTag(Avatar::SMALL) ?>
+            </a>
+        <? else : ?>
+            <?= htmlReady($log['user_id']) ?>
+        <? endif ?>
+    </td>
     <td><?= htmlReady(str_replace(".", ",", $log['time'])) ?></td>
     <td><?= date("d.m.Y H:i:s", $log['mkdate']) ?></td>
     <td class="actions">

@@ -6,6 +6,7 @@
         <tr>
             <th width="16"></th>
             <th><?= dgettext("evasys", "SOAP-Methode") ?></th>
+            <th><?= dgettext('evasys', 'Benutzer') ?></th>
             <th><?= dgettext("evasys", "Dauer (ms)") ?></th>
             <th><?= dgettext("evasys", "Zeitpunkt") ?></th>
             <th class="actions"><?= dgettext("evasys", "Aktion") ?></th>
@@ -27,6 +28,8 @@
     </tfoot>
 </table>
 
+<input type="hidden" id="function" value="<?= htmlReady(Request::get('function')) ?>">
+<input type="hidden" id="search" value="<?= htmlReady(Request::get('search')) ?>">
 
 <script>
     //Infinity-scroll:
@@ -44,7 +47,9 @@
             jQuery.ajax({
                 url: STUDIP.ABSOLUTE_URI_STUDIP + "plugins.php/evasysplugin/logs/more",
                 data: {
-                    'earliest': earliest
+                    'earliest': earliest,
+                    'function': $('#function').val(),
+                    'search': $('#search').val()
                 },
                 dataType: "json",
                 success: function (response) {
@@ -61,3 +66,15 @@
         }
     }, 30));
 </script>
+
+<?
+$search = new SearchWidget(PluginEngine::getURL($plugin, ['function' => Request::get('function')], 'logs/index'));
+$search->addNeedle(
+    _('Suche'),
+    'search',
+    '',
+    null,
+    null,
+    Request::get('search')
+);
+Sidebar::Get()->addWidget($search);
