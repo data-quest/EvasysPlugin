@@ -16,11 +16,24 @@ class LogsController extends PluginController
     public function index_action()
     {
         if (Request::option("function")) {
-            $this->logs = EvasysSoapLog::findBySQL("`function` = ? ORDER BY id DESC LIMIT ".($this->limit + 1), [
-                Request::option("function")
-            ]);
+            if (Request::get('search')) {
+                $this->logs = EvasysSoapLog::findBySQL("LEFT JOIN auth_user_md5 ON (evasys_soap_logs.user_id = auth_user_md5.user_id) WHERE (`arguments` LIKE :search OR `result` LIKE :search OR CONCAT(auth_user_md5.`Vorname`, ' ', auth_user_md5.`Nachname`, ' ', auth_user_md5.`username`) LIKE :search) AND `function` = :func ORDER BY id DESC LIMIT ".($this->limit + 1), [
+                    'search' => '%'.Request::get('search').'%',
+                    'func' => Request::option("function")
+                ]);
+            } else {
+                $this->logs = EvasysSoapLog::findBySQL("`function` = :func ORDER BY id DESC LIMIT ".($this->limit + 1), [
+                    'func' => Request::option("function")
+                ]);
+            }
         } else {
-            $this->logs = EvasysSoapLog::findBySQL("1 ORDER BY id DESC LIMIT ".($this->limit + 1));
+            if (Request::get('search')) {
+                $this->logs = EvasysSoapLog::findBySQL("LEFT JOIN auth_user_md5 ON (evasys_soap_logs.user_id = auth_user_md5.user_id) WHERE (`arguments` LIKE :search OR `result` LIKE :search OR CONCAT(auth_user_md5.`Vorname`, ' ', auth_user_md5.`Nachname`, ' ', auth_user_md5.`username`) LIKE :search) ORDER BY id DESC LIMIT ".($this->limit + 1), [
+                    'search' => '%'.Request::get('search').'%'
+                ]);
+            } else {
+                $this->logs = EvasysSoapLog::findBySQL("1 ORDER BY id DESC LIMIT " . ($this->limit + 1));
+            }
         }
         if (count($this->logs) > $this->limit) {
             $this->more = true;
@@ -39,14 +52,29 @@ class LogsController extends PluginController
     public function more_action()
     {
         if (Request::option("function")) {
-            $this->logs = EvasysSoapLog::findBySQL("`function` = :function AND id < :id ORDER BY id DESC LIMIT ".($this->limit + 1), [
-                'function' => Request::option("function"),
-                'id' => Request::option("earliest")
-            ]);
+            if (Request::get('search')) {
+                $this->logs = EvasysSoapLog::findBySQL("LEFT JOIN auth_user_md5 ON (evasys_soap_logs.user_id = auth_user_md5.user_id) WHERE (`arguments` LIKE :search OR `result` LIKE :search OR CONCAT(auth_user_md5.`Vorname`, ' ', auth_user_md5.`Nachname`, ' ', auth_user_md5.`username`) LIKE :search) AND `function` = :function AND `id` < :id ORDER BY id DESC LIMIT " . ($this->limit + 1), [
+                    'search' => '%'.Request::get('search').'%',
+                    'function' => Request::option("function"),
+                    'id' => Request::option("earliest")
+                ]);
+            } else {
+                $this->logs = EvasysSoapLog::findBySQL("`function` = :function AND `id` < :id ORDER BY id DESC LIMIT " . ($this->limit + 1), [
+                    'function' => Request::option("function"),
+                    'id' => Request::option("earliest")
+                ]);
+            }
         } else {
-            $this->logs = EvasysSoapLog::findBySQL("id < :id ORDER BY id DESC LIMIT ".($this->limit + 1), [
-                'id' => Request::option("earliest")
-            ]);
+            if (Request::get('search')) {
+                $this->logs = EvasysSoapLog::findBySQL("LEFT JOIN auth_user_md5 ON (evasys_soap_logs.user_id = auth_user_md5.user_id) WHERE (`arguments` LIKE :search OR `result` LIKE :search OR CONCAT(auth_user_md5.`Vorname`, ' ', auth_user_md5.`Nachname`, ' ', auth_user_md5.`username`) LIKE :search) AND `id` < :id ORDER BY id DESC LIMIT " . ($this->limit + 1), [
+                    'search' => '%'.Request::get('search').'%',
+                    'id' => Request::option("earliest")
+                ]);
+            } else {
+                $this->logs = EvasysSoapLog::findBySQL("`id` < :id ORDER BY id DESC LIMIT " . ($this->limit + 1), [
+                    'id' => Request::option("earliest")
+                ]);
+            }
         }
         if (count($this->logs) > $this->limit) {
             $this->more = true;
