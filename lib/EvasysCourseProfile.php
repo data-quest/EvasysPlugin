@@ -134,6 +134,7 @@ class EvasysCourseProfile extends SimpleORMap {
         }
 
         $new_values = $this->toArray(array_keys($old_values));
+        $is_dirty = false;
         foreach ($old_values as $key => $value) {
             if ($value == $new_values) {
                 unset($old_values[$key]);
@@ -141,19 +142,24 @@ class EvasysCourseProfile extends SimpleORMap {
             } else {
                 $old_values[$key] = (string) $old_values[$key];
                 $new_values[$key] = (string) $new_values[$key];
+                if (!in_array($key, ['chdate', 'transferred', 'transferdate', 'teachers']) && ($new_values[$key] !== $old_values[$key])) {
+                    $is_dirty = true;
+                }
             }
         }
 
-        StudipLog::log(
-            $applied ? 'EVASYS_EVAL_APPLIED' : 'EVASYS_EVAL_UPDATE',
-            $GLOBALS['user']->id,
-            $this['seminar_id'],
-            $this['semester_id'],
-            json_encode([
-                'old' => $old_values,
-                'new' => $new_values
-            ])
-        );
+        if ($is_dirty) {
+            StudipLog::log(
+                $applied ? 'EVASYS_EVAL_APPLIED' : 'EVASYS_EVAL_UPDATE',
+                $GLOBALS['user']->id,
+                $this['seminar_id'],
+                $this['semester_id'],
+                json_encode([
+                    'old' => $old_values,
+                    'new' => $new_values
+                ])
+            );
+        }
         if ($this['by_dozent'] || $old_values['by_dozent']) {
             //Nachricht an Dozenten, wenn ihre Evaluation verändert wird vom Admin:
             if (EvasysPlugin::isRoot()

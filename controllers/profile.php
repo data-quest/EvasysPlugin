@@ -117,6 +117,13 @@ class ProfileController extends PluginController {
                 'payload' => $course_id
             )));
         }
+        $log_actions = LogAction::findBySQL("`name` LIKE 'EVASYS_%'");
+        $log_action_ids = SimpleORMapCollection::createFromArray($log_actions)->pluck('action_id');
+
+        $this->logs = LogEvent::findBySQL("`coaffected_range_id` = :course_id AND `action_id` IN (:action_ids) ORDER BY `event_id` DESC", [
+            'course_id' => $course_id,
+            'action_ids' => $log_action_ids
+        ]);
     }
 
 

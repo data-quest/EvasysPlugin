@@ -369,16 +369,90 @@
         <fieldset>
             <legend><?= dgettext("evasys", "Log") ?></legend>
 
-            <? $last_author = $profile['user_id'] ? User::find($profile['user_id']) : null ?>
-            <?= MessageBox::info(sprintf(dgettext("evasys", "Letzte Bearbeitung von %s am %s Uhr"), ($last_author ? $last_author->getFullName() : ($profile['user_id'] ?: dgettext("evasys", "unbekannt"))), date("d.m.Y H:i", $profile['chdate'])) ) ?>
-
             <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id']))) : ?>
                 <?= MessageBox::info(sprintf(dgettext("evasys", "Evaluationsart: %s"), EvasysMatching::wording("freiwillige Evaluation"))) ?>
             <? endif ?>
 
-            <? if ($profile['transferred']) : ?>
-                <?= MessageBox::info(dgettext("evasys", "Diese Veranstaltung wurde bereits an den Evaluationsserver übertragen.")) ?>
-            <? endif ?>
+            <table class="default no-hover">
+                <thead>
+                    <tr>
+                        <th><?= dgettext('evasys', 'Aktion') ?></th>
+                        <th><?= dgettext('evasys', 'Nutzer') ?></th>
+                        <th><?= dgettext('evasys', 'Datum') ?></th>
+                        <th class="actions"><?= dgettext('evasys', 'Info') ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <? foreach ($logs as $log) : ?>
+                    <tr>
+                        <td>
+                            <?
+                            switch ($log->action['name']) {
+                                case 'EVASYS_EVAL_APPLIED':
+                                    echo dgettext('evasys', 'Evaluation beantragt');
+                                    break;
+                                case 'EVASYS_EVAL_UPDATE':
+                                    echo dgettext('evasys', 'Daten verändert');
+                                    break;
+                                case 'EVASYS_EVAL_TRANSFER':
+                                    echo dgettext('evasys', 'Übertragen nach EvaSys');
+                                    break;
+                                case 'EVASYS_EVAL_DELETE':
+                                    echo dgettext('evasys', 'Gelöscht');
+                                    break;
+                                default:
+                                    echo htmlReady($log->action['name']);
+                            }
+                            ?>
+                        </td>
+                        <td>
+                            <? $user = User::find($log['user_id']) ?>
+                            <? if ($user) : ?>
+                            <a href="<?= URLHelper::getLink('dispatch.php/profile', ['username' => $user['username']]) ?>">
+                                <?= Avatar::getAvatar($log['user_id'])->getImageTag(Avatar::SMALL) ?>
+                                <?= htmlReady($user->getFullName()) ?>
+                            </a>
+                            <? else : ?>
+                            <?= htmlReady($log['user_id']) ?>
+                            <? endif ?>
+                        </td>
+                        <td><?= date('d.m.Y H:i', $log['mkdate']) ?></td>
+                        <td class="actions">
+                            <?
+                            $message = '';
+                            if ($log->action['name'] === 'EVASYS_EVAL_UPDATE') {
+                                $change = json_decode($log['dbg_info'], true);
+                                if ($change['new']['form_id'] !== $change['old']['form_id']) {
+                                    $message .= dgettext('evasys', 'Fragebogen geändert. ');
+                                }
+                                if ($change['new']['begin'] !== $change['old']['begin']) {
+                                    $message .= dgettext('evasys', 'Beginn geändert. ');
+                                }
+                                if ($change['new']['end'] !== $change['old']['end']) {
+                                    $message .= dgettext('evasys', 'Befragungsendende geändert. ');
+                                }
+                                if ($change['new']['split'] !== $change['old']['split']) {
+                                    $message .= dgettext('evasys', 'Teilevaluation geändert. ');
+                                }
+                                if ($change['new']['mode'] !== $change['old']['mode']) {
+                                    $message .= dgettext('evasys', 'Modus der Evaluation geändert. ');
+                                }
+                                if ($change['new']['locked'] !== $change['old']['locked']) {
+                                    $message .= dgettext('evasys', 'Sperrung geändert. ');
+                                }
+                                if ($change['new']['objection_to_publication'] !== $change['old']['objection_to_publication']) {
+                                    $message .= dgettext('evasys', 'Widerspruch geändert. ');
+                                }
+                            }
+                            if ($message) {
+                                echo tooltipIcon($message);
+                            }
+                            ?>
+                        </td>
+                    </tr>
+                    <? endforeach ?>
+                </tbody>
+            </table>
         </fieldset>
         <? endif ?>
 

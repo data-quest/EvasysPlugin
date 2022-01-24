@@ -76,9 +76,20 @@ class AdminController extends PluginController
             if (!empty($evasys_seminar)) {
                 $success = EvasysSeminar::UploadSessions($evasys_seminar);
                 if ($success === true) {
-                    foreach (Request::getArray("course") as $course_id) {
+                    foreach ($courses as $course_id) {
                         if (isset($evasys_seminar[$course_id])) {
                             $evasys_seminar[$course_id]->store();
+                        }
+                        try {
+                            StudipLog::log(
+                                'EVASYS_EVAL_TRANSFER',
+                                $GLOBALS['user']->id,
+                                $evasys_seminar[$course_id]['seminar_id'],
+                                $evasys_seminar[$course_id]['seminar_id']
+                            );
+                        } catch (Exception $e) {
+                            var_dump($evasys_seminar[$course_id]['seminar_id']);
+                            die();
                         }
                     }
                     PageLayout::postMessage(MessageBox::success(sprintf(dgettext("evasys", "%s Veranstaltungen mit EvaSys synchronisiert."), count($activate))));
