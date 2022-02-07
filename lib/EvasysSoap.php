@@ -18,7 +18,7 @@ class EvasysSoap
             }
             self::$instance = new EvasysSoapClient($evasys_wsdl, array(
                 'connection_timeout' => Config::get()->EVASYS_SOAP_CON_TIMEOUT, //Zeit für den Verbindungsaufbau
-                'trace' => 1,
+                'trace' => 0, //anschalten nur im Entwicklungsbetrieb
                 'exceptions' => 0,
                 'cache_wsdl' => ($GLOBALS['CACHING_ENABLE'] || !isset($GLOBALS['CACHING_ENABLE']))
                     ? WSDL_CACHE_DISK
