@@ -370,7 +370,7 @@ class EvasysSeminar extends SimpleORMap
         );
         $i = 3;
         foreach ($datenfelder as $datafield_id => $datafield) {
-            $custom_fields[$i] = $datafield;
+            $custom_fields[$i] = (string) $datafield;
             $i++;
         }
         $surveys = array();

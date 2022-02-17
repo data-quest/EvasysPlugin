@@ -23,7 +23,7 @@ class EvasysForm extends SimpleORMap
     static public function GetAllForms()
     {
         if (Config::get()->EVASYS_CACHE && ((time() - $_SESSION['EVASYS_ALL_FORMS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE)) {
-            return true;
+            //return true;
         }
         if (!class_exists("SoapClient")) {
             PageLayout::postError(dgettext("evasys","SoapClient existiert nicht."));
@@ -58,7 +58,8 @@ class EvasysForm extends SimpleORMap
             }
         } else {
             $form_ids = array();
-            foreach ($forms->Strings as $formdata) {
+            $formdatae = $forms->Strings ?: $forms['Strings'];
+            foreach ($formdatae as $formdata) {
                 $formdata = json_decode($formdata, true);
                 $form = EvasysForm::findOneBySQL("form_id = ?", array($formdata['FormId']));
                 if (!$form) {
