@@ -415,6 +415,15 @@ class EvasysSeminar extends SimpleORMap
                 }
             }
 
+            $start_time = $profile->getFinalBegin();
+            if ($start_time < time()) {
+                $start_time = time() + 60 * 30;
+            }
+            $end_time = $profile->getFinalEnd() + $profile->getPresetAttribute("send_report_delay");
+            if ($end_time <= time()) {
+                $end_time = time() + 60 * 60 * 2 + $profile->getPresetAttribute("send_report_delay");
+            }
+
             $surveys[] = array(
                 'FormId' => $form_id,
                 'FormIdType' => "INTERNAL",
@@ -438,7 +447,7 @@ class EvasysSeminar extends SimpleORMap
                     'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
                         ? $profile['surveys'][$this['Seminar_id']]
                         : "",
-                    'StartTime' => date("c", $profile->getFinalBegin()),
+                    'StartTime' => date("c", $start_time),
                     //'sendInstructorNotification' => true, // Template kann nicht überschrieben werden.
                     'EmailSubject' => "###PREVENT_DISPATCH###" //Keine Mail an die Studierenden mit den TANs senden
                 ),
@@ -446,7 +455,7 @@ class EvasysSeminar extends SimpleORMap
                     'SurveyID' => $profile['surveys'] && $profile['surveys'][$this['Seminar_id']]
                         ? $profile['surveys'][$this['Seminar_id']]
                         : "",
-                    'StartTime' => date("c", $profile->getFinalEnd() + $profile->getPresetAttribute("send_report_delay")),
+                    'StartTime' => date("c", $end_time),
                     'SendReport' => ($profile->getPresetAttribute("send_report") === 'yes')
                 ),
                 'SerialPrint' => false

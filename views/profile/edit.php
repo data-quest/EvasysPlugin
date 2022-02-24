@@ -106,14 +106,21 @@
 
                 <label>
                     <?= dgettext("evasys", "Evaluationsbeginn") ?>
-                    <? $begin = $profile->getFinalBegin() ?>
+                    <?
+                    $begin = $profile->getFinalBegin();
+                    if ($profile->isNew() && ($begin < time()) && Config::get()->EVASYS_INDIVIDUAL_TIME_OFFSETS) {
+                        $offsets = preg_split("/\n/", Config::get()->EVASYS_INDIVIDUAL_TIME_OFFSETS, -1, PREG_SPLIT_NO_EMPTY);
+                        $begin = time() + $offsets[0] * 60;
+                    }
+                    ?>
                     <? if ($editable) : ?>
-                    <input type="text"
-                           name="data[begin]"
-                           value="<?= $begin ? date("d.m.Y H:i", $begin) : "" ?>"
-                           data-datetime-picker='{">=":"today"}'
-                           id="evasys_eval_begin"
-                           class="datepicker evasys_begin">
+                        <input type="text"
+                               name="data[begin]"
+                               value="<?= $begin ? date("d.m.Y H:i", $begin) : "" ?>"
+                               data-datetime-picker='{">=":"today"}'
+                               id="evasys_eval_begin"
+                               class="datepicker evasys_begin">
+
                     <? else : ?>
                     <div>
                         <?= $begin ? date("d.m.Y H:i", $begin) : "" ?>
@@ -123,7 +130,13 @@
 
                 <label>
                     <?= dgettext("evasys", "Evaluationsende") ?>
-                    <? $end = $profile->getFinalEnd() ?>
+                    <?
+                    $end = $profile->getFinalEnd();
+                    if ($profile->isNew() && ($end <= time()) && Config::get()->EVASYS_INDIVIDUAL_TIME_OFFSETS) {
+                        $offsets = preg_split("/\n/", Config::get()->EVASYS_INDIVIDUAL_TIME_OFFSETS, -1, PREG_SPLIT_NO_EMPTY);
+                        $end = time() + $offsets[1] * 60;
+                    }
+                    ?>
                     <? if ($editable) : ?>
                     <input type="text"
                            name="data[end]"
