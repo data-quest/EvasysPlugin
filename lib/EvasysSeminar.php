@@ -447,7 +447,7 @@ class EvasysSeminar extends SimpleORMap
                         ? $profile['surveys'][$this['Seminar_id']]
                         : "",
                     'StartTime' => date("c", $profile->getFinalEnd() + $profile->getPresetAttribute("send_report_delay")),
-                    'SendReport' => (boolean) $profile->getPresetAttribute("send_report")
+                    'SendReport' => ($profile->getPresetAttribute("send_report") === 'yes')
                 ),
                 'SerialPrint' => false
             );
