@@ -22,6 +22,8 @@ class EvaluationController extends PluginController
 
     public function show_action()
     {
+        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN semester_data USING (semester_id) WHERE seminar_id = ? ORDER semester_data.beginn DESC ", array(Context::get()->id));
+
         if ($this->profile && $this->profile['split']) {
             $this->redirect("evaluation/split");
             return;

@@ -617,11 +617,17 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
             $profile = EvasysCourseProfile::findBySemester($course_id);
-            if ($profile['applied']
-                && $profile['transferred']
-                && ($profile->getFinalBegin() <= time())
-                && ($profile->getFinalEnd() > time())) {
-                $activated = true;
+            if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+                if ($profile['applied']) {
+                    $activated = true;
+                }
+            } else {
+                if ($profile['applied']
+                    && $profile['transferred']
+                    && ($profile->getFinalBegin() <= time())
+                    && ($profile->getFinalEnd() > time())) {
+                    $activated = true;
+                }
             }
         } else {
             foreach ($evasys_seminars as $evasys_seminar) {
@@ -664,12 +670,20 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (Config::get()->EVASYS_ENABLE_PROFILES) {
             $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", array($course_id));
             foreach ($profiles as $profile) {
-                if ($profile['applied']
-                    && $profile['transferred']
-                    && ($profile->getFinalBegin() <= time())) {
-                    $activated = true;
-                    break;
+                if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+                    if ($profile['applied']) {
+                        $activated = true;
+                        break;
+                    }
+                } else {
+                    if ($profile['applied']
+                        && $profile['transferred']
+                        && ($profile->getFinalBegin() <= time())) {
+                        $activated = true;
+                        break;
+                    }
                 }
+
             }
         } else {
             $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
