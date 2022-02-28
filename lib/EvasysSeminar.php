@@ -211,11 +211,12 @@ class EvasysSeminar extends SimpleORMap
             }
 
         } else {
+
             //Speichern der survey_ids, sodass wir beim nächsten Mal die alten Survey_ids mitgeben können.
-            foreach ((array) $evasys_sem_object->UploadStatus as $status) {
+            $uploadStatus = $evasys_sem_object['UploadStatus'] ?: $evasys_sem_object->UploadStatus;
+            foreach ((array) $uploadStatus as $status) {
 
                 $course_id = self::getCourseIdByUID($status->CourseUid);
-                //var_dump($course_id); die();
 
                 //$status->StatusMessage;
                 $profile = EvasysCourseProfile::findBySemester(
@@ -676,14 +677,32 @@ class EvasysSeminar extends SimpleORMap
             return $_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id];
         }
 
-        $user_language = getUserLanguage($GLOBALS['user']->id);
-
         $soap = EvasysSoap::get();
+        $params = array(
+            'nSurveyId' => $survey_id
+        );
         //GetFormTranslations pro form_id liefert eine SystemLanguage (SystemLanguageAbbreviation ist beispielsweise en_GB de_edu, en_edu)
-        $link = $soap->soapCall("GetPDFReport", array(
-            'nSurveyId' => $survey_id,
-            //'nLanguageID' => 16 //$user_language === "en_GB" ? 2 : 1 //SystemLanguage 1= 2=
-        ));
+        $profile = null;
+        $profiles = EvasysCourseProfile::findBySQL('course_id = :course_id AND `surveys` LIKE :survey_id', [
+            'course_id' => $this['Seminar_id'],
+            'survey_id' => '%'.$survey_id.'%'
+        ]);
+        foreach ($profiles as $p) {
+            if (in_array($survey_id, array_values($p['surveys']->getArrayCopy()))) {
+                $profile = $p;
+            }
+        }
+        if ($profile) {
+            $form = EvasysForm::find($profile->getFinalFormId());
+            if ($form && $form['translations']) {
+                $user_language = getUserLanguage($GLOBALS['user']->id);
+                if ($form['translations'][$user_language]) {
+                    $params['nLanguageID'] = $form['translations'][$user_language]; //$user_language === "en_GB" ? 2 : 1 //SystemLanguage 1= 2=
+                }
+            }
+        }
+
+        $link = $soap->soapCall("GetPDFReport", $params);
         $_SESSION['EVASYS_SURVEY_PDF_LINK_EXPIRE'][$survey_id] = time();
         if (is_a($link, "SoapFault")) {
             return $_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id] = false;
