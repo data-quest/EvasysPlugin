@@ -10,6 +10,7 @@
                 <th><?= dgettext("evasys", "Name") ?></th>
                 <th><?= dgettext("evasys", "Überschrift") ?></th>
                 <th><?= dgettext("evasys", "Info") ?></th>
+                <th><?= dgettext("evasys", "Übersetzung") ?></th>
                 <th></th>
             </tr>
         </thead>
@@ -26,6 +27,11 @@
                             <a href="<?= htmlReady($form['link']) ?>" target="_blank">
                                 <?= Icon::create("info-circle", "clickable")->asImg(20, array('class' => "text-middle")) ?>
                             </a>
+                        <? endif ?>
+                    </td>
+                    <td>
+                        <? if ($form['translations']) : ?>
+                        <?= Icon::create('globe', 'info')->asImg(20, ['class' => "text-bottom", 'title' => dgettext("evasys", "Übersetzung vorhanden: ").implode(", ", array_keys($form['translations']->getArrayCopy()))]) ?>
                         <? endif ?>
                     </td>
                     <td class="actions">

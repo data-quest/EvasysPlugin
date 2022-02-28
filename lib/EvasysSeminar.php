@@ -744,7 +744,7 @@ class EvasysSeminar extends SimpleORMap
         if (!$GLOBALS['perm']->have_studip_perm("dozent", $this['Seminar_id'])) {
             return false;
         }
-        $dozenten = (array) $this->publishing_allowed_by_dozent;
+        $dozenten = $this->publishing_allowed_by_dozent ? $this->publishing_allowed_by_dozent->getArrayCopy() : [];
         $dozenten[$GLOBALS['user']->id] = $vote ? 1 : 0;
         $this->publishing_allowed_by_dozent = $dozenten;
         $this->publishing_allowed = $vote ? 1 : 0;

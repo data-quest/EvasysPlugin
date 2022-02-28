@@ -8,6 +8,7 @@ class EvasysForm extends SimpleORMap
     protected static function configure($config = array())
     {
         $config['db_table'] = 'evasys_forms';
+        $config['serialized_fields']['translations'] = "JSONArrayObject";
         parent::configure($config);
     }
 

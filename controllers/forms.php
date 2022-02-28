@@ -96,27 +96,49 @@ class FormsController extends PluginController
     public function fetch_forms_languages_action()
     {
         $forms = EvasysForm::findBySQL("`active` = '1'");
+        $language_matching = Config::get()->EVASYS_LANGUAGE_MATCHING;
+        if (!trim($language_matching)) {
+            return;
+        } else {
+            $language_matching = preg_split("/\n/", $language_matching, -1, PREG_SPLIT_NO_EMPTY);
+            $languages = [];
+            foreach ($language_matching as $i => $matching) {
+                $matching = explode("=", $matching);
+                $languages[$matching[0]] = $matching[1];
+            }
+        }
         foreach ($forms as $form) {
             $soap = EvasysSoap::get();
 
-            $forms = $soap->__soapCall("GetFormTranslations", array(
-                'Params' => array(
-                    'FormId' => $form->getId()
-                )
+
+            $evasys_forminfo = $soap->__soapCall("GetFormTranslations", array(
+                'FormId' => $form->getId()
             ));
-            if (is_a($forms, "SoapFault")) {
-                if ($forms->getMessage() === "ERR_225") {
+            if (is_a($evasys_forminfo, "SoapFault")) {
+                if ($evasys_forminfo->getMessage() === "ERR_225") {
                     //gibt keine Übersetzungen
-                    echo "gibt nix";
+                    $form['translations'] = null;
+                    $form->store();
                 } else {
-                    echo "hö?";
+                    echo "Was ist das für ein Fehler? ";
+                    var_dump($evasys_forminfo->getMessage());
                 }
             } else {
-                var_dump($forms); die();
+                $translations = [];
+                foreach ($evasys_forminfo->FormTranslation as $formtranslation) {
+                    //var_dump($formtranslation); die();
+                    $formtranslation_id = $formtranslation->FormTranslationId;
+                    //$language_id = $formtranslation->SystemLanguage;
+                    $language = trim($languages[$formtranslation->Name]); //the language in Stud.IP is the index
+                    $translations[$language] = $formtranslation_id;
+                }
+                $form['translations'] = $translations;
+                $form->store();
             }
 
 
         }
-        die();
+        PageLayout::postSuccess(dgettext('evasys', 'Übersetzungsinformationen wurden abgerufen.'));
+        $this->redirect("forms/index");
     }
 }
