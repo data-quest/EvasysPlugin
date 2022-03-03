@@ -18,13 +18,6 @@ require_once __DIR__."/lib/EvasysMatching.php";
 require_once __DIR__."/lib/EvasysAdditionalField.php";
 require_once __DIR__."/lib/EvasysSoapLog.php";
 
-if (!interface_exists("AdminCourseContents")) {
-    interface AdminCourseContents
-    {
-        public function adminAvailableContents();
-        public function adminAreaGetCourseContent($course, $index);
-    }
-}
 
 class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin, AdminCourseAction, Loggable, AdminCourseContents
 {
@@ -655,11 +648,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         $activated = false;
         $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", [$course_id]);
         foreach ($profiles as $profile) {
-            if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
-                if ($profile['applied']) {
-                    $activated = true;
-                    break;
-                }
+            if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && $profile['applied'] && $profile['by_dozent']) {
+                $activated = true;
+                break;
             } else {
                 if ($profile['applied']
                     && $profile['transferred']
