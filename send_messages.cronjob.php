@@ -34,7 +34,7 @@ class EvasysSendMessagesJob extends CronJob
      */
     public static function getParameters()
     {
-        return array();
+        return [];
     }
 
     /**
@@ -48,7 +48,7 @@ class EvasysSendMessagesJob extends CronJob
      *                          "verbose" which toggles verbose output while
      *                          purging the cache.
      */
-    public function execute($last_result, $parameters = array())
+    public function execute($last_result, $parameters = [])
     {
         $last_execution = Config::get()->EVASYS_SEND_MESSAGES_LAST_EXECUTION;
 

@@ -112,10 +112,10 @@ class ProfileController extends PluginController {
             }
 
             PageLayout::postSuccess(dgettext("evasys", "Daten wurden gespeichert."));
-            $this->response->add_header("X-Dialog-Execute", json_encode(array(
+            $this->response->add_header("X-Dialog-Execute", json_encode([
                 'func' => "STUDIP.Evasys.refreshCourseInOverview",
                 'payload' => $course_id
-            )));
+            ]));
         }
         $log_actions = LogAction::findBySQL("`name` LIKE 'EVASYS_%'");
         $log_action_ids = SimpleORMapCollection::createFromArray($log_actions)->pluck('action_id');
@@ -137,7 +137,7 @@ class ProfileController extends PluginController {
             PageLayout::postError(dgettext("evasys", "Es wurden keine Veranstaltungen zum Bearbeiten ausgewählt."));
             $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
         }
-        $this->profiles = array();
+        $this->profiles = [];
         foreach ($this->ids as $id) {
             list($seminar_id, $semester_id) = explode("_", $id);
             if (!$semester_id) {
@@ -240,14 +240,14 @@ class ProfileController extends PluginController {
             }
             PageLayout::postSuccess(dgettext("evasys", "Evaluationsdaten wurden gespeichert"));
             if (Request::get("individual")) {
-                $this->redirect(PluginEngine::getURL($this->plugin, array(), "individual/list"));
+                $this->redirect(PluginEngine::getURL($this->plugin, [], "individual/list"));
             } else {
                 $this->redirect(URLHelper::getURL("dispatch.php/admin/courses"));
             }
             return;
         }
 
-        $this->values = array();
+        $this->values = [];
         $this->all_form_ids = null;
         $this->available_form_ids = null;
         foreach ($this->profiles as $profile) {
@@ -278,7 +278,7 @@ class ProfileController extends PluginController {
             } elseif ($this->values['form_id'] !== $form_id) {
                 $this->values['form_id'] = "EVASYS_UNEINDEUTIGER_WERT";
             }
-            $available = array($profile->getPresetFormId());
+            $available = [$profile->getPresetFormId()];
             $available = array_unique(array_merge($available, $profile->getAvailableFormIds()));
             if ($this->all_form_ids === null) {
                 $this->all_form_ids = $available;

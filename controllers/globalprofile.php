@@ -7,9 +7,6 @@ class GlobalprofileController extends PluginController
     function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        if (!Config::get()->EVASYS_ENABLE_PROFILES) {
-            throw new AccessDeniedException();
-        }
 
         if ($this->profile_type === "global") {
             if (!EvasysPlugin::isRoot()) {
@@ -61,10 +58,10 @@ class GlobalprofileController extends PluginController
                     AND profile_type = :profile_type
                     AND standard = '1'
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'semester_id' => $this->profile->getId(),
                 'profile_type' => $this->profile_type
-            ));
+            ]);
             $this->forms_by_type = $statement->fetchAll(PDO::FETCH_COLUMN | PDO::FETCH_GROUP);
 
             $statement = DBManager::get()->prepare("
@@ -74,10 +71,10 @@ class GlobalprofileController extends PluginController
                     AND profile_type = :profile_type
                     AND standard = '0'
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'semester_id' => $this->profile->getId(),
                 'profile_type' => $this->profile_type
-            ));
+            ]);
             $this->available_forms_by_type = $statement->fetchAll(PDO::FETCH_COLUMN | PDO::FETCH_GROUP);
         }
         $statement = DBManager::get()->prepare("
@@ -145,11 +142,11 @@ class GlobalprofileController extends PluginController
 
             //now edit all the form-relations for the global profile:
             foreach (Request::getArray("forms_by_type") as $sem_type => $form_id) {
-                $entry = EvasysProfileSemtypeForm::findOneBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND standard = '1' ", array(
+                $entry = EvasysProfileSemtypeForm::findOneBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND standard = '1' ", [
                     'profile_id' => $this->profile->getId(),
                     'sem_type' => $sem_type,
                     'profile_type' => $this->profile_type
-                ));
+                ]);
                 if (!$entry) {
                     $entry = new EvasysProfileSemtypeForm();
                     $entry['profile_id'] = $this->profile->getId();
@@ -163,30 +160,30 @@ class GlobalprofileController extends PluginController
                 } else {
                     $entry->delete();
                 }
-                EvasysProfileSemtypeForm::deleteBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND standard = '1' AND form_id != :form_id", array(
+                EvasysProfileSemtypeForm::deleteBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND standard = '1' AND form_id != :form_id", [
                     'profile_id' => $this->profile->getId(),
                     'sem_type' => $sem_type,
                     'form_id' => $form_id,
                     'profile_type' => $this->profile_type
-                ));
+                ]);
             }
 
             foreach (Request::getArray("available_forms_by_type") as $sem_type => $form_ids) {
-                EvasysProfileSemtypeForm::deleteBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND standard = '0' AND form_id NOT IN (:form_ids)", array(
+                EvasysProfileSemtypeForm::deleteBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND standard = '0' AND form_id NOT IN (:form_ids)", [
                     'profile_id' => $this->profile->getId(),
                     'sem_type' => $sem_type,
                     'form_ids' => $form_ids,
                     'profile_type' => $this->profile_type
-                ));
+                ]);
 
                 foreach ($form_ids as $i => $form_id) {
                     if ($form_id) {
-                        $entry = EvasysProfileSemtypeForm::findOneBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND form_id = :form_id AND standard = '0' ", array(
+                        $entry = EvasysProfileSemtypeForm::findOneBySQL("profile_id = :profile_id AND profile_type = :profile_type AND sem_type = :sem_type AND form_id = :form_id AND standard = '0' ", [
                             'profile_id' => $this->profile->getId(),
                             'sem_type' => $sem_type,
                             'form_id' => $form_id,
                             'profile_type' => $this->profile_type
-                        ));
+                        ]);
                         if (!$entry) {
                             $entry = new EvasysProfileSemtypeForm();
                             $entry['profile_id'] = $this->profile->getId();
@@ -200,11 +197,11 @@ class GlobalprofileController extends PluginController
                     }
                 }
             }
-            EvasysProfileSemtypeForm::deleteBySQL("profile_id = :semester_id AND profile_type = :profile_type AND sem_type NOT IN (:sem_types) AND standard = '0'", array(
+            EvasysProfileSemtypeForm::deleteBySQL("profile_id = :semester_id AND profile_type = :profile_type AND sem_type NOT IN (:sem_types) AND standard = '0'", [
                 'semester_id' => $this->profile->getId(),
-                'sem_types' => array_keys(Request::getArray("available_forms_by_type")) ?: array(''),
+                'sem_types' => array_keys(Request::getArray("available_forms_by_type")) ?: [''],
                 'profile_type' => $this->profile_type
-            ));
+            ]);
 
             PageLayout::postSuccess(dgettext("evasys", "Einstellungen wurden gespeichert"));
         }

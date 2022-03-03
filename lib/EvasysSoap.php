@@ -16,7 +16,7 @@ class EvasysSoap
             if (!$evasys_wsdl || !$evasys_user || !$evasys_password) {
                 throw new Exception("EVASYS_* Konfiguration unvollständig!");
             }
-            self::$instance = new EvasysSoapClient($evasys_wsdl, array(
+            self::$instance = new EvasysSoapClient($evasys_wsdl, [
                 'connection_timeout' => Config::get()->EVASYS_SOAP_CON_TIMEOUT, //Zeit für den Verbindungsaufbau
                 'trace' => 0, //anschalten nur im Entwicklungsbetrieb
                 'exceptions' => 0,
@@ -28,12 +28,12 @@ class EvasysSoap
                     'verify_peer' => false,
                     'verify_peer_name' => false
                 ]*/
-            ));
+            ]);
             $file = strtolower(substr($evasys_wsdl, strrpos($evasys_wsdl, "/") + 1));
-            $soapHeaders = new SoapHeader($file, 'Header', array(
+            $soapHeaders = new SoapHeader($file, 'Header', [
                 'Login' => $evasys_user,
                 'Password' => $evasys_password
-            ));
+            ]);
             self::$instance->__setSoapHeaders($soapHeaders);
             if (is_soap_fault(self::$instance)) {
                 throw new Exception("SOAP-Error: " . self::$instance);

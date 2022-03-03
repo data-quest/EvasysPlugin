@@ -18,13 +18,13 @@ class AdminController extends PluginController
         // Get the view filter
         $this->view_filter = $this->getFilterConfig();
 
-        $courses = $this->getCourses(array(
+        $courses = $this->getCourses([
             'sortby'      => $this->sortby,
             'sortFlag'    => $this->sortFlag,
             'view_filter' => $this->view_filter,
             'typeFilter'  => $GLOBALS['user']->cfg->MY_COURSES_TYPE_FILTER,
             'datafields' => $this->getDatafieldFilters()
-        ));
+        ]);
 
         $this->semid = $course_id;
         $this->selected_action = $GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA;
@@ -46,23 +46,21 @@ class AdminController extends PluginController
     {
         if (Request::isPost() && $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION)) {
             $activate = Request::getArray("c");
-            $evasys_seminar = array();
+            $evasys_seminar = [];
 
-            $courses = Config::get()->EVASYS_ENABLE_PROFILES
-                ? array_map(function ($i) { $id = explode("_", $i); return $id[0]; }, array_keys(Request::getArray("c")))
-                : Request::getArray("course");
+            $courses = array_map(function ($i) {
+                $id = explode("_", $i); return $id[0];
+                }, array_keys(Request::getArray("c")));
             $courses = array_unique($courses);
             foreach ($courses as $course_id) {
-                $evasys_evaluations = EvasysSeminar::findBySeminar($course_id);
-                if (!empty($evasys_evaluations)) {
-                    foreach ($evasys_evaluations as $evaluation) {
-                        $evaluation['activated'] = $activate[$course_id] ? 1 : 0;
-                        if (!$evaluation['activated']) {
-                            $evaluation->store();
-                            unset($evasys_seminar[$course_id]);
-                        } else {
-                            $evasys_seminar[$course_id] = $evaluation;
-                        }
+                $evasys_evaluation = EvasysSeminar::findBySeminar($course_id);
+                if ($evasys_evaluation) {
+                    $evasys_evaluation['activated'] = $activate[$course_id] ? 1 : 0;
+                    if (!$evasys_evaluation['activated']) {
+                        $evasys_evaluation->store();
+                        unset($evasys_seminar[$course_id]);
+                    } else {
+                        $evasys_seminar[$course_id] = $evasys_evaluation;
                     }
                 } else {
                     $evasys_seminar[$course_id] = new EvasysSeminar($course_id);
@@ -121,7 +119,7 @@ class AdminController extends PluginController
             $config = json_decode($temp, true);
             $config = array_intersect($config, $available_filters);
         } else {
-            $config = array();
+            $config = [];
         }
 
         return $config;
@@ -129,7 +127,7 @@ class AdminController extends PluginController
 
     protected function getViewFilters()
     {
-        $views = array(
+        $views = [
             'number'        => dgettext("evasys", 'Nr.'),
             'name'          => dgettext("evasys", 'Name'),
             'type'          => dgettext("evasys", 'Veranstaltungstyp'),
@@ -141,7 +139,7 @@ class AdminController extends PluginController
             'preliminary'   => dgettext("evasys", 'Vorläufige Anmeldungen'),
             'contents'      => dgettext("evasys", 'Inhalt'),
             'last_activity' => dgettext("evasys", 'Letzte Aktivität'),
-        );
+        ];
         foreach (PluginManager::getInstance()->getPlugins("AdminCourseContents") as $plugin) {
             foreach ($plugin->adminAvailableContents() as $index => $label) {
                 $views[$plugin->getPluginId() . "_" . $index] = $label;
@@ -150,7 +148,7 @@ class AdminController extends PluginController
         return $views;
     }
 
-    protected function getCourses($params = array())
+    protected function getCourses($params = [])
     {
         // Init
         if ($GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === "all") {
@@ -191,20 +189,20 @@ class AdminController extends PluginController
 
         if ($params['datafields']) {
             //enable filtering by datafield values:
-            $filter->settings['query']['joins']['datafields_entries'] = array(
+            $filter->settings['query']['joins']['datafields_entries'] = [
                 'join' => "INNER JOIN",
                 'on' => "seminare.seminar_id = datafields_entries.range_id"
-            );
+            ];
 
             //and use the where-clause for each datafield:
 
             foreach ($params['datafields'] as $fieldId => $fieldValue) {
                 $filter->where("datafields_entries.datafield_id = :fieldId "
                     . "AND datafields_entries.content = :fieldValue",
-                    array(
+                    [
                         'fieldId' => $fieldId,
                         'fieldValue' => $fieldValue
-                    )
+                    ]
                 );
             }
 
@@ -215,9 +213,9 @@ class AdminController extends PluginController
         // Get only children of given course
         if ($params['parent_course']) {
             $filter->where("parent_course = :parent",
-                array(
+                [
                     'parent' => $params['parent_course']
-                )
+                ]
             );
         }
 
@@ -250,7 +248,7 @@ class AdminController extends PluginController
         if ($this->count_courses && $this->count_courses <= $filter->max_show_courses) {
             $courses = $filter->getCourses();
         } else {
-            return array();
+            return [];
         }
 
         if (in_array('contents', $params['view_filter'])) {
@@ -303,14 +301,14 @@ class AdminController extends PluginController
         $activeDatafields = $userSelectedElements['datafields'];
 
         if (!$activeDatafields) {
-            return array();
+            return [];
         }
 
         //Ok, we have a list of active datafields whose value may be searched for.
         //We must check for the request parameters (df_$DATAFIELD_ID)
         //and return their IDs with a value.
 
-        $searchedDatafields = array();
+        $searchedDatafields = [];
 
         foreach ($activeDatafields as $activeField) {
             $requestParamValue = Request::get('df_'.$activeField);
@@ -327,12 +325,12 @@ class AdminController extends PluginController
         $teachers   = CourseMember::findByCourseAndStatus($course_id, 'dozent');
         $collection = SimpleCollection::createFromArray($teachers);
         return $collection->map(function (CourseMember $teacher) {
-            return array(
+            return [
                 'user_id'  => $teacher->user_id,
                 'username' => $teacher->username,
                 'Nachname' => $teacher->nachname,
                 'fullname' => $teacher->getUserFullname('no_title_rev'),
-            );
+            ];
         });
     }
 

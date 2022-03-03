@@ -2,7 +2,7 @@
 
 class EvasysSoapLog extends SimpleORMap
 {
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'evasys_soap_logs';
         $config['serialized_fields']['arguments']        = 'JSONArrayObject';

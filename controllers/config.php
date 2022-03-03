@@ -5,9 +5,6 @@ class ConfigController extends PluginController
     function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        if (!Config::get()->EVASYS_ENABLE_PROFILES) {
-            throw new AccessDeniedException();
-        }
 
         if (!EvasysPlugin::isRoot()) {
             throw new AccessDeniedException();

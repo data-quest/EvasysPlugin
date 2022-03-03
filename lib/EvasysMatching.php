@@ -4,7 +4,7 @@ class EvasysMatching extends SimpleORMap {
 
     static public function instituteName($institut_id)
     {
-        $matching = self::findOneBySQL("item_id = ? AND item_type = 'institute' ", array($institut_id));
+        $matching = self::findOneBySQL("item_id = ? AND item_type = 'institute' ", [$institut_id]);
         if ($matching) {
             return $matching['name'];
         } else {
@@ -14,7 +14,7 @@ class EvasysMatching extends SimpleORMap {
 
     static public function semtypeName($sem_type_id)
     {
-        $matching = self::findOneBySQL("item_id = ? AND item_type = 'semtype' ", array($sem_type_id));
+        $matching = self::findOneBySQL("item_id = ? AND item_type = 'semtype' ", [$sem_type_id]);
         if ($matching) {
             return $matching['name'];
         } else {
@@ -24,7 +24,7 @@ class EvasysMatching extends SimpleORMap {
 
     static public function wording($text)
     {
-        $matching = self::findOneBySQL("item_id = ? AND item_type = 'wording' ", array(md5($text)));
+        $matching = self::findOneBySQL("item_id = ? AND item_type = 'wording' ", [md5($text)]);
         if ($matching && trim($matching['name'])) {
             return $matching['name'];
         } else {
@@ -32,7 +32,7 @@ class EvasysMatching extends SimpleORMap {
         }
     }
 
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'evasys_matchings';
         $config['i18n_fields']['name'] = true;

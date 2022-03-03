@@ -7,7 +7,7 @@ class FormsController extends PluginController
     {
         parent::before_filter($action, $args);
 
-        if (!EvasysPlugin::isRoot() || !Config::get()->EVASYS_ENABLE_PROFILES) {
+        if (!EvasysPlugin::isRoot()) {
             throw new AccessDeniedException();
         }
     }
@@ -50,7 +50,7 @@ class FormsController extends PluginController
                 SET active = '0'
                 WHERE form_id NOT IN (?)
             ");
-            $statement->execute(array(Request::getArray("a")));
+            $statement->execute([Request::getArray("a")]);
         }
         $this->redirect("forms/index");
     }
@@ -68,11 +68,11 @@ class FormsController extends PluginController
             //
         }
         PageLayout::setTitle(sprintf(dgettext("evasys", "Fragebögen sortieren für Typ %s"), $GLOBALS['SEM_TYPE'][$this->sem_type]['name']));
-        $this->forms = EvasysProfileSemtypeForm::findBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '0' ORDER BY position ASC", array(
+        $this->forms = EvasysProfileSemtypeForm::findBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '0' ORDER BY position ASC", [
             'profile_type' => $this->profile_type,
             'sem_type' => $this->sem_type,
             'profile_id' => $this->profile_id
-        ));
+        ]);
         if (Request::isPost()) {
             $positions = array_flip(Request::getArray("form"));
             foreach ($this->forms as $form) {
@@ -80,17 +80,17 @@ class FormsController extends PluginController
                 $form->store();
             }
             PageLayout::postSuccess(dgettext("evasys", "Sortierung wurde gespeichert."));
-            $this->forms = EvasysProfileSemtypeForm::findBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '0' ORDER BY position ASC", array(
+            $this->forms = EvasysProfileSemtypeForm::findBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '0' ORDER BY position ASC", [
                 'profile_type' => $this->profile_type,
                 'sem_type' => $this->sem_type,
                 'profile_id' => $this->profile_id
-            ));
+            ]);
         }
-        $this->standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
+        $this->standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", [
             'profile_type' => $this->profile_type,
             'sem_type' => $this->sem_type,
             'profile_id' => $this->profile_id
-        ));
+        ]);
     }
 
     public function fetch_forms_languages_action()
@@ -111,9 +111,9 @@ class FormsController extends PluginController
             $soap = EvasysSoap::get();
 
 
-            $evasys_forminfo = $soap->__soapCall("GetFormTranslations", array(
+            $evasys_forminfo = $soap->__soapCall("GetFormTranslations", [
                 'FormId' => $form->getId()
-            ));
+            ]);
             if (is_a($evasys_forminfo, "SoapFault")) {
                 if ($evasys_forminfo->getMessage() === "ERR_225") {
                     //gibt keine Übersetzungen

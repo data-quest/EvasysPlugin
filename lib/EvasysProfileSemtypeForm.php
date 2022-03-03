@@ -2,13 +2,13 @@
 
 class EvasysProfileSemtypeForm extends SimpleORMap {
 
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'evasys_profiles_semtype_forms';
-        $config['belongs_to']['form'] = array(
+        $config['belongs_to']['form'] = [
             'class_name' => 'EvasysForm',
             'foreign_key' => 'form_id'
-        );
+        ];
         parent::configure($config);
     }
 
@@ -17,6 +17,6 @@ class EvasysProfileSemtypeForm extends SimpleORMap {
             $profile_type = $profile_id[1];
             $profile_id = $profile_id[0];
         }
-        return self::findBySQL("profile_id = ? AND profile_type = ?", array($profile_id, $profile_type));
+        return self::findBySQL("profile_id = ? AND profile_type = ?", [$profile_id, $profile_type]);
     }
 }

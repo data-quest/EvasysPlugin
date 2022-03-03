@@ -43,37 +43,34 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         //The user must be root
         if (self::isRoot()) {
-            $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, array(), Config::get()->EVASYS_ENABLE_PROFILES ? "globalprofile" : "matching/seminartypes"));
+            $nav = new Navigation($this->getDisplayName(), PluginEngine::getURL($this, [], "globalprofile"));
             Navigation::addItem("/admin/evasys", $nav);
-            if (Config::get()->EVASYS_ENABLE_PROFILES) {
-                $nav = new Navigation(dgettext("evasys", "Standardwerte"), PluginEngine::getURL($this, array(), "globalprofile"));
-                Navigation::addItem("/admin/evasys/globalprofile", clone $nav);
-                $nav = new Navigation(sprintf(dgettext("evasys", "Standardwerte der %s"), EvasysMatching::wording("Einrichtungen")), PluginEngine::getURL($this, array(), "instituteprofile"));
-                Navigation::addItem("/admin/evasys/instituteprofile", clone $nav);
-                $nav = new Navigation(dgettext("evasys", "Freie Felder"), PluginEngine::getURL($this, array(), "config/additionalfields"));
-                Navigation::addItem("/admin/evasys/additionalfields", clone $nav);
-                $nav = new Navigation(dgettext("evasys", "Fragebögen"), PluginEngine::getURL($this, array(), "forms/index"));
-                Navigation::addItem("/admin/evasys/forms", clone $nav);
-                $nav = new Navigation(dgettext("evasys", "Logs"), PluginEngine::getURL($this, array(), "logs/index"));
-                Navigation::addItem("/admin/evasys/logs", clone $nav);
-            }
-            $nav = new Navigation(dgettext("evasys", "Matching Veranstaltungstypen"), PluginEngine::getURL($this, array(), "matching/seminartypes"));
+            $nav = new Navigation(dgettext("evasys", "Standardwerte"), PluginEngine::getURL($this, [], "globalprofile"));
+            Navigation::addItem("/admin/evasys/globalprofile", clone $nav);
+            $nav = new Navigation(sprintf(dgettext("evasys", "Standardwerte der %s"), EvasysMatching::wording("Einrichtungen")), PluginEngine::getURL($this, [], "instituteprofile"));
+            Navigation::addItem("/admin/evasys/instituteprofile", clone $nav);
+            $nav = new Navigation(dgettext("evasys", "Freie Felder"), PluginEngine::getURL($this, [], "config/additionalfields"));
+            Navigation::addItem("/admin/evasys/additionalfields", clone $nav);
+            $nav = new Navigation(dgettext("evasys", "Fragebögen"), PluginEngine::getURL($this, [], "forms/index"));
+            Navigation::addItem("/admin/evasys/forms", clone $nav);
+            $nav = new Navigation(dgettext("evasys", "Logs"), PluginEngine::getURL($this, [], "logs/index"));
+            Navigation::addItem("/admin/evasys/logs", clone $nav);
+            $nav = new Navigation(dgettext("evasys", "Matching Veranstaltungstypen"), PluginEngine::getURL($this, [], "matching/seminartypes"));
             Navigation::addItem("/admin/evasys/matchingtypes", clone $nav);
-            $nav = new Navigation(dgettext("evasys", "Matching Einrichtungen"), PluginEngine::getURL($this, array(), "matching/institutes"));
+            $nav = new Navigation(dgettext("evasys", "Matching Einrichtungen"), PluginEngine::getURL($this, [], "matching/institutes"));
             Navigation::addItem("/admin/evasys/matchinginstitutes", clone $nav);
-            $nav = new Navigation(dgettext("evasys", "Begrifflichkeiten"), PluginEngine::getURL($this, array(), "matching/wording"));
+            $nav = new Navigation(dgettext("evasys", "Begrifflichkeiten"), PluginEngine::getURL($this, [], "matching/wording"));
             Navigation::addItem("/admin/evasys/wording", clone $nav);
-        } elseif (Config::get()->EVASYS_ENABLE_PROFILES && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS && Navigation::hasItem("/admin/institute")) {
-            $nav = new Navigation(dgettext("evasys", "Standard-Evaluationsprofil"), PluginEngine::getURL($this, array(), "instituteprofile"));
+        } elseif (Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS && Navigation::hasItem("/admin/institute")) {
+            $nav = new Navigation(dgettext("evasys", "Standard-Evaluationsprofil"), PluginEngine::getURL($this, [], "instituteprofile"));
             if (!self::isAdmin()) {
                 $nav->setEnabled(false);
             }
             Navigation::addItem("/admin/institute/instituteprofile", $nav);
         }
 
-        if (Config::get()->EVASYS_ENABLE_PROFILES
-                && ((stripos($_SERVER['REQUEST_URI'], "dispatch.php/admin/courses") !== false) || (stripos($_SERVER['REQUEST_URI'], "plugins.php/evasysplugin/profile/bulkedit") !== false))
-                ) {
+        if (((stripos($_SERVER['REQUEST_URI'], "dispatch.php/admin/courses") !== false)
+                || (stripos($_SERVER['REQUEST_URI'], "plugins.php/evasysplugin/profile/bulkedit") !== false))) {
             $this->addStylesheet("assets/evasys.less");
             if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin") {
                 if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")) {
@@ -90,19 +87,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             NotificationCenter::addObserver($this, "addMainphaseFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addIndividualFilterToSidebar", "SidebarWillRender");
         }
-        if (Config::get()->EVASYS_ENABLE_PROFILES && Navigation::hasItem("/course/admin") && Context::isCourse()) {
+        if (Navigation::hasItem("/course/admin") && Context::isCourse()) {
             if (Navigation::hasItem("/course/admin/evaluation")) {
                 $nav = Navigation::getItem("/course/admin/evaluation");
                 $nav->setTitle(dgettext("evasys", "Eigene Evaluationen"));
             }
 
-            $nav = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".Context::get()->id));
+            $nav = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getURL($this, [], "profile/edit/".Context::get()->id));
             $nav->setImage(Icon::create("checkbox-checked", "clickable"));
             $nav->setDescription(dgettext("evasys", "Beantragen Sie für diese Veranstaltung eine Lehrevaluation oder sehen Sie, ob eine Lehrevaluation für diese Veranstaltung vorgesehen ist."));
             Navigation::addItem("/course/admin/evasys", $nav);
         }
         if (Config::get()->EVASYS_ENABLE_PASSIVE_ACCOUNT && $GLOBALS['perm']->get_perm() === "dozent") {
-            $tab = new Navigation(dgettext("evasys", "EvaSys"), PluginEngine::getURL($this, array(), "passiveaccount/index"));
+            $tab = new Navigation(dgettext("evasys", "EvaSys"), PluginEngine::getURL($this, [], "passiveaccount/index"));
             Navigation::addItem("/profile/evasyspassiveaccount", $tab);
         }
         NotificationCenter::addObserver($this, "addNonfittingDatesFilter", "AdminCourseFilterWillQuery");
@@ -127,7 +124,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin"
                 || $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
-            $widget = new SelectWidget(dgettext("evasys", "Transfer-Filter"), PluginEngine::getURL($this, array(), "change_transferred_filter"), "transferstatus", "post");
+            $widget = new SelectWidget(dgettext("evasys", "Transfer-Filter"), PluginEngine::getURL($this, [], "change_transferred_filter"), "transferstatus", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
@@ -171,20 +168,20 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
             if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
-                $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                $filter->settings['query']['joins']['evasys_course_profiles'] = [
                     'join' => "LEFT JOIN",
                     'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                 "
-                );
+                ];
             } else {
-                $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                $filter->settings['query']['joins']['evasys_course_profiles'] = [
                     'join' => "LEFT JOIN",
                     'on' => "
                     seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                         AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
-                );
+                ];
                 $filter->settings['parameter']['evasys_semester_id'] = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
             }
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred") {
@@ -217,8 +214,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $widget->addCheckbox(
                 dgettext("evasys", "Nach Transfer veränderte Veranstaltungen"),
                 (bool) $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERDATE"),
-                PluginEngine::getURL($this, array('transferdate' => 1), "change_transferdate_filter"),
-                PluginEngine::getURL($this, array('transferdate' => 0), "change_transferdate_filter")
+                PluginEngine::getURL($this, ['transferdate' => 1], "change_transferdate_filter"),
+                PluginEngine::getURL($this, ['transferdate' => 0], "change_transferdate_filter")
             );
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferdate");
         }
@@ -234,20 +231,20 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERDATE")) {
             if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
-                $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                $filter->settings['query']['joins']['evasys_course_profiles'] = [
                     'join' => "LEFT JOIN",
                     'on' => "
                         seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     "
-                );
+                ];
             } else {
-                $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+                $filter->settings['query']['joins']['evasys_course_profiles'] = [
                     'join' => "LEFT JOIN",
                     'on' => "
                         seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                             AND evasys_course_profiles.semester_id = :evasys_semester_id
                     "
-                );
+                ];
                 $filter->settings['parameter']['evasys_semester_id'] = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
             }
             $filter->settings['query']['where']['evasys_transferdate']
@@ -266,7 +263,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $widget->addCheckbox(
                 (dgettext("evasys","Nur Veranstaltungen, die im Eval-Zeitraum keine Termine haben")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
-                PluginEngine::getURL($this, array(), "toggle_nonfittingdates_filter")
+                PluginEngine::getURL($this, [], "toggle_nonfittingdates_filter")
             );
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_nonfittingdates");
         }
@@ -286,29 +283,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES")) {
-            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+            $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
-            );
-            $filter->settings['query']['joins']['evasys_institute_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_institute_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id
                     AND evasys_institute_profiles.semester_id = :evasys_semester_id"
-            );
-            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = [
                 'join' => "LEFT JOIN",
                 'table' => "evasys_institute_profiles",
                 'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id
                     AND evasys_fakultaet_profiles.semester_id = :evasys_semester_id"
-            );
-            $filter->settings['query']['joins']['evasys_global_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_global_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "evasys_global_profiles.semester_id = :evasys_semester_id"
-            );
-            $filter->settings['query']['joins']['termine'] = array(
+            ];
+            $filter->settings['query']['joins']['termine'] = [
                 'join' => "LEFT JOIN",
                 'on' => "
                     seminare.Seminar_id = termine.range_id
@@ -318,7 +315,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                         OR (termine.date < IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.end_time > IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
                     )
                 "
-            );
+            ];
             $filter->settings['query']['where']['date_not_in_timespan'] = "termine.termin_id IS NULL";
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
         }
@@ -335,7 +332,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $widget->addCheckbox(
                 (dgettext("evasys","Ausreißer-Veranstaltungen der nächsten 7 Tage anzeigen.")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"),
-                PluginEngine::getURL($this, array(), "toggle_recentevalcourses_filter")
+                PluginEngine::getURL($this, [], "toggle_recentevalcourses_filter")
             );
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_recentevalcourses");
         }
@@ -352,13 +349,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES")) {
-            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+            $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
-            );
+            ];
             $filter->settings['query']['where']['eval_starts_next_days'] = "evasys_course_profiles.applied = '1' AND evasys_course_profiles.begin IS NOT NULL AND evasys_course_profiles.begin > UNIX_TIMESTAMP() AND evasys_course_profiles.begin < UNIX_TIMESTAMP() + 86400 * 7 ";
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
         }
@@ -370,7 +367,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID"))) {
-            $widget = new SelectWidget(dgettext("evasys","Fragebogen-Filter"), PluginEngine::getURL($this, array(), "change_form_filter"), "form_id", "post");
+            $widget = new SelectWidget(dgettext("evasys","Fragebogen-Filter"), PluginEngine::getURL($this, [], "change_form_filter"), "form_id", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
@@ -397,51 +394,51 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID")) {
-            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+            $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
-            );
-            $filter->settings['query']['joins']['evasys_institute_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_institute_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id
                     AND evasys_institute_profiles.semester_id = :evasys_semester_id"
-            );
-            $filter->settings['query']['joins']['evasys_profiles_semtype_forms'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_profiles_semtype_forms'] = [
                 'join' => "LEFT JOIN",
                 'on' => "evasys_profiles_semtype_forms.profile_id = evasys_institute_profiles.institute_profile_id
                     AND evasys_profiles_semtype_forms.profile_type = 'institute'
                     AND evasys_profiles_semtype_forms.sem_type = seminare.status
                     AND evasys_profiles_semtype_forms.`standard` = '1'"
-            );
-            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = [
                 'join' => "LEFT JOIN",
                 'table' => "evasys_institute_profiles",
                 'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id
                     AND evasys_fakultaet_profiles.semester_id = :evasys_semester_id"
-            );
-            $filter->settings['query']['joins']['evasys_profiles_semtype_forms_fakultaet'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_profiles_semtype_forms_fakultaet'] = [
                 'table' => "evasys_profiles_semtype_forms",
                 'join' => "LEFT JOIN",
                 'on' => "evasys_profiles_semtype_forms_fakultaet.profile_id = evasys_fakultaet_profiles.institute_profile_id
                     AND evasys_profiles_semtype_forms_fakultaet.profile_type = 'institute'
                     AND evasys_profiles_semtype_forms_fakultaet.sem_type = seminare.status
                     AND evasys_profiles_semtype_forms_fakultaet.`standard` = '1'"
-            );
-            $filter->settings['query']['joins']['evasys_global_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_global_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "evasys_global_profiles.semester_id = :evasys_semester_id"
-            );
-            $filter->settings['query']['joins']['evasys_profiles_semtype_forms_global'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_profiles_semtype_forms_global'] = [
                 'table' => "evasys_profiles_semtype_forms",
                 'join' => "LEFT JOIN",
                 'on' => "evasys_profiles_semtype_forms_global.profile_id = evasys_global_profiles.semester_id
                     AND evasys_profiles_semtype_forms_global.profile_type = 'global'
                     AND evasys_profiles_semtype_forms_global.sem_type = seminare.status
                     AND evasys_profiles_semtype_forms_global.`standard` = '1'"
-            );
+            ];
 
 
             $filter->settings['query']['where']['evasys_form_filter'] = "IFNULL(evasys_course_profiles.form_id, IFNULL(evasys_profiles_semtype_forms.form_id, IFNULL(evasys_profiles_semtype_forms_fakultaet.form_id, IFNULL(evasys_profiles_semtype_forms_global.form_id, IFNULL(evasys_institute_profiles.form_id, IFNULL(evasys_fakultaet_profiles.form_id, evasys_global_profiles.form_id)))))) = :evasys_form_id";
@@ -456,7 +453,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID"))) {
-            $widget = new SelectWidget(dgettext("evasys","Modus der Evaluation"), PluginEngine::getURL($this, array(), "change_paperonline_filter"), "paperonline", "post");
+            $widget = new SelectWidget(dgettext("evasys","Modus der Evaluation"), PluginEngine::getURL($this, [], "change_paperonline_filter"), "paperonline", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
@@ -485,28 +482,28 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE")) {
-            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+            $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
-            );
-            $filter->settings['query']['joins']['evasys_institute_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_institute_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "evasys_institute_profiles.institut_id = seminare.Institut_id
                     AND evasys_institute_profiles.semester_id = :evasys_semester_id"
-            );
-            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_fakultaet_profiles'] = [
                 'join' => "LEFT JOIN",
                 'table' => "evasys_institute_profiles",
                 'on' => "evasys_fakultaet_profiles.institut_id = Institute.fakultaets_id
                     AND evasys_fakultaet_profiles.semester_id = :evasys_semester_id"
-            );
-            $filter->settings['query']['joins']['evasys_global_profiles'] = array(
+            ];
+            $filter->settings['query']['joins']['evasys_global_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "evasys_global_profiles.semester_id = :evasys_semester_id"
-            );
+            ];
 
             $filter->settings['query']['where']['evasys_paperonline_filter'] = "IFNULL(evasys_course_profiles.mode, IFNULL(evasys_institute_profiles.mode, IFNULL(evasys_fakultaet_profiles.mode, evasys_global_profiles.mode))) = :evasys_mode";
             $filter->settings['parameter']['evasys_mode'] = $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE");
@@ -520,7 +517,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE"))) {
-            $widget = new SelectWidget(dgettext("evasys","Hauptphasen-Filter"), PluginEngine::getURL($this, array(), "change_mainphase_filter"), "mainphase", "post");
+            $widget = new SelectWidget(dgettext("evasys","Hauptphasen-Filter"), PluginEngine::getURL($this, [], "change_mainphase_filter"), "mainphase", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
@@ -549,13 +546,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE")) {
-            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+            $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
-            );
+            ];
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "nonmainphase") {
                 $filter->settings['query']['where']['evasys_mainphase_filter'] = "evasys_course_profiles.`begin` IS NOT NULL";
             } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "mainphase") {
@@ -569,7 +566,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_INDIVIDUAL"))) {
-            $widget = new SelectWidget(dgettext("evasys","Freiwillige Evaluation"), PluginEngine::getURL($this, array(), "change_individual_filter"), "individual", "post");
+            $widget = new SelectWidget(dgettext("evasys","Freiwillige Evaluation"), PluginEngine::getURL($this, [], "change_individual_filter"), "individual", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
@@ -598,13 +595,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_INDIVIDUAL")) {
-            $filter->settings['query']['joins']['evasys_course_profiles'] = array(
+            $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
                 'on' => "
                 seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
                     AND evasys_course_profiles.semester_id = :evasys_semester_id
                 "
-            );
+            ];
             $filter->settings['query']['where']['evasys_individual_filter'] = "evasys_course_profiles.by_dozent = :evasys_individual";
             $filter->settings['parameter']['evasys_individual'] = ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_INDIVIDUAL") === 'individual') ? 1 : 0;
             $filter->settings['parameter']['evasys_semester_id'] = $semester_id;
@@ -614,41 +611,30 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function getIconNavigation($course_id, $last_visit, $user_id = null)
     {
         $activated = false;
-        $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
-        if (Config::get()->EVASYS_ENABLE_PROFILES) {
-            $profile = EvasysCourseProfile::findBySemester($course_id);
-            if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
-                if ($profile['applied']) {
-                    $activated = true;
-                }
-            } else {
-                if ($profile['applied']
-                    && $profile['transferred']
-                    && ($profile->getFinalBegin() <= time())
-                    && ($profile->getFinalEnd() > time())) {
-                    $activated = true;
-                }
+        $evasys_seminar = EvasysSeminar::findBySeminar($course_id);
+        $profile = EvasysCourseProfile::findBySemester($course_id);
+        if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+            if ($profile['applied']) {
+                $activated = true;
             }
         } else {
-            foreach ($evasys_seminars as $evasys_seminar) {
-                if ($evasys_seminar['activated']) {
-                    $activated = true;
-                }
+            if ($profile['applied']
+                && $profile['transferred']
+                && ($profile->getFinalBegin() <= time())
+                && ($profile->getFinalEnd() > time())) {
+                $activated = true;
             }
         }
 
         if ($activated) {
-            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
-            if ($profile && $profile['split']) {
-                $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
-            }
-            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => dgettext("evasys", "Lehrveranstaltungsevaluationen")));
+            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getLink($this, [], "evaluation/show"));
+            $tab->setImage(Icon::create("evaluation", "inactive"), ['title' => dgettext("evasys", "Lehrveranstaltungsevaluationen")]);
             if (!Config::get()->EVASYS_NO_RED_ICONS) {
                 if (Config::get()->EVASYS_RED_ICONS_STOP_UNTIL > time()) {
-                    $tab->setImage(Icon::create("evaluation", "new"), array('title' => dgettext("evasys", "Neue Evaluation")));
+                    $tab->setImage(Icon::create("evaluation", "new"), ['title' => dgettext("evasys", "Neue Evaluation")]);
                 } else {
                     $number = 0;
-                    foreach ($evasys_seminars as $evasys_seminar) {
+                    if ($evasys_seminar) {
                         $number += $evasys_seminar->getEvaluationStatus();
                     }
                     if ($number > 0) {
@@ -658,8 +644,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             }
             return $tab;
         } elseif($profile && $profile['applied'] && $GLOBALS['perm']->have_studip_perm("dozent", $course_id)) {
-            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getURL($this, array(), "profile/edit/".$course_id));
-            $tab->setImage(Icon::create("evaluation", "inactive"), array('title' => dgettext("evasys", "Evaluationen")));
+            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getURL($this, [], "profile/edit/".$course_id));
+            $tab->setImage(Icon::create("evaluation", "inactive"), ['title' => dgettext("evasys", "Evaluationen")]);
             return $tab;
         }
     }
@@ -667,40 +653,27 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function getTabNavigation($course_id)
     {
         $activated = false;
-        if (Config::get()->EVASYS_ENABLE_PROFILES) {
-            $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", array($course_id));
-            foreach ($profiles as $profile) {
-                if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
-                    if ($profile['applied']) {
-                        $activated = true;
-                        break;
-                    }
-                } else {
-                    if ($profile['applied']
-                        && $profile['transferred']
-                        && ($profile->getFinalBegin() <= time())) {
-                        $activated = true;
-                        break;
-                    }
+        $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", [$course_id]);
+        foreach ($profiles as $profile) {
+            if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id)) {
+                if ($profile['applied']) {
+                    $activated = true;
+                    break;
                 }
-
-            }
-        } else {
-            $evasys_seminars = EvasysSeminar::findBySeminar($course_id);
-            foreach ($evasys_seminars as $evasys_seminar) {
-                if ($evasys_seminar['activated']) {
+            } else {
+                if ($profile['applied']
+                    && $profile['transferred']
+                    && ($profile->getFinalBegin() <= time())) {
                     $activated = true;
                     break;
                 }
             }
+
         }
         if ($activated) {
-            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getLink($this, array(), "evaluation/show"));
-            if ($profile && $profile['split']) {
-                $tab->setURL(PluginEngine::getLink($this, array(), "evaluation/split"));
-            }
+            $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getLink($this, [], "evaluation/show"));
             $tab->setImage(Icon::create("evaluation", "info_alt"));
-            return array('evasys' => $tab);
+            return ['evasys' => $tab];
         }
     }
 
@@ -726,8 +699,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function getAdminActionURL()
     {
         return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
-            ? PluginEngine::getURL($this, array(), "admin/upload_courses")
-            : PluginEngine::getURL($this, array(), "profile/bulkedit");
+            ? PluginEngine::getURL($this, [], "admin/upload_courses")
+            : PluginEngine::getURL($this, [], "profile/bulkedit");
     }
 
     public function useMultimode()
@@ -747,14 +720,14 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
         }
         if ($semester_id) {
-            $profiles = array(EvasysCourseProfile::findBySemester(
+            $profiles = [EvasysCourseProfile::findBySemester(
                 $course_id,
                 $semester_id
-            ));
+            )];
         } else {
-            $profiles = EvasysCourseProfile::findBySQL("seminar_id = :course_id", array(
+            $profiles = EvasysCourseProfile::findBySQL("seminar_id = :course_id", [
                 'course_id' => $course_id
-            ));
+            ]);
             //sort
             usort($profiles, function ($a, $b) {
                 return $a->semester->beginn > $a->semester->beginn ? -1 : 1;
@@ -771,8 +744,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             WHERE seminare.Seminar_id = :seminar_id
             ORDER BY semester_data.beginn ASC
         ");
-        $get_semesters->execute(array('seminar_id' => $course_id));
-        $semesters = array();
+        $get_semesters->execute(['seminar_id' => $course_id]);
+        $semesters = [];
         foreach ($get_semesters->fetchAll(PDO::FETCH_ASSOC) as $semester_data) {
             $semesters[] = Semester::buildExisting($semester_data);
         }
@@ -792,9 +765,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if ($GLOBALS['perm']->have_perm("root")) {
             return false;
-        } elseif ($GLOBALS['perm']->have_perm("admin") && !Config::get()->EVASYS_ENABLE_PROFILES) {
-            //for the case that we have no profiles and are admin:
-            return true;
         } elseif ($seminar_id && $GLOBALS['perm']->have_studip_perm("admin", $seminar_id) && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
             $global_profile = EvasysGlobalProfile::findCurrent();
             if ($global_profile['adminedit_begin']) {
@@ -813,7 +783,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 WHERE rolename = 'Evasys-Dozent-Admin'
                     AND roles_user.userid = ?
             ");
-            $statement->execute(array($GLOBALS['user']->id));
+            $statement->execute([$GLOBALS['user']->id]);
             $roles = $statement->fetchAll(PDO::FETCH_ASSOC);
             if (!$seminar_id && !empty($roles)) {
                 return true;
@@ -839,7 +809,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function adminAvailableContents()
     {
-        $array = array(
+        $array = [
             'form' => dgettext("evasys", "Fragebogen"),
             'mode' => dgettext("evasys", "Modus der Evalation"),
             'timespan' => dgettext("evasys", "Eval-Zeitraum"),
@@ -847,7 +817,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             'lehrende_emails' => dgettext("evasys", 'Eval: Beantragte Lehrende (Emails)'),
             'ruecklauf' => dgettext("evasys", "Rückläufer"),
             'individual' => ucfirst(EvasysMatching::wording('freiwillige Evaluation'))
-        );
+        ];
         if (Config::get()->EVASYS_ENABLE_SPLITTING_COURSES) {
             $array['split'] = dgettext("evasys", "Teilevaluation");
         }
@@ -903,7 +873,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 if (!$profile || !$profile['applied']) {
                     return "";
                 }
-                $emails = array();
+                $emails = [];
                 if ($profile['teachers']) {
                     foreach ((array) $profile['teachers']->getArrayCopy() as $teacher_id) {
                         $teacher = User::find($teacher_id);
@@ -919,7 +889,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 return $profile && $profile['by_dozent'] ? 1 : 0;
             case "ruecklauf":
 
-                $active_seminar_ids = array();
+                $active_seminar_ids = [];
 
                 $profile;
                 if (!$profile['applied'] || !$profile['transferred'] || $profile->getFinalBegin() >= time()) {
@@ -934,17 +904,17 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     $active_seminar_ids[$profile['seminar_id']] = $profile['seminar_id'];
                 }
 
-                $results = array();
+                $results = [];
 
                 $soap = EvasysSoap::get();
 
                 foreach (array_keys($active_seminar_ids) as $course_code) {
-                    $evasys_surveys_object = $soap->soapCall("GetCourse", array(
+                    $evasys_surveys_object = $soap->soapCall("GetCourse", [
                             'CourseId' => $course_code,
                             'IdType' => "PUBLIC",
                             'IncludeSurveys' => true,
                             'IncludeParticipants' => false
-                        )
+                        ]
                     );
                     if (is_a($evasys_surveys_object, "SoapFault")) {
                         if ($evasys_surveys_object->getMessage() === "ERR_312") {
@@ -985,7 +955,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $course = Course::find($event->coaffected_range_id);
             $semester = Semester::find($event->info);
             if ($course) {
-                $url = PluginEngine::getURL('EvasysPlugin', array(), '/profile/edit/'
+                $url = PluginEngine::getURL('EvasysPlugin', [], '/profile/edit/'
                     . $event->coaffected_range_id, true);
                 $name = sprintf('<a data-dialog href="%s">%s - %s (%s)</a>',
                     $url, $course->veranstaltungsnummer,
@@ -1035,29 +1005,25 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function removeEvasysCourse($event, $course)
     {
-        if (Config::get()->EVASYS_ENABLE_PROFILES) {
-            $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", array($course->getId()));
-            $seminar_ids = array();
-            foreach ($profiles as $profile) {
-                if ($profile['transferred']) {
-                    if ($profile['split']) {
-                        $seminar_ids = array_unique(array_merge($seminar_ids, array_keys($profile['surveys']->getArrayCopy())));
-                    } else {
-                        if (!in_array($course->getId(), $seminar_ids)) {
-                            $seminar_ids[] = $course->getId();
-                        }
+        $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", [$course->getId()]);
+        $seminar_ids = [];
+        foreach ($profiles as $profile) {
+            if ($profile['transferred']) {
+                if ($profile['split']) {
+                    $seminar_ids = array_unique(array_merge($seminar_ids, array_keys($profile['surveys']->getArrayCopy())));
+                } else {
+                    if (!in_array($course->getId(), $seminar_ids)) {
+                        $seminar_ids[] = $course->getId();
                     }
                 }
             }
-        } else {
-            $seminar_ids = array($course->getId());
         }
         foreach ($seminar_ids as $seminar_id) {
             $soap = EvasysSoap::get();
-            $soap->soapCall("DeleteCourse", array(
+            $soap->soapCall("DeleteCourse", [
                 'CourseId' => $seminar_id,
                 'IdType' => "PUBLIC"
-            ));
+            ]);
         }
     }
 }

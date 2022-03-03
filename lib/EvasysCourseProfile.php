@@ -5,10 +5,10 @@ class EvasysCourseProfile extends SimpleORMap {
     static public function findBySemester($seminar_id, $semester_id = null)
     {
         $semester_id || $semester_id = Semester::findCurrent()->id;
-        $profile = self::findOneBySQL("seminar_id = :course_id AND semester_id = :semester_id", array(
+        $profile = self::findOneBySQL("seminar_id = :course_id AND semester_id = :semester_id", [
             'course_id' => $seminar_id,
             'semester_id' => $semester_id
-        ));
+        ]);
         if (!$profile) {
             $profile = new EvasysCourseProfile();
             $profile['seminar_id'] = $seminar_id;
@@ -20,36 +20,40 @@ class EvasysCourseProfile extends SimpleORMap {
     static public function findManyBySemester($course_ids, $semester_id = null)
     {
         $semester_id || $semester_id = Semester::findCurrent()->id;
-        $profiles = array();
+        $profiles = [];
         foreach ($course_ids as $course_id) {
             $profiles[] = self::findBySemester($course_id, $semester_id);
         }
         return $profiles;
     }
 
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'evasys_course_profiles';
-        $config['belongs_to']['course'] = array(
+        $config['belongs_to']['course'] = [
             'class_name' => 'Course',
             'foreign_key' => 'seminar_id'
-        );
-        $config['belongs_to']['semester'] = array(
+        ];
+        $config['belongs_to']['evasys_seminar'] = [
+            'class_name' => 'EvasysSeminar',
+            'foreign_key' => 'seminar_id'
+        ];
+        $config['belongs_to']['semester'] = [
             'class_name' => 'Semester',
             'foreign_key' => 'semester_id'
-        );
-        $config['additional_fields']['final_form_id'] = array(
+        ];
+        $config['additional_fields']['final_form_id'] = [
             'get' => 'getFinalFormId'
-        );
-        $config['additional_fields']['final_begin'] = array(
+        ];
+        $config['additional_fields']['final_begin'] = [
             'get' => 'getFinalBegin'
-        );
-        $config['additional_fields']['final_end'] = array(
+        ];
+        $config['additional_fields']['final_end'] = [
             'get' => 'getFinalEnd'
-        );
-        $config['additional_fields']['final_mode'] = array(
+        ];
+        $config['additional_fields']['final_mode'] = [
             'get' => 'getFinalmode'
-        );
+        ];
         $config['serialized_fields']['teachers'] = "JSONArrayObject";
         $config['serialized_fields']['surveys'] = "JSONArrayObject";
 
@@ -69,13 +73,13 @@ class EvasysCourseProfile extends SimpleORMap {
                 AND user_id = :user_id
                 AND status = 'dozent'
         ");
-        $is_dozent->execute(array(
+        $is_dozent->execute([
             'user_id' => $GLOBALS['user']->id,
             'seminar_id' => $this['seminar_id']
-        ));
+        ]);
         $is_dozent = (bool) $is_dozent->fetch(PDO::FETCH_COLUMN, 0);
         if ($applied && $is_dozent) {
-            $institut_ids = array($this->course['institut_id']);
+            $institut_ids = [$this->course['institut_id']];
             $fakultaet_id = $this->course->home_institut['fakultaets_id'];
             if (!in_array($fakultaet_id, $institut_ids)) {
                 $institut_ids[] = $fakultaet_id;
@@ -95,17 +99,17 @@ class EvasysCourseProfile extends SimpleORMap {
                 WHERE seminar_user.status = 'dozent'
                     AND seminar_user.Seminar_id = :seminar_id
             ");
-            $statement->execute(array(
+            $statement->execute([
                 "role" => "Evasys-Admin",
                 'seminar_id' => $this['seminar_id'],
                 'institut_ids' => $institut_ids
-            ));
+            ]);
             $user_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
             $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
             $messaging = new messaging();
             foreach ($user_ids as $user_id) {
                 if ($user_id !== $GLOBALS['user']->id) {
-                    $link = URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], array('cid' => $this['seminar_id']));
+                    $link = URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], ['cid' => $this['seminar_id']]);
                     $message = sprintf(
                             dgettext("evasys", "%s hat eine Lehrevaluation für die Veranstaltung %s beantragt. Sie können die Evaluationsdaten hier einsehen:"),
                             get_fullname($GLOBALS['user']->id),
@@ -126,7 +130,7 @@ class EvasysCourseProfile extends SimpleORMap {
                         ),
                         true,
                         "normal",
-                        array("Lehrevaluation")
+                        ["Lehrevaluation"]
                     );
                 }
             }
@@ -174,9 +178,9 @@ class EvasysCourseProfile extends SimpleORMap {
                     WHERE seminar_user.status = 'dozent'
                         AND seminar_user.Seminar_id = :seminar_id
                 ");
-                $statement->execute(array(
+                $statement->execute([
                     'seminar_id' => $this['seminar_id']
-                ));
+                ]);
                 $dozenten = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
                 foreach ($dozenten as $dozent_username) {
@@ -187,7 +191,7 @@ class EvasysCourseProfile extends SimpleORMap {
                             dgettext("evasys", "%s hat gerade die Lehrevaluationsdaten der Veranstaltung %s verändert. Die geänderten Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
                             get_fullname($GLOBALS['user']->id),
                             $this->course['name'],
-                            URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], array('cid' => $profile['seminar_id']), true)
+                            URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], ['cid' => $this['seminar_id']], true)
                         );
                         $messaging->insert_message(
                             $message,
@@ -200,7 +204,7 @@ class EvasysCourseProfile extends SimpleORMap {
                             dgettext("evasys", "Bearbeitung der Evaluationsdaten"),
                             true,
                             "normal",
-                            array("Lehrevaluation")
+                            ["Lehrevaluation"]
                         );
                         URLHelper::setBaseURL($oldbase);
                     }
@@ -243,11 +247,11 @@ class EvasysCourseProfile extends SimpleORMap {
         $sem_type = $this->course->status;
         if ($inst_profile) {
 
-            $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
+            $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", [
                 'profile_type' => "institute",
                 'sem_type' => $sem_type,
                 'profile_id' => $inst_profile->getId()
-            ));
+            ]);
 
             $statement = DBManager::get()->prepare("
                 SELECT form_id
@@ -257,11 +261,11 @@ class EvasysCourseProfile extends SimpleORMap {
                     AND sem_type = :sem_type
                     AND standard = '0'
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'profile_type' => "institute",
                 'sem_type' => $sem_type,
                 'profile_id' => $inst_profile->getId()
-            ));
+            ]);
             $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
             if (!empty($available_form_ids)) {
@@ -283,11 +287,11 @@ class EvasysCourseProfile extends SimpleORMap {
         if ($fakultaet_id !== $institut_id) {
             $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id, $this['semester_id']);
             if ($inst_profile) { //Do the same thing with this profile:
-                $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
+                $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", [
                     'profile_type' => "institute",
                     'sem_type' => $sem_type,
                     'profile_id' => $inst_profile->getId()
-                ));
+                ]);
 
                 $statement = DBManager::get()->prepare("
                     SELECT form_id
@@ -297,11 +301,11 @@ class EvasysCourseProfile extends SimpleORMap {
                         AND sem_type = :sem_type
                         AND standard = '0'
                 ");
-                $statement->execute(array(
+                $statement->execute([
                     'profile_type' => "institute",
                     'sem_type' => $sem_type,
                     'profile_id' => $inst_profile->getId()
-                ));
+                ]);
                 $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
                 if (!empty($available_form_ids)) {
@@ -322,11 +326,11 @@ class EvasysCourseProfile extends SimpleORMap {
         }
         $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
         if ($global_profile) {
-            $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", array(
+            $standardform = EvasysProfileSemtypeForm::findOneBySQL("profile_type = :profile_type AND profile_id = :profile_id AND sem_type = :sem_type AND standard = '1'", [
                 'profile_type' => "global",
                 'sem_type' => $sem_type,
                 'profile_id' => $global_profile->getId()
-            ));
+            ]);
 
             $statement = DBManager::get()->prepare("
                 SELECT form_id
@@ -336,11 +340,11 @@ class EvasysCourseProfile extends SimpleORMap {
                     AND sem_type = :sem_type
                     AND standard = '0'
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'profile_type' => "global",
                 'sem_type' => $sem_type,
                 'profile_id' => $global_profile->getId()
-            ));
+            ]);
             $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
 
             if (!empty($available_form_ids)) {
@@ -376,11 +380,11 @@ class EvasysCourseProfile extends SimpleORMap {
                     AND standard = '0'
                 ORDER BY position ASC
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'profile_type' => "institute",
                 'sem_type' => $sem_type,
                 'profile_id' => $inst_profile->getId()
-            ));
+            ]);
             $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
             if (!empty($form_ids)) {
                 return $form_ids;
@@ -399,11 +403,11 @@ class EvasysCourseProfile extends SimpleORMap {
                         AND standard = '0'
                     ORDER BY position ASC
                 ");
-                $statement->execute(array(
+                $statement->execute([
                     'profile_type' => "institute",
                     'sem_type' => $sem_type,
                     'profile_id' => $inst_profile->getId()
-                ));
+                ]);
                 $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
                 if (!empty($form_ids)) {
                     return $form_ids;
@@ -422,11 +426,11 @@ class EvasysCourseProfile extends SimpleORMap {
                     AND standard = '0'
                 ORDER BY position ASC
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'profile_type' => "global",
                 'sem_type' => $sem_type,
                 'profile_id' => $global_profile->getId()
-            ));
+            ]);
             $form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
             if (!empty($form_ids)) {
                 return $form_ids;
@@ -601,11 +605,11 @@ class EvasysCourseProfile extends SimpleORMap {
                     OR (date < :begin AND end_time > :end)
                 )
         ");
-        $statement->execute(array(
+        $statement->execute([
             'course_id' => $this['Seminar_id'],
             'begin' => $begin,
             'end' => $end
-        ));
+        ]);
         return (bool) $statement->fetch(PDO::FETCH_COLUMN, 0);
     }
 
@@ -627,7 +631,7 @@ class EvasysCourseProfile extends SimpleORMap {
             }
         }
         if (!trim($emails)) {
-            return array();
+            return [];
         } else {
             $emails = preg_split("/[\s,;]+/", strtolower($emails), -1, PREG_SPLIT_NO_EMPTY);
             return array_unique($emails);
@@ -637,12 +641,110 @@ class EvasysCourseProfile extends SimpleORMap {
     public function getFinalTeilnehmer()
     {
         return count($this->course->members->filter(function ($member) {
-            return in_array($member['status'], array("autor", "user", "tutor"));
+            return in_array($member['status'], ["autor", "user", "tutor"]);
         }));
     }
 
     public function isChangedAfterTransfer()
     {
         return $this['applied'] && $this['transferred'] && ($this['transferdate'] < $this['chdate']);
+    }
+
+    /**
+     * Returns all open TANs for the $user_id for this course. If this course is split, you need to define the
+     * teacher, because the id of the teacher is needed to get the correct course in evasys.
+     * @param $teacher_id
+     * @param $user_id
+     * @return array
+     * @throws Exception
+     */
+    public function getTANs($teacher_id = null, $user_id = null)
+    {
+        if ($this['split']) {
+            $seminar_id = $this['Seminar_id'] . $teacher_id;
+        } else {
+            $seminar_id = $this['Seminar_id'];
+        }
+        if (isset($_SESSION['EVASYS_SEMINAR_SURVEYS'][$seminar_id])
+            && (time() - $_SESSION['EVASYS_SEMINAR_SURVEYS_EXPIRE'][$seminar_id]) < 60 * Config::get()->EVASYS_CACHE) {
+            return array_filter(array_map(function ($k) {
+                return $k->TransactionNumber && $k->TransactionNumber !== "null" ? $k->TransactionNumber : null;
+            }, $_SESSION['EVASYS_SEMINAR_SURVEYS'][$seminar_id]));
+        }
+        $soap = EvasysSoap::get();
+        $user_id || $user_id = $GLOBALS['user']->id;
+        $user = new User($user_id);
+
+
+        $surveys = $soap->soapCall("GetPswdsByParticipant", [
+            'UserMailAddress' => $user->email,
+            'CourseCode' => $seminar_id
+        ]);
+
+        if (is_a($surveys, "SoapFault")) {
+            if ($surveys->faultstring === "ERR_206") {
+                PageLayout::postMessage(MessageBox::info($surveys->detail));
+                $surveys = [];
+            } elseif ($surveys->faultstring === "ERR_207") {
+                $surveys = ["schon teilgenommen"];
+            } elseif(is_string($surveys->detail)) {
+                throw new Exception("SOAP-Fehler: ".$surveys->detail);
+            } else {
+                throw new Exception("SOAP-Fehler: ".print_r($surveys->detail, true));
+            }
+        }
+        $_SESSION['EVASYS_SEMINAR_SURVEYS_EXPIRE'][$seminar_id] = time();
+        $_SESSION['EVASYS_SEMINAR_SURVEYS'][$seminar_id] = $surveys->OnlineSurveyKeys;
+
+        return array_filter(array_map(function ($k) {
+            return $k->TransactionNumber && $k->TransactionNumber !== "null" ? $k->TransactionNumber : null;
+        }, $_SESSION['EVASYS_SEMINAR_SURVEYS'][$seminar_id]));
+    }
+
+    /**
+     * Get the information about the survey from evasys. Uses session caching.
+     * @param $teacher_id
+     * @return array|null
+     * @throws Exception
+     */
+    public function getSurveyInformation($teacher_id = null)
+    {
+        if ($this['split']) {
+            $seminar_id = $this['Seminar_id'] . $teacher_id;
+        } else {
+            $seminar_id = $this['Seminar_id'];
+        }
+
+        if (isset($_SESSION['EVASYS_SURVEY_INFO'][$seminar_id])
+            && (time() - $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$seminar_id] < 60 * Config::get()->EVASYS_CACHE)) {
+            $profile = $this;
+            return array_filter($_SESSION['EVASYS_SURVEY_INFO'][$seminar_id], function ($a) use ($profile) {
+                $semester = Semester::findByTimestamp(strtotime($a->m_oPeriod->m_sStartDate));
+                return ($semester && $semester->getId() === $profile['semester_id']);
+            });
+        }
+
+        $soap = EvasysSoap::get();
+        $course = $soap->soapCall("GetCourse", [
+            'CourseId' => $seminar_id,
+            'IdType' => "EXTERNAL", //the CourseUid from the export
+            'IncludeSurveys' => 1
+        ]);
+
+        if (is_a($course, "SoapFault")) {
+            return null;
+        } elseif(!$this['split'] && $course->m_nCourseId) {
+            $this->evasys_seminar['evasys_id'] = $course->m_nCourseId; //kann nie schaden
+            $this->evasys_seminar->store();
+        }
+        $surveys = (array) $course->m_oSurveyHolder->m_aSurveys->Surveys;
+        $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$seminar_id] = time();
+        $_SESSION['EVASYS_SURVEY_INFO'][$seminar_id] = $surveys;
+
+        $profile = $this;
+        return array_filter($_SESSION['EVASYS_SURVEY_INFO'][$seminar_id], function ($a) use ($profile) {
+            $semester = Semester::findByTimestamp(strtotime($a->m_oPeriod->m_sStartDate));
+            return ($semester && $semester->getId() === $profile['semester_id']);
+        });
     }
 }

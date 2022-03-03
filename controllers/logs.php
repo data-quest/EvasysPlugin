@@ -5,7 +5,7 @@ class LogsController extends PluginController
     function before_filter(&$action, &$args)
     {
         parent::before_filter($action, $args);
-        if (!EvasysPlugin::isRoot() || !Config::get()->EVASYS_ENABLE_PROFILES) {
+        if (!EvasysPlugin::isRoot()) {
             throw new AccessDeniedException();
         }
         Navigation::activateItem("/admin/evasys/logs");

@@ -56,7 +56,7 @@ class EvasysUploadParticipantsJob extends CronJob
      *                          "verbose" which toggles verbose output while
      *                          purging the cache.
      */
-    public function execute($last_result, $parameters = array())
+    public function execute($last_result, $parameters = [])
     {
         $start = mktime(0, 0, 0, date("n"), date("j") + 1); // 0 Uhr des nächsten Tages
         $end = $start + 86400; // 0 Uhr des übernächsten Tages
@@ -78,11 +78,11 @@ class EvasysUploadParticipantsJob extends CronJob
             $sql .= " AND IFNULL(`evasys_course_profiles`.`mode`, IFNULL(evasys_institute_profiles.`mode`, IFNULL(evasys_fakultaet_profiles.`mode`, evasys_global_profiles.`mode`))) = 'online'";
         }
         $statement = DBManager::get()->prepare($sql);
-        $statement->execute(array(
+        $statement->execute([
             'start' => $start,
             'end' => $end
-        ));
-        $seminars = array();
+        ]);
+        $seminars = [];
         foreach ($statement->fetchAll(PDO::FETCH_COLUMN, 0) as $seminar_id) {
             $seminars[] = new EvasysSeminar($seminar_id);
         }

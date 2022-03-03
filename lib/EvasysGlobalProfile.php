@@ -5,20 +5,20 @@ class EvasysGlobalProfile extends SimpleORMap
 
     static protected $singleton = null;
 
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'evasys_global_profiles';
-        $config['belongs_to']['semester'] = array(
+        $config['belongs_to']['semester'] = [
             'class_name' => 'Semester',
             'foreign_key' => 'semester_id'
-        );
-        $config['has_many']['institute_profiles'] = array(
+        ];
+        $config['has_many']['institute_profiles'] = [
             'class_name' => 'EvasysInstituteProfile',
             'foreign_key' => 'semester_id',
             'on_delete'  => 'delete',
             'on_store'  => 'store'
-        );
-        $config['has_many']['semtype_forms'] = array(
+        ];
+        $config['has_many']['semtype_forms'] = [
             'class_name' => 'EvasysProfileSemtypeForm',
             'foreign_key' => 'profile_id',
             'foreign_key' => function($profile) {
@@ -27,7 +27,7 @@ class EvasysGlobalProfile extends SimpleORMap
             'assoc_func' => 'findByProfileAndType',
             'on_delete'  => 'delete',
             'on_store'  => 'store'
-        );
+        ];
         parent::configure($config);
     }
 
@@ -82,14 +82,14 @@ class EvasysGlobalProfile extends SimpleORMap
                 WHERE profile_id = :old_semester
                     AND profile_type = 'global'
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'new_semester' => $new_semester_id,
                 'old_semester' => $old_profile['semester_id']
-            ));
+            ]);
 
-            $institute_profiles = EvasysInstituteProfile::findBySQL("semester_id = ?", array(
+            $institute_profiles = EvasysInstituteProfile::findBySQL("semester_id = ?", [
                 $old_profile['semester_id']
-            ));
+            ]);
             foreach ($institute_profiles as $institute_profile) {
                 $institute_profile->copyToNewSemester($new_semester_id);
             }

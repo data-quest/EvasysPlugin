@@ -3,7 +3,7 @@
 class EvasysAdditionalField extends SimpleORMap
 {
 
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'evasys_additional_fields';
         $config['i18n_fields']['name'] = true;
@@ -25,12 +25,12 @@ class EvasysAdditionalField extends SimpleORMap
                     `value` = :value,
                     `chdate` = UNIX_TIMESTAMP()
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'field_id' => $this->getId(),
                 'profile_id' => $profile_id,
                 'type' => $profile_type,
                 'value' => $value
-            ));
+            ]);
         } else {
             $statement = DBManager::get()->prepare("
                 SELECT `value`
@@ -39,11 +39,11 @@ class EvasysAdditionalField extends SimpleORMap
                     AND `profile_type` = :type
                     AND profile_id = :profile_id
             ");
-            $statement->execute(array(
+            $statement->execute([
                 'field_id' => $this->getId(),
                 'profile_id' => $profile_id,
                 'type' => $profile_type
-            ));
+            ]);
             return $statement->fetch(PDO::FETCH_COLUMN, 0);
         }
     }

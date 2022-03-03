@@ -11,7 +11,7 @@ class EvaluationController extends PluginController
         Navigation::activateItem("/course/evasys");
         $this->profile = EvasysCourseProfile::findBySemester(Context::get()->id);
         if ($this->profile->isNew()) {
-            $profile = EvasysCourseProfile::findOneBySQL("seminar_id = ?", array(Context::get()->id));
+            $profile = EvasysCourseProfile::findOneBySQL("seminar_id = ?", [Context::get()->id]);
             if ($profile) {
                 $this->profile = $profile;
             }
@@ -22,106 +22,8 @@ class EvaluationController extends PluginController
 
     public function show_action()
     {
-        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN semester_data USING (semester_id) WHERE seminar_id = ? ORDER semester_data.beginn DESC ", array(Context::get()->id));
-
-        if ($this->profile && $this->profile['split']) {
-            $this->redirect("evaluation/split");
-            return;
-        }
-
-        $this->evasys_seminars = EvasysSeminar::findBySeminar(Context::get()->id);
-        $this->surveys = array();
-
-        //repair-code
-        if (empty($this->evasys_seminars)) {
-            $activated = false;
-            foreach (EvasysCourseProfile::findBySQL("seminar_id = ?", array(Context::get()->id)) as $profile) {
-                if ($profile['applied'] && $profile['transferred']) {
-                    $activated = true;
-                    break;
-                }
-            }
-            if ($activated) {
-                $this->evasys_seminars[0] = new EvasysSeminar(Context::get()->id);
-                $this->evasys_seminars[0]['activated'] = 1;
-                $this->evasys_seminars[0]->store();
-            }
-        }
-
-        foreach ($this->evasys_seminars as $evasys_seminar) {
-            $survey_information = $evasys_seminar->getSurveyInformation();
-            if (is_array($survey_information)) {
-                foreach ($survey_information as $info) {
-                    $this->surveys[] = $info;
-                }
-            }
-        }
-    }
-
-    public function split_action()
-    {
-        if (!Config::get()->EVASYS_ENABLE_PROFILES || !$this->profile || !$this->profile['split']) {
-            $this->redirect("evaluation/show");
-            return;
-        }
-
-        //repair-code
-        $this->evasys_seminar = EvasysSeminar::findOneBySQL("seminar_id = ?", array(Context::get()->id));
-        if ($this->evasys_seminar) {
-            $activated = false;
-            foreach (EvasysCourseProfile::findBySQL("seminar_id = ?", array(Context::get()->id)) as $profile) {
-                if ($profile['applied'] && $profile['transferred']) {
-                    $activated = true;
-                    break;
-                }
-            }
-            if ($activated) {
-                $this->evasys_seminar = new EvasysSeminar(Context::get()->id);
-                $this->evasys_seminar['activated'] = 1;
-                $this->evasys_seminar->store();
-            }
-        }
-
-        $this->evasys_seminars = array();
-        if ($this->profile['teachers']) {
-            $teachers = $this->profile['teachers']->getArrayCopy();
-        } else {
-            $statement = DBManager::get()->prepare("
-                SELECT seminar_user.user_id
-                FROM seminar_user
-                WHERE seminar_user.Seminar_id = ?
-                    AND seminar_user.status = 'dozent'
-                ORDER BY seminar_user.position ASC
-            ");
-            $statement->execute(array(Context::get()->id));
-            $teachers = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-        }
-        foreach ($teachers as $dozent_id) {
-            $seminar = new EvasysSeminar();
-            $seminar['seminar_id'] = $this->evasys_seminar->getExportedId() . $dozent_id;
-            $seminar['publishing_allowed'] = $this->evasys_seminar['publishing_allowed_by_dozent'][$dozent_id];
-            $this->evasys_seminars[$dozent_id] = $seminar;
-        }
-
-        $this->surveys = array();
-        foreach ($this->evasys_seminars as $dozent_id => $evasys_seminar) {
-            $survey_information = $evasys_seminar->getSurveyInformation();
-            if (is_array($survey_information)) {
-                foreach ($survey_information as $info) {
-                    $this->surveys[$dozent_id][] = $info;
-                }
-            }
-        }
-
-        $this->open_surveys = array();
-
-        if (!empty($this->evasys_seminars)
-            && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) {
-            foreach ($this->evasys_seminars as $dozent_id => $seminar) {
-                $this->open_surveys[$dozent_id] = $seminar->getSurveys($GLOBALS['user']->id);
-            }
-        }
-
+        $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN semester_data USING (semester_id) WHERE seminar_id = ? ORDER BY semester_data.beginn DESC ", [Context::get()->id]);
+        $this->evasys_seminar = new EvasysSeminar(Context::get()->id);
     }
 
     public function toggle_publishing_action()

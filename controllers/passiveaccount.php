@@ -12,11 +12,11 @@ class PassiveaccountController extends PluginController
 
         if (!$GLOBALS['user']->cfg->EVASYS_INTERNAL_USER_ID) {
 
-            $user_info = $soap->soapCall("GetUserIdsByParams", array(
-                'Params' => array(
+            $user_info = $soap->soapCall("GetUserIdsByParams", [
+                'Params' => [
                     'Email' => User::findCurrent()->email
-                )
-            ));
+                ]
+            ]);
             $user_ids = $user_info->Strings;
             $eavsys_user_id = $user_ids[0];
             if ($eavsys_user_id) {
@@ -24,10 +24,10 @@ class PassiveaccountController extends PluginController
             }
         }
 
-        $this->link = $soap->soapCall("GetSessionForUser", array(
+        $this->link = $soap->soapCall("GetSessionForUser", [
             'UserId' => $eavsys_user_id,
             'IdType' => "INTERNAL"
-        ));
+        ]);
         if (is_a($this->link, "SoapFault")) {
             if ($GLOBALS['user']->cfg->EVASYS_INTERNAL_USER_ID) {
                 $GLOBALS['user']->cfg->delete("EVASYS_INTERNAL_USER_ID");

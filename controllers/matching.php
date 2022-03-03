@@ -20,7 +20,7 @@ class MatchingController extends PluginController
 
         if (Request::isPost()) {
             foreach (Request::getArray("matching") as $id => $name) {
-                $matching = EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'institute'", array($id));
+                $matching = EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'institute'", [$id]);
                 if (trim($name) === Institute::find($id)->name) {
                     if ($matching) {
                         $matching->delete();
@@ -40,14 +40,14 @@ class MatchingController extends PluginController
             return;
         }
 
-        $this->items = array();
+        $this->items = [];
         foreach (Institute::getInstitutes() as $institute) {
-            $this->items[$institute['Institut_id']] = array(
+            $this->items[$institute['Institut_id']] = [
                 'id' => $institute['Institut_id'],
                 'long_name' => $institute['Name'],
                 'name' => $institute['Name'],
                 'matching' => EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'institute'", array($institute['Institut_id']))
-            );
+            ];
         }
     }
 
@@ -59,7 +59,7 @@ class MatchingController extends PluginController
 
         if (Request::isPost()) {
             foreach (Request::getArray("matching") as $id => $name) {
-                $matching = EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'semtype'", array($id));
+                $matching = EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'semtype'", [$id]);
                 if (trim($name) === $GLOBALS['SEM_TYPE'][$id]['name']) {
                     if ($matching) {
                         $matching->delete();
@@ -79,14 +79,14 @@ class MatchingController extends PluginController
             return;
         }
 
-        $this->items = array();
+        $this->items = [];
         foreach (SemType::getTypes() as $type) {
-            $this->items[$type['id']] = array(
+            $this->items[$type['id']] = [
                 'id' => $type['id'],
                 'long_name' => $GLOBALS['SEM_CLASS'][$type['class']]['name'] . ": ".$type['name'],
                 'name' => $type['name'],
-                'matching' => EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'semtype'", array($type['id']))
-            );
+                'matching' => EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'semtype'", [$type['id']])
+            ];
         }
 
         $this->render_template("matching/institutes", $this->layout);
@@ -99,11 +99,11 @@ class MatchingController extends PluginController
         $this->action = "wording";
         $this->i18n = true;
 
-        $words_raw = array(
+        $words_raw = [
             "Einrichtung", "Einrichtungen", "Fakultät", "Fakultäten",
             "freiwillige Evaluation", "freiwillige Evaluationen"
-        );
-        $words = array();
+        ];
+        $words = [];
         foreach ($words_raw as $word) {
             $words[md5($word)] = $word;
         }
@@ -112,7 +112,7 @@ class MatchingController extends PluginController
         if (Request::isPost()) {
             foreach ($words as $id => $word) {
                 $name = Request::i18n("matching__".$id."__");
-                $matching = EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'wording'", array($id));
+                $matching = EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'wording'", [$id]);
                 if ($name === $words[$id]) {
                     if ($matching) {
                         $matching->delete();
@@ -132,14 +132,14 @@ class MatchingController extends PluginController
             return;
         }
 
-        $this->items = array();
+        $this->items = [];
         foreach ($words as $id => $word) {
-            $this->items[$id] = array(
+            $this->items[$id] = [
                 'id' => $id,
                 'long_name' => $word,
                 'name' => $word,
                 'matching' => EvasysMatching::findOneBySQL("item_id = ? AND item_type = 'wording'", array($id))
-            );
+            ];
         }
 
         $this->render_template("matching/institutes", $this->layout);

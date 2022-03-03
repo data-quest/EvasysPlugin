@@ -3,22 +3,22 @@
 class EvasysInstituteProfile extends SimpleORMap
 {
 
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'evasys_institute_profiles';
-        $config['belongs_to']['institute'] = array(
+        $config['belongs_to']['institute'] = [
             'class_name'  => 'Institute',
             'foreign_key' => 'institut_id'
-        );
-        $config['belongs_to']['global_profile'] = array(
+        ];
+        $config['belongs_to']['global_profile'] = [
             'class_name' => 'EvasysGlobalProfile',
             'foreign_key' => 'semester_id'
-        );
-        $config['belongs_to']['semester'] = array(
+        ];
+        $config['belongs_to']['semester'] = [
             'class_name' => 'Semester',
             'foreign_key' => 'semester_id'
-        );
-        $config['has_many']['semtype_forms'] = array(
+        ];
+        $config['has_many']['semtype_forms'] = [
             'class_name' => 'EvasysProfileSemtypeForm',
             'foreign_key' => 'profile_id',
             'foreign_key' => function($profile) {
@@ -27,7 +27,7 @@ class EvasysInstituteProfile extends SimpleORMap
             'assoc_func' => 'findByProfileAndType',
             'on_delete'  => 'delete',
             'on_store'  => 'store'
-        );
+        ];
         parent::configure($config);
     }
 
@@ -37,10 +37,10 @@ class EvasysInstituteProfile extends SimpleORMap
         if (!$semester) {
             return null;
         }
-        $profile = self::findOneBySQL("institut_id = ? AND semester_id = ?", array(
+        $profile = self::findOneBySQL("institut_id = ? AND semester_id = ?", [
             $institut_id,
             $semester->getId()
-        ));
+        ]);
         if (!$profile) {
             $profile = new EvasysInstituteProfile();
             $profile['institut_id'] = $institut_id;
@@ -65,10 +65,10 @@ class EvasysInstituteProfile extends SimpleORMap
         if ($this->institute && !$this->institute->isFaculty()) {
             $profile = self::findByInstitute($this->institute['fakultaets_id'], $this['semester_id']);
 
-            $forms = EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'institute' ORDER BY `standard` DESC, position ASC", array(
+            $forms = EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'institute' ORDER BY `standard` DESC, position ASC", [
                 'profile_id' => $profile->getId(),
                 'sem_type_id' => $sem_type_id
-            ));
+            ]);
             if (!empty($forms)) {
                 return $forms;
             } else {
@@ -76,10 +76,10 @@ class EvasysInstituteProfile extends SimpleORMap
             }
         } else {
             $profile = new EvasysGlobalProfile($this['semester_id']);
-            return EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'global' ORDER BY `standard` DESC, position ASC", array(
+            return EvasysProfileSemtypeForm::findBySQL("profile_id = :profile_id AND sem_type = :sem_type_id AND profile_type = 'global' ORDER BY `standard` DESC, position ASC", [
                 'profile_id' => $profile->getId(),
                 'sem_type_id' => $sem_type_id
-            ));
+            ]);
         }
     }
 
@@ -106,21 +106,10 @@ class EvasysInstituteProfile extends SimpleORMap
             WHERE profile_id = :old_profile
                 AND profile_type = 'institute'
         ");
-        $statement->execute(array(
+        $statement->execute([
             'new_profile' => $new_profile->getId(),
             'old_profile' => $this->getId()
-        ));
-
-        /*$semtypeforms = EvasysProfileSemtypeForm::findBySQL("profile_id = ? AND profile_type = 'institute'", array($this->getId()));
-        foreach ($semtypeforms as $semtypeform) {
-            $new_semtypeform = new EvasysProfileSemtypeForm();
-            $new_semtypeform->setData($semtypeform->toArray());
-            $new_semtypeform->setId($new_semtypeform->getNewId());
-            $new_semtypeform['profile_id'] = $new_profile->getId();
-            $new_semtypeform['mkdate'] = time();
-            $new_semtypeform['chdate'] = time();
-            $new_semtypeform->store();
-        }*/
+        ]);
 
         return $new_profile;
     }

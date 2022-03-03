@@ -209,7 +209,7 @@ class AddCourseProfiles extends Migration
         DBManager::get()->exec("ALTER TABLE evasys_seminar DROP PRIMARY KEY");
         DBManager::get()->exec("
             DELETE e1 FROM evasys_seminar AS e1, evasys_seminar AS e2
-            WHERE e1.Seminar_id = e2.Seminar_id 
+            WHERE e1.Seminar_id = e2.Seminar_id
                 AND e1.evasys_id != e2.evasys_id
         "); //remove possible double entries, which could possibly have occurred in the past
         DBManager::get()->exec("ALTER TABLE evasys_seminar ADD PRIMARY KEY (`Seminar_id`), ADD KEY `evasys_id` (`evasys_id`)");
@@ -220,7 +220,7 @@ class AddCourseProfiles extends Migration
         StudipLog::registerActionPlugin('EVASYS_EVAL_TRANSFER', 'EvaSys: Lehrevaluation nach Evasys übertragen', '%user überträgt Lehrevaluation %coaffected(%info) für %user(%affected) nach Evasys.', 'EvasysPlugin');
         SimpleORMap::expireTableScheme();
     }
-    
+
     public function down()
     {
         StudipLog::unregisterAction('EVASYS_EVAL_APPLIED');
@@ -241,7 +241,7 @@ class AddCourseProfiles extends Migration
         Config::get()->delete("EVASYS_TRANSFER_PERMISSION");
 
         DBManager::get()->exec("
-            DELETE roles, roles_user 
+            DELETE roles, roles_user
             FROM roles
                 LEFT JOIN roles_user ON (roles_user.roleid = roles.roleid)
             WHERE rolename = 'Evasys-Admin'
@@ -253,7 +253,7 @@ class AddCourseProfiles extends Migration
             WHERE rolename = 'Evasys-Dozent-Admin'
         ");
 
-        Config::get()->delete("EVASYS_ENABLE_PROFILES");
+        //Config::get()->delete("EVASYS_ENABLE_PROFILES");
         Config::get()->delete("EVASYS_ENABLE_PROFILES_FOR_ADMINS");
         Config::get()->delete("EVASYS_ENABLE_SPLITTING_COURSES");
         Config::get()->delete("EVASYS_FORCE_ONLINE");
@@ -278,7 +278,7 @@ class AddCourseProfiles extends Migration
             DROP TABLE `evasys_matchings`
         ");
         DBManager::get()->exec("
-            DROP TABLE `evasys_additional_fields` 
+            DROP TABLE `evasys_additional_fields`
         ");
         DBManager::get()->exec("
             DROP TABLE `evasys_additional_fields_values`

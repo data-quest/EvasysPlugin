@@ -13,20 +13,20 @@ class EvasysSoapClient extends SoapClient
         );
 
         $starttime = microtime(true);
-        $result = (array) parent::__soapCall($function_name, $arguments, $options, $input_headers, $output_headers);
+        $result = parent::__soapCall($function_name, $arguments, $options, $input_headers, $output_headers);
         $soapcalltime = microtime(true) - $starttime;
 
         ini_set("default_socket_timeout", $orginal_default_socket_timeout);
 
         $maxsize = 10 * 1024 * 1024;
-        if (strlen(json_encode($result)) > $maxsize) {
-            $result = [substr(json_encode($result), 0, $maxsize)];
+        if (strlen(json_encode((array) $result)) > $maxsize) {
+            $result2 = [substr(json_encode($result), 0, $maxsize)];
         }
 
         $soaplog = new EvasysSoapLog();
         $soaplog['function'] = $function_name;
         $soaplog['arguments'] = (array) $arguments;
-        $soaplog['result'] = $result;
+        $soaplog['result'] = $result2 ?: (array) $result;
         $soaplog['time'] = $soapcalltime;
         $soaplog['user_id'] = $GLOBALS['user']->id;
         $soaplog->store();

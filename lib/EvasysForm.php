@@ -5,7 +5,7 @@ require_once dirname(__file__)."/EvasysSoapClient.php";
 
 class EvasysForm extends SimpleORMap
 {
-    protected static function configure($config = array())
+    protected static function configure($config = [])
     {
         $config['db_table'] = 'evasys_forms';
         $config['serialized_fields']['translations'] = "JSONArrayObject";
@@ -32,20 +32,20 @@ class EvasysForm extends SimpleORMap
         }
         $soap = EvasysSoap::get();
 
-        $forms = $soap->soapCall("GetFormsInfoByParams", array(
-            'Params' => array(
-                'Users' => array("1"), //1 is for admin
+        $forms = $soap->soapCall("GetFormsInfoByParams", [
+            'Params' => [
+                'Users' => ["1"], //1 is for admin
                 'IncludeDeactivatedForms' => false,
-                'SelectFields' => array(
+                'SelectFields' => [
                     "ShortName",
                     "Description",
                     //"MainLanguageId",
                     //"OriginalId",
                     //"HeadLogoId",
                     //"URL"
-                )
-            )
-        ));
+                ]
+            ]
+        ]);
         if (is_a($forms, "SoapFault")) {
             if ($forms->getMessage() === "Not Found") {
                 return "SoapPort der WSDL-Datei antwortet nicht.";
@@ -58,11 +58,11 @@ class EvasysForm extends SimpleORMap
                         : "");
             }
         } else {
-            $form_ids = array();
+            $form_ids = [];
             $formdatae = $forms->Strings ?: $forms['Strings'];
             foreach ($formdatae as $formdata) {
                 $formdata = json_decode($formdata, true);
-                $form = EvasysForm::findOneBySQL("form_id = ?", array($formdata['FormId']));
+                $form = EvasysForm::findOneBySQL("form_id = ?", [$formdata['FormId']]);
                 if (!$form) {
                     $form = new EvasysForm();
                     $form->setId($formdata['FormId']);
@@ -72,7 +72,7 @@ class EvasysForm extends SimpleORMap
                 $form->store();
                 $form_ids[] = $formdata['FormId'];
             }
-            EvasysForm::deleteBySQL("form_id NOT IN (?)", array($form_ids));
+            EvasysForm::deleteBySQL("form_id NOT IN (?)", [$form_ids]);
             $_SESSION['EVASYS_ALL_FORMS_EXPIRE'] = time();
             return true;
         }
@@ -108,7 +108,7 @@ class EvasysForm extends SimpleORMap
                 GROUP BY evasys_course_profiles.course_profile_id
             ) AS all_applied_seminars
         ");
-        $statement->execute(array('form_id' => $this->getId()));
+        $statement->execute(['form_id' => $this->getId()]);
         return $statement->fetch(PDO::FETCH_COLUMN, 0);
     }
 
