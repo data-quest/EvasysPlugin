@@ -41,6 +41,9 @@
                             <? endif ?>
                         </td>
                     </tr>
+                    <? if (($profile->evasys_seminar->publishingAllowed($dozent_id) || in_array($GLOBALS['user']->id, $dozent_ids)) && $profile->evasys_seminar->reportsAllowed()) {
+                        $pdf_link = $profile->evasys_seminar->getPDFLink($survey->m_nSurveyId);
+                    } ?>
                     <tr>
                         <td><?= dgettext("evasys", "Status") ?></td>
                         <td><? switch($survey->m_nState) {
@@ -53,7 +56,9 @@
                                     break;
                                 case 1:
                                     if ($profile->getFinalEnd() < time()) {
-                                        echo dgettext("evasys", "Lehrveranstaltungsevaluation abgeschlossen / Bericht kann abgerufen werden");
+                                        echo dgettext("evasys", "Lehrveranstaltungsevaluation abgeschlossen")
+                                                ." / "
+                                                .($pdf_link ? dgettext("evasys", "Bericht kann abgerufen werden") : dgettext("evasys","Rücklauf für Bericht zu gering"));
                                     } else {
                                         echo dgettext("evasys", "Lehrveranstaltungsevaluation bereit / Bericht kann abgerufen werden");
                                     }
@@ -69,7 +74,6 @@
                             } ?></td>
                     </tr>
                     <? if (($profile->evasys_seminar->publishingAllowed($dozent_id) || in_array($GLOBALS['user']->id, $dozent_ids)) && $profile->evasys_seminar->reportsAllowed()) : ?>
-                        <? $pdf_link = $profile->evasys_seminar->getPDFLink($survey->m_nSurveyId) ?>
                         <? if ($pdf_link) : ?>
                             <tr>
                                 <td><?= dgettext("evasys", "Auswertung der Evaluation") ?></td>

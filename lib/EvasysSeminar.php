@@ -362,7 +362,19 @@ class EvasysSeminar extends SimpleORMap
         $studienbereiche = [];
         $study_areas = StudipStudyArea::findMany($stmt->fetchAll(PDO::FETCH_COLUMN, 0));
         foreach ($study_areas as $studyarea) {
-            $studienbereiche[] = $studyarea->getPath(" » ");
+            switch (Config::get()->EVASYS_STUDYAREA_MATCHING) {
+                case 'name':
+                    $studienbereiche[] = $studyarea['name'];
+                    break;
+                case 'info':
+                    $studienbereiche[] = $studyarea['info'];
+                    break;
+                default:
+                case 'path':
+                    $studienbereiche[] = $studyarea->getPath(" » ");
+                    break;
+            }
+
         }
         $datenfelder = DatafieldEntryModel::findBySQL("INNER JOIN datafields USING (datafield_id) WHERE `object_type` = 'sem' AND datafields_entries.range_id = ? ORDER BY datafields.priority ASC", [
             $course->getId()
@@ -603,6 +615,7 @@ class EvasysSeminar extends SimpleORMap
             $_SESSION['EVASYS_SURVEY_PDF_LINK'] = [];
         }
         if (isset($_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id])
+                && ($_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id])
                 && (time() - $_SESSION['EVASYS_SURVEY_PDF_LINK_EXPIRE'][$survey_id] < 60 * Config::get()->EVASYS_CACHE)) {
             //return $_SESSION['EVASYS_SURVEY_PDF_LINK'][$survey_id];
         }
