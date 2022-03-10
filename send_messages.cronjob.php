@@ -52,6 +52,9 @@ class EvasysSendMessagesJob extends CronJob
     {
         $last_execution = Config::get()->EVASYS_SEND_MESSAGES_LAST_EXECUTION;
 
+        $sent_messages = 0;
+        $courses_count = 0;
+
         if (!$last_execution || $last_execution < time() - 86400) {
             //if we do this for the first time, we use the last 24 hours:
             $last_execution = time() - 86400;
@@ -127,6 +130,7 @@ class EvasysSendMessagesJob extends CronJob
                         false
                     );
                     restoreLanguage();
+                    $sent_messages++;
                 }
 
                 URLHelper::setBaseURL($oldbase);
@@ -162,13 +166,11 @@ class EvasysSendMessagesJob extends CronJob
             $user_permissions[] = 'user';
         }
 
-        $sent_messages = 0;
-        $coures_count = 0;
 
         while ($course_data = $fetch_profiles->fetch(PDO::FETCH_ASSOC)) {
             $profile = EvasysCourseProfile::buildExisting($course_data);
 
-            $coures_count++;
+            $courses_count++;
 
             $fetch_members = DBManager::get()->prepare("
                 SELECT seminar_user.user_id
@@ -232,7 +234,7 @@ class EvasysSendMessagesJob extends CronJob
             }
         }
 
-        echo "Courses started: ".$coures_count."\n";
+        echo "Courses started: ".$courses_count."\n";
         echo "Messages sent: ".$sent_messages;
     }
 }
