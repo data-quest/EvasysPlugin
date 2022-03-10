@@ -381,6 +381,42 @@
 
     </fieldset>
 
+    <fieldset>
+        <legend><?= dgettext("evasys","Mails / Benachrichtigungen") ?></legend>
+
+        <h2>
+            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(20, ['class' => "text-bottom"])  ?>
+            <?= dgettext('evasys', 'Nachricht an Lehrende 24 Stunden vor Beginn')?>
+        </h2>
+        <?= dgettext('evasys', 'Diese Nachricht wird 24 Stunden vor Beginn des Evaluationszeitraumes an die Lehrenden verschickt.')?>
+        <label>
+            <?= dgettext('evasys', 'Betreff')?>
+            <?= I18N::input('mail_begin_subject', $profile['mail_begin_subject']) ?>
+        </label>
+        <label>
+            <?= dgettext('evasys', 'Betreff')?>
+            <?= I18N::textarea('mail_begin_body', $profile['mail_begin_body']) ?>
+        </label>
+
+
+
+        <h2>
+            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(20, ['class' => "text-bottom"])  ?>
+            <?= dgettext('evasys', 'Nachricht an Studierende')?>
+        </h2>
+        <?= dgettext('evasys', 'Diese Nachricht wird zu Beginn des Evaluationszeitraumes an die Studierenden verschickt.')?>
+        <label>
+            <?= dgettext('evasys', 'Betreff')?>
+            <?= I18N::input('mail_reminder_subject', $profile['mail_reminder_subject']) ?>
+        </label>
+        <label>
+            <?= dgettext('evasys', 'Betreff')?>
+            <?= I18N::textarea('mail_reminder_body', $profile['mail_reminder_body']) ?>
+        </label>
+
+
+    </fieldset>
+
     <script>
         jQuery(function () {
             jQuery(".forms_for_types .select2").select2({

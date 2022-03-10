@@ -56,9 +56,85 @@ class EvasysSendMessagesJob extends CronJob
             //if we do this for the first time, we use the last 24 hours:
             $last_execution = time() - 86400;
         }
+        $messaging = new messaging();
 
         Config::get()->store("EVASYS_SEND_MESSAGES_LAST_EXECUTION", time());
 
+        //Send reminder to teachers 24 Stunden vor Beginn:
+        $fetch_profiles = DBManager::get()->prepare("
+            SELECT `evasys_course_profiles`.*
+            FROM `evasys_course_profiles`
+                LEFT JOIN seminare ON (`evasys_course_profiles`.`seminar_id` = `seminare`.`Seminar_id`)
+                LEFT JOIN evasys_institute_profiles ON (`evasys_institute_profiles`.`institut_id` = `seminare`.`Institut_id`
+                        AND evasys_institute_profiles.semester_id = `evasys_course_profiles`.`semester_id`)
+                LEFT JOIN `Institute` ON (`seminare`.`Institut_id` = `Institute`.`Institut_id`)
+                LEFT JOIN `evasys_institute_profiles` AS `evasys_fakultaet_profiles` ON (`evasys_fakultaet_profiles`.`institut_id` = `Institute`.`fakultaets_id`
+                        AND `evasys_fakultaet_profiles`.`semester_id` = `evasys_course_profiles`.`semester_id`)
+                LEFT JOIN evasys_global_profiles ON (`evasys_global_profiles`.`semester_id` = `evasys_course_profiles`.`semester_id`)
+            WHERE `evasys_course_profiles`.`applied` = '1'
+                AND `evasys_course_profiles`.`transferred` = '1'
+                AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) < :now
+                AND IFNULL(`evasys_course_profiles`.`begin`, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) >= :last_execution
+                AND IFNULL(evasys_institute_profiles.mail_begin_subject, IFNULL(evasys_fakultaet_profiles.mail_begin_subject, evasys_global_profiles.mail_begin_subject)) IS NOT NULL
+                AND IFNULL(evasys_institute_profiles.mail_begin_body, IFNULL(evasys_fakultaet_profiles.mail_begin_body, evasys_global_profiles.mail_begin_body)) IS NOT NULL
+            GROUP BY `evasys_course_profiles`.`seminar_id`
+        ");
+        $fetch_profiles->execute([
+            'now' => time() + 86400,
+            'last_execution' => $last_execution + 86400
+        ]);
+        while ($course_data = $fetch_profiles->fetch(PDO::FETCH_ASSOC)) {
+            $profile = EvasysCourseProfile::buildExisting($course_data);
+            $subject = $profile->getPresetAttribute('mail_begin_subject');
+            $body = $profile->getPresetAttribute('mail_begin_body');
+            if ($subject && $body) {
+                $teachers = $profile->teachers->getArrayCopy();
+                $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+                $url = URLHelper::getURL("plugins.php/evasysplugin/evaluation/show", [
+                    'cid' => $profile['seminar_id']
+                ]);
+                foreach ($teachers as $teacher_id) {
+                    setTempLanguage($teacher_id);
+                    $templates = [
+                        '{{course}}',
+                        '{{coursename}}',
+                        '{{url}}',
+                        '{{evaluationsende}}',
+                        '{{evaluationsbeginn}}'
+                    ];
+                    $replacement = [
+                        $profile->course->getFullName(),
+                        $profile->course['name'],
+                        $url,
+                        date("d.m.Y H:i", $profile->getFinalEnd()),
+                        date("d.m.Y H:i", $profile->getFinalBegin())
+                    ];
+                    $subject_mail = str_ireplace($templates, $replacement, (string) $subject);
+                    $body_mail = str_ireplace($templates, $replacement, (string) $body);
+
+                    $messaging->insert_message(
+                        $body_mail,
+                        get_username($teacher_id),
+                        '____%system%____',
+                        '',
+                        '',
+                        '',
+                        '',
+                        $subject_mail,
+                        true,
+                        'normal',
+                        ["Evaluation"],
+                        false
+                    );
+                    restoreLanguage();
+                }
+
+                URLHelper::setBaseURL($oldbase);
+            }
+        }
+
+
+        //Send reminder to students:
         $fetch_profiles = DBManager::get()->prepare("
             SELECT `evasys_course_profiles`.*
             FROM `evasys_course_profiles`
@@ -85,8 +161,6 @@ class EvasysSendMessagesJob extends CronJob
         if (EvasysPlugin::useLowerPermissionLevels()) {
             $user_permissions[] = 'user';
         }
-
-        $messaging = new messaging();
 
         $sent_messages = 0;
         $coures_count = 0;
@@ -117,7 +191,6 @@ class EvasysSendMessagesJob extends CronJob
                 $user = User::find($user_id);
                 if ($user) {
                     setTempLanguage($user['user_id']);
-
 
                     $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                     $url = URLHelper::getURL("plugins.php/evasysplugin/evaluation/show", [
