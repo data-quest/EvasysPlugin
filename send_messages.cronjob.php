@@ -7,7 +7,7 @@ class EvasysSendMessagesJob extends CronJob
      */
     public static function getName()
     {
-        return _('EvaSys: Nachrichten verschicken über neue Evaluationen');
+        return _('EvaSys: Nachrichten verschicken');
     }
 
     /**
@@ -15,7 +15,7 @@ class EvasysSendMessagesJob extends CronJob
      */
     public static function getDescription()
     {
-        return _('Sendet an die Studierenden eine Nachricht über eine neu geöffnete Evaluation, an der sie teilnehmen können.');
+        return _('Sendet a) an die Studierenden eine Nachricht über eine neu geöffnete Evaluation, an der sie teilnehmen können, und b) eine Nachricht an Lehrende 24 Stunden vor Beginn der Befragung.');
     }
 
     /**
@@ -54,6 +54,7 @@ class EvasysSendMessagesJob extends CronJob
 
         $sent_messages = 0;
         $courses_count = 0;
+        $next_courses_count = 0;
 
         if (!$last_execution || $last_execution < time() - 86400) {
             //if we do this for the first time, we use the last 24 hours:
@@ -90,6 +91,7 @@ class EvasysSendMessagesJob extends CronJob
             $profile = EvasysCourseProfile::buildExisting($course_data);
             $subject = $profile->getPresetAttribute('mail_begin_subject');
             $body = $profile->getPresetAttribute('mail_begin_body');
+            $next_courses_count++;
             if ($subject && $body) {
                 $teachers = $profile->teachers->getArrayCopy();
                 $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
@@ -235,6 +237,7 @@ class EvasysSendMessagesJob extends CronJob
         }
 
         echo "Courses started: ".$courses_count."\n";
+        echo "Courses will start in 24 hours: ".$next_courses_count."\n";
         echo "Messages sent: ".$sent_messages;
     }
 }
