@@ -33,9 +33,9 @@ if ($profile === null) {
         <? endif ?>
 
         <? if ($profile['transferred']) : ?>
-            <?= Icon::create($plugin->getPluginURL()."/assets/evasys-export_grey.svg", "inactive")->asImg(38, array(
+            <?= Icon::create($plugin->getPluginURL()."/assets/evasys-logo.svg", "inactive")->asImg(26, array(
                     'title' => dgettext("evasys", "Veranstaltung wurde bereits übertragen."),
-                    'style' => "margin-top: -11px;"
+                    'class' => "text-bottom"
             )) ?>
         <? endif ?>
 

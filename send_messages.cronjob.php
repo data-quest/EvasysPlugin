@@ -7,7 +7,7 @@ class EvasysSendMessagesJob extends CronJob
      */
     public static function getName()
     {
-        return _('EvaSys: Nachrichten verschicken');
+        return _('evasys: Nachrichten verschicken');
     }
 
     /**

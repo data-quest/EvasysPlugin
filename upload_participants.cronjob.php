@@ -7,7 +7,7 @@ class EvasysUploadParticipantsJob extends CronJob
      */
     public static function getName()
     {
-        return dgettext("evasys", 'EvaSys: Teilnehmer erneut hochladen');
+        return dgettext("evasys", 'evasys: Teilnehmer erneut hochladen');
     }
 
     /**

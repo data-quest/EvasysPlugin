@@ -381,6 +381,7 @@
 
     </fieldset>
 
+    <? if (CronjobScheduler::getInstance()) : ?>
     <fieldset>
         <legend><?= dgettext("evasys","Mails / Benachrichtigungen") ?></legend>
 
@@ -416,6 +417,7 @@
 
 
     </fieldset>
+    <? endif ?>
 
     <script>
         jQuery(function () {
