@@ -7,6 +7,14 @@
                 <td><?= htmlReady($profile->semester['name']) ?></td>
             </tr>
             <tr>
+                <td><?= dgettext("evasys", "Befragungszeitraum") ?></td>
+                <td>
+                    <? $begin = $profile->getFinalBegin() ?>
+                    <? $end = $profile->getFinalEnd() ?>
+                    <?= date('d.m.Y H:i', $begin)." - ".date('d.m.Y H:i', $end) ?>
+                </td>
+            </tr>
+            <tr>
                 <td><?= dgettext("evasys", "Papier/Online-Umfrage") ?></td>
                 <td><?= $profile->getFinalmode() === 'online' ? dgettext("evasys", "Onlineumfrage") : dgettext("evasys", "Papierumfrage") ?></td>
             </tr>
@@ -24,6 +32,14 @@
                     <tr>
                         <td><?= dgettext("evasys", "Semester") ?></td>
                         <td><?= htmlReady($profile->semester['name']) ?></td>
+                    </tr>
+                    <tr>
+                        <td><?= dgettext("evasys", "Befragungszeitraum") ?></td>
+                        <td>
+                            <? $begin = $profile->getFinalBegin() ?>
+                            <? $end = $profile->getFinalEnd() ?>
+                            <?= date('d.m.Y H:i', $begin)." - ".date('d.m.Y H:i', $end) ?>
+                        </td>
                     </tr>
                     <tr>
                         <td><?= dgettext("evasys", "Papier/Online-Umfrage") ?></td>
@@ -48,10 +64,15 @@
                         <td><?= dgettext("evasys", "Status") ?></td>
                         <td><? switch($survey->m_nState) {
                                 case 0:
-                                    if ($profile->getFinalBegin() > time()) {
-                                        echo dgettext("evasys", "Anmeldedaten übertragen und fixiert / Evaluationszeitraum noch nicht erreicht");
+                                    if ($begin > time()) {
+                                        $task = CronjobTask::findOneBySQL('`class` = ?', ['EvasysUploadParticipantsJob']);
+                                        if ($task && $task['active']) {
+                                            echo dgettext("evasys", "Anmeldedaten übertragen und bis auf Teilnehmende fixiert / Evaluationszeitraum noch nicht erreicht");
+                                        } else {
+                                            echo dgettext("evasys", "Anmeldedaten übertragen und fixiert / Evaluationszeitraum noch nicht erreicht");
+                                        }
                                     } else {
-                                        echo dgettext("evasys", "Lehrveranstaltungsevaluation bereit / keine Daten vorhanden");
+                                        echo dgettext("evasys", "Lehrveranstaltungsevaluation offen / keine Daten vorhanden");
                                     }
                                     break;
                                 case 1:
@@ -60,11 +81,11 @@
                                                 ." / "
                                                 .($pdf_link ? dgettext("evasys", "Bericht kann abgerufen werden") : dgettext("evasys","Rücklauf für Bericht zu gering"));
                                     } else {
-                                        echo dgettext("evasys", "Lehrveranstaltungsevaluation bereit / Bericht kann abgerufen werden");
+                                        echo dgettext("evasys", "Lehrveranstaltungsevaluation offen / Bericht kann abgerufen werden");
                                     }
                                     break;
                                 case 4:
-                                    echo dgettext("evasys", "Lehrveranstaltungsevaluation bereit / Rücklauf für Bericht zu gering");
+                                    echo dgettext("evasys", "Lehrveranstaltungsevaluation offen / Rücklauf für Bericht zu gering");
                                     break;
                                 case 5:
                                     echo dgettext("evasys", "Validierung / Datenerfassungskraft");

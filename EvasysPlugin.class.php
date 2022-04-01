@@ -648,7 +648,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         $activated = false;
         $profiles = EvasysCourseProfile::findBySQL("seminar_id = ?", [$course_id]);
         foreach ($profiles as $profile) {
-            if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && $profile['applied'] && $profile['by_dozent']) {
+            if ($GLOBALS['perm']->have_studip_perm('dozent', $course_id) && $profile['applied']) {
                 $activated = true;
                 break;
             } else {

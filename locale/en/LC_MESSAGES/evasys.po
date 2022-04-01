@@ -1045,3 +1045,6 @@ msgstr "The data of evaluation have been changed after the last transfer."
 
 msgid "Nach Transfer veränderte Veranstaltungen"
 msgstr "Courses that have been changed after the transfer to Evasys"
+
+msgid "Befragungszeitraum"
+msgstr "Time of evaluation"
