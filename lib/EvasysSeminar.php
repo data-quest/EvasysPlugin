@@ -364,14 +364,21 @@ class EvasysSeminar extends SimpleORMap
         foreach ($study_areas as $studyarea) {
             switch (Config::get()->EVASYS_STUDYAREA_MATCHING) {
                 case 'name':
-                    $studienbereiche[] = $studyarea['name'];
+                    if ($studyarea['name']) {
+                        $studienbereiche[] = $studyarea['name'];
+                    }
                     break;
                 case 'info':
-                    $studienbereiche[] = $studyarea['info'];
+                    if ($studyarea['info']) {
+                        $studienbereiche[] = $studyarea['info'];
+                    }
                     break;
                 default:
                 case 'path':
-                    $studienbereiche[] = $studyarea->getPath(" » ");
+                    $path = $studyarea->getPath(" » ");
+                    if ($path) {
+                        $studienbereiche[] = $path;
+                    }
                     break;
             }
 
