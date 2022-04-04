@@ -1,6 +1,6 @@
 <? foreach ($semesters as $i => $semester) : ?>
 <?
-if (($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") && (count($semesters) > 1) && ($semester->getId() !== Semester::findCurrent()->id)) {
+if (($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") && (count($semesters) > 1) && ($semester->getId() !== $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE)) {
     continue;
 }
 $profile = null;

@@ -240,8 +240,8 @@ class EvasysCourseProfile extends SimpleORMap {
         return $this->getPresetFormId($form_id);
     }
 
-    public function getPresetFormId($form_id = null) {
-
+    public function getPresetFormId($form_id = null)
+    {
         $institut_id = $this->course['institut_id'];
         $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id, $this['semester_id']);
         $sem_type = $this->course->status;
@@ -491,7 +491,7 @@ class EvasysCourseProfile extends SimpleORMap {
      */
     public function getFinalAttribute($attribute)
     {
-        if ($this[$attribute] && (!is_a($this[$attribute], "I18NString") || (string) $this[$attribute])) {
+        if ($this[$attribute] || ($this->isI18nField($attribute) && (string) $this[$attribute])) {
             return $this[$attribute];
         } else {
             return $this->getPresetAttribute($attribute);
@@ -502,18 +502,18 @@ class EvasysCourseProfile extends SimpleORMap {
     {
         $institut_id = $this->course['institut_id'];
         $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id, $this['semester_id']);
-        if ($inst_profile[$attribute] && (!is_a($inst_profile[$attribute], "I18NString") || (string) $inst_profile[$attribute])) {
+        if ($inst_profile[$attribute] || ($inst_profile->isI18nField($attribute) && (string) $inst_profile[$attribute])) {
             return $inst_profile[$attribute];
         }
         $fakultaet_id = $this->course->home_institut->fakultaets_id;
         if ($fakultaet_id !== $institut_id) {
             $inst_profile = EvasysInstituteProfile::findByInstitute($fakultaet_id, $this['semester_id']);
-            if ($inst_profile[$attribute] && (!is_a($inst_profile[$attribute], "I18NString") || (string) $inst_profile[$attribute])) {
+            if ($inst_profile[$attribute] || ($inst_profile->isI18nField($attribute) && (string) $inst_profile[$attribute])) {
                 return $inst_profile[$attribute];
             }
         }
         $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
-        if ($global_profile[$attribute] && (!is_a($global_profile[$attribute], "I18NString") || (string) $global_profile[$attribute])) {
+        if ($global_profile[$attribute] || ($global_profile->isI18nField($attribute) && (string) $global_profile[$attribute])) {
             return $global_profile[$attribute];
         }
         // else ...
