@@ -915,7 +915,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                         }
                         return;
                     }
-                    //var_dump($evasys_surveys_object->m_oSurveyHolder->m_aSurveys->Surveys);
                     foreach ((array) $evasys_surveys_object->m_oSurveyHolder->m_aSurveys->Surveys as $survey_data) {
                         $count_forms = $survey_data->m_nFormCount;
                         $tans = $survey_data->m_nPswdCount;
