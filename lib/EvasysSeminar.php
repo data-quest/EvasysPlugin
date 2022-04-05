@@ -383,16 +383,20 @@ class EvasysSeminar extends SimpleORMap
             }
 
         }
-        $datenfelder = DatafieldEntryModel::findBySQL("INNER JOIN datafields USING (datafield_id) WHERE `object_type` = 'sem' AND datafields_entries.range_id = ? ORDER BY datafields.priority ASC", [
-            $course->getId()
-        ]);
+
+        //TODO:
+        $datafields = DataField::getDataFields('sem');
         $custom_fields = [
             '1' => $course['veranstaltungsnummer'],
             '2' => "" //Anzahl der Bögen ?
         ];
         $i = 3;
-        foreach ($datenfelder as $datafield_entry) {
-            $custom_fields[$i] = (string) $datafield_entry['content'];
+        foreach ($datafields as $datafield) {
+            $datafield_entry = DatafieldEntryModel::findOneBySQL('datafield_id = :datafield_id AND range_id = :course_id', [
+                'datafield_id' => $datafield->getId(),
+                'course_id' => $course->getId()
+            ]);
+            $custom_fields[$i] = $datafield_entry ? (string) $datafield_entry['content'] : '';
             $i++;
         }
         $surveys = [];
