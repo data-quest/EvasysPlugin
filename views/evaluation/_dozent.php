@@ -79,7 +79,7 @@
                                     if ($profile->getFinalEnd() < time()) {
                                         echo dgettext("evasys", "Lehrveranstaltungsevaluation abgeschlossen")
                                                 ." / "
-                                                .($pdf_link ? dgettext("evasys", "Bericht kann abgerufen werden") : dgettext("evasys","Rücklauf für Bericht zu gering"));
+                                                .dgettext("evasys", "Bericht kann abgerufen werden");
                                     } else {
                                         echo dgettext("evasys", "Lehrveranstaltungsevaluation offen / Bericht kann abgerufen werden");
                                     }

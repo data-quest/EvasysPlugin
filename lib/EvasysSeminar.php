@@ -396,7 +396,7 @@ class EvasysSeminar extends SimpleORMap
                 'datafield_id' => $datafield->getId(),
                 'course_id' => $course->getId()
             ]);
-            $custom_fields[$i] = $datafield_entry ? (string) $datafield_entry['content'] : '';
+            $custom_fields[$i] = $datafield_entry ? (string) $datafield_entry['content'] : $datafield['default_value'];
             $i++;
         }
         $surveys = [];
