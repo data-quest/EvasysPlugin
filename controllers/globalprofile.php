@@ -142,6 +142,10 @@ class GlobalprofileController extends PluginController
             $this->profile->mail_begin_body = Request::i18n('mail_begin_body');
             $this->profile->mail_reminder_subject = Request::i18n('mail_reminder_subject');
             $this->profile->mail_reminder_body = Request::i18n('mail_reminder_body');
+            $this->profile->mail_apply_subject = Request::i18n('mail_apply_subject');
+            $this->profile->mail_apply_body = Request::i18n('mail_apply_body');
+            $this->profile->mail_changed_subject = Request::i18n('mail_changed_subject');
+            $this->profile->mail_changed_body = Request::i18n('mail_changed_body');
             $this->profile->store();
 
             //now edit all the form-relations for the global profile:

@@ -109,12 +109,30 @@ class EvasysCourseProfile extends SimpleORMap {
             $messaging = new messaging();
             foreach ($user_ids as $user_id) {
                 if ($user_id !== $GLOBALS['user']->id) {
-                    $link = URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], ['cid' => $this['seminar_id']]);
-                    $message = sprintf(
-                            dgettext("evasys", "%s hat eine Lehrevaluation für die Veranstaltung %s beantragt. Sie können die Evaluationsdaten hier einsehen:"),
-                            get_fullname($GLOBALS['user']->id),
-                            $this->course->name
-                        ) . "\n\n" . $link;
+                    $url = URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], ['cid' => $this['seminar_id']]);
+                    $message = $this->getPresetAttribute('mail_apply_body');
+                    $subject = $this->getPresetAttribute('mail_apply_subject');
+
+                    setTempLanguage($user_id);
+                    $templates = [
+                        '{{course}}',
+                        '{{coursename}}',
+                        '{{url}}',
+                        '{{evaluationsende}}',
+                        '{{evaluationsbeginn}}',
+                        '{{person}}'
+                    ];
+                    $replacement = [
+                        $this->course->getFullName(),
+                        $this->course['name'],
+                        $url,
+                        date("d.m.Y H:i", $this->getFinalEnd()),
+                        date("d.m.Y H:i", $this->getFinalBegin()),
+                        User::findCurrent()->getFullName()
+                    ];
+                    $subject = str_ireplace($templates, $replacement, (string) $subject);
+                    $message = str_ireplace($templates, $replacement, (string) $message);
+
                     $messaging->insert_message(
                         $message,
                         get_username($user_id),
@@ -123,15 +141,12 @@ class EvasysCourseProfile extends SimpleORMap {
                         "",
                         "",
                         "",
-                        sprintf(
-                            dgettext("evasys", "Lehrevaluation für Veranstaltung %s wurde von %s beantragt"),
-                            $this->course->name,
-                            get_fullname($GLOBALS['user']->id)
-                        ),
+                        $subject,
                         true,
                         "normal",
                         ["Lehrevaluation"]
                     );
+                    restoreLanguage();
                 }
             }
             URLHelper::setBaseURL($oldbase);
@@ -182,17 +197,34 @@ class EvasysCourseProfile extends SimpleORMap {
                     'seminar_id' => $this['seminar_id']
                 ]);
                 $dozenten = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
-
+                $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+                $messaging = new messaging();
                 foreach ($dozenten as $dozent_username) {
                     if ($dozent_username !== $GLOBALS['user']->username) {
-                        $messaging = new messaging();
-                        $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
-                        $message = sprintf(
-                            dgettext("evasys", "%s hat gerade die Lehrevaluationsdaten der Veranstaltung %s verändert. Die geänderten Daten können Sie hier einsehen und gegebenenfalls bearbeiten: \n\n %s"),
-                            get_fullname($GLOBALS['user']->id),
-                            $this->course['name'],
-                            URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], ['cid' => $this['seminar_id']], true)
-                        );
+                        $url = URLHelper::getURL("plugins.php/evasysplugin/profile/edit/" . $this['seminar_id'], ['cid' => $this['seminar_id']], true);
+                        $message = $this->getPresetAttribute('mail_changed_body');
+                        $subject = $this->getPresetAttribute('mail_changed_subject');
+
+                        setTempLanguage(get_userid($dozent_username));
+                        $templates = [
+                            '{{course}}',
+                            '{{coursename}}',
+                            '{{url}}',
+                            '{{evaluationsende}}',
+                            '{{evaluationsbeginn}}',
+                            '{{person}}'
+                        ];
+                        $replacement = [
+                            $this->course->getFullName(),
+                            (string) $this->course['name'],
+                            $url,
+                            date("d.m.Y H:i", $this->getFinalEnd()),
+                            date("d.m.Y H:i", $this->getFinalBegin()),
+                            User::findCurrent()->getFullName()
+                        ];
+                        $subject = str_ireplace($templates, $replacement, (string) $subject);
+                        $message = str_ireplace($templates, $replacement, (string) $message);
+
                         $messaging->insert_message(
                             $message,
                             $dozent_username,
@@ -201,14 +233,15 @@ class EvasysCourseProfile extends SimpleORMap {
                             "",
                             "",
                             "",
-                            dgettext("evasys", "Bearbeitung der Evaluationsdaten"),
+                            $subject,
                             true,
                             "normal",
                             ["Lehrevaluation"]
                         );
-                        URLHelper::setBaseURL($oldbase);
+                        restoreLanguage();
                     }
                 }
+                URLHelper::setBaseURL($oldbase);
             }
 
         }
@@ -278,8 +311,8 @@ class EvasysCourseProfile extends SimpleORMap {
                 if ($standardform && !$form_id) {
                     return $standardform['form_id'];
                 }
-                if (!$form_id) {
-                    $form_id = $inst_profile['form_id'];
+                if (!$form_id && $inst_profile['form_id']) {
+                    return $inst_profile['form_id'];
                 }
             }
         }
@@ -318,8 +351,8 @@ class EvasysCourseProfile extends SimpleORMap {
                     if ($standardform && !$form_id) {
                         return $standardform['form_id'];
                     }
-                    if (!$form_id) {
-                        $form_id = $inst_profile['form_id'];
+                    if (!$form_id && $inst_profile['form_id']) {
+                        return $inst_profile['form_id'];
                     }
                 }
             }

@@ -32,6 +32,10 @@ class EvasysInstituteProfile extends SimpleORMap
         $config['i18n_fields']['mail_reminder_body'] = true;
         $config['i18n_fields']['mail_begin_subject'] = true;
         $config['i18n_fields']['mail_begin_body'] = true;
+        $config['i18n_fields']['mail_apply_subject'] = true;
+        $config['i18n_fields']['mail_apply_body'] = true;
+        $config['i18n_fields']['mail_changed_subject'] = true;
+        $config['i18n_fields']['mail_changed_body'] = true;
         parent::configure($config);
     }
 
