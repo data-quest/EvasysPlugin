@@ -559,7 +559,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if (($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin")
             || ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_INDIVIDUAL"))) {
-            $widget = new SelectWidget(dgettext("evasys","Freiwillige Evaluation"), PluginEngine::getURL($this, [], "change_individual_filter"), "individual", "post");
+            $widget = new SelectWidget(dgettext("evasys", ucfirst(EvasysMatching::wording('freiwillige Evaluationen'))), PluginEngine::getURL($this, [], "change_individual_filter"), "individual", "post");
             $widget->addElement(new SelectElement(
                 '',
                 ""
