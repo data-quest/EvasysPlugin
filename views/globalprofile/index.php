@@ -387,6 +387,36 @@
 
         <h2>
             <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(20, ['class' => "text-bottom"])  ?>
+            <?= dgettext('evasys', 'Nachricht zum Beantragen an Admins und andere Lehrende')?>
+        </h2>
+        <?= dgettext('evasys', 'Diese Nachricht wird beim Beantragen der Lehrenden verschickt an die anderen Lehrende und die Eval-Admins')?>
+        <label>
+            <?= dgettext('evasys', 'Betreff')?>
+            <?= I18N::input('mail_apply_subject', $profile['mail_apply_subject']) ?>
+        </label>
+        <label>
+            <?= dgettext('evasys', 'Betreff')?>
+            <?= I18N::textarea('mail_apply_body', $profile['mail_apply_body']) ?>
+        </label>
+
+
+        <h2>
+            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(20, ['class' => "text-bottom"])  ?>
+            <?= dgettext('evasys', 'Nachricht an Lehrende')?>
+        </h2>
+        <?= dgettext('evasys', 'Diese Nachricht wird beim Verändern der Befragungsdaten an die anderen Lehrenden verschickt.')?>
+        <label>
+            <?= dgettext('evasys', 'Betreff')?>
+            <?= I18N::input('mail_changed_subject', $profile['mail_changed_subject']) ?>
+        </label>
+        <label>
+            <?= dgettext('evasys', 'Betreff')?>
+            <?= I18N::textarea('mail_changed_body', $profile['mail_changed_body']) ?>
+        </label>
+
+
+        <h2>
+            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(20, ['class' => "text-bottom"])  ?>
             <?= dgettext('evasys', 'Nachricht an Lehrende 24 Stunden vor Beginn')?>
         </h2>
         <?= dgettext('evasys', 'Diese Nachricht wird 24 Stunden vor Beginn des Evaluationszeitraumes an die Lehrenden verschickt.')?>
@@ -413,36 +443,6 @@
         <label>
             <?= dgettext('evasys', 'Betreff')?>
             <?= I18N::textarea('mail_reminder_body', $profile['mail_reminder_body']) ?>
-        </label>
-
-
-        <h2>
-            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(20, ['class' => "text-bottom"])  ?>
-            <?= dgettext('evasys', 'Nachricht zum Beantragen an Admins und andere Lehrende')?>
-        </h2>
-        <?= dgettext('evasys', 'Diese Nachricht wird beim Beantragen der Lehrenden verschickt an die anderen Lehrende und die Eval-Admins')?>
-        <label>
-            <?= dgettext('evasys', 'Betreff')?>
-            <?= I18N::input('mail_apply_subject', $profile['mail_apply_subject']) ?>
-        </label>
-        <label>
-            <?= dgettext('evasys', 'Betreff')?>
-            <?= I18N::textarea('mail_apply_body', $profile['mail_apply_body']) ?>
-        </label>
-
-
-        <h2>
-            <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(20, ['class' => "text-bottom"])  ?>
-            <?= dgettext('evasys', 'Nachricht an Lehrende')?>
-        </h2>
-        <?= dgettext('evasys', 'Diese Nachricht wird beim Verändern der Befragungsdaten an die anderen Lehrenden verschickt.')?>
-        <label>
-            <?= dgettext('evasys', 'Betreff')?>
-            <?= I18N::input('mail_changed_subject', $profile['mail_changed_subject']) ?>
-        </label>
-        <label>
-            <?= dgettext('evasys', 'Betreff')?>
-            <?= I18N::textarea('mail_changed_body', $profile['mail_changed_body']) ?>
         </label>
 
 
