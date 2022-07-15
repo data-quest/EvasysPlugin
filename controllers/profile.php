@@ -207,7 +207,7 @@ class ProfileController extends PluginController {
                 if (in_array("end", Request::getArray("change"))) {
                     if (Request::get("end")) {
                         $end = strtotime(Request::get("end"));
-                        if ($begin > 0) {
+                        if ($end > 0) {
                             $profile['end'] = $end != $profile->getPresetEnd() ? $end : null;
                         }
                     } else {
