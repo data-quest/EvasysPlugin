@@ -189,8 +189,6 @@ class EvasysSendMessagesJob extends CronJob
 
             $user_ids = $fetch_members->fetchAll(PDO::FETCH_COLUMN, 0);
 
-            $course = Course::find($profile['seminar_id']);
-
             foreach ($user_ids as $user_id) {
                 $user = User::find($user_id);
                 if ($user) {
@@ -202,16 +200,30 @@ class EvasysSendMessagesJob extends CronJob
                     ]);
 
                     $message = (string) $profile->getPresetAttribute('mail_reminder_body');
+                    $templates = [
+                        '{{course}}',
+                        '{{coursename}}',
+                        '{{url}}',
+                        '{{evaluationsende}}',
+                        '{{evaluationsbeginn}}'
+                    ];
+                    $replacement = [
+                        $profile->course->getFullName(),
+                        $profile->course['name'],
+                        $url,
+                        date("d.m.Y H:i", $profile->getFinalEnd()),
+                        date("d.m.Y H:i", $profile->getFinalBegin())
+                    ];
                     $message = str_ireplace(
-                        ["{{url}}", "{{coursename}}", "{{evaluationsende}}", "{{evaluationsbeginn}}"],
-                        [$url, $course->name, date("d.m.Y H:i", $profile->getFinalEnd()), date("d.m.Y H:i", $profile->getFinalBegin())],
+                        $templates,
+                        $replacement,
                         $message
                     );
 
                     $subject = $profile->getPresetAttribute('mail_reminder_subject');
                     $subject = str_ireplace(
-                        ["{{url}}", "{{coursename}}", "{{evaluationsende}}", "{{evaluationsbeginn}}"],
-                        [$url, $course->name, date("d.m.Y H:i", $profile->getFinalEnd()), date("d.m.Y H:i", $profile->getFinalBegin())],
+                        $templates,
+                        $replacement,
                         $subject
                     );
 
