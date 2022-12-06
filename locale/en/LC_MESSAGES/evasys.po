@@ -231,6 +231,10 @@ msgstr "Information for lecturers about the evaluation data"
 msgid "Infotext für Studierende über der Evaluation"
 msgstr "Info text for students about the evaluation"
 
+#: ../views/globalprofile/index.php:139
+msgid "Infotext für Studierende"
+msgstr "Info text for students"
+
 #: ../views/globalprofile/index.php:148
 msgid "Erst nach Ablauf der Evaluation"
 msgstr "Only after the end of the evaluation"

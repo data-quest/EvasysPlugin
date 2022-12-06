@@ -10,7 +10,12 @@
 
     <? $student_infotext = trim($profile->getPresetAttribute("student_infotext")) ?>
     <? if ($student_infotext) : ?>
-        <div class="messagebox">
+        <div class="evasysmessagebox">
+            <? if ($GLOBALS['perm']->have_studip_perm('dozent', Context::get()->id)) : ?>
+                <div class="legend">
+                    <?= dgettext("evasys", "Infotext für Studierende") ?>
+                </div>
+            <? endif ?>
             <?= formatReady($student_infotext) ?>
         </div>
     <? endif ?>
