@@ -98,6 +98,9 @@ class ProfileController extends PluginController {
             if (Request::submitted("unset_by_dozent") && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($course_id))) {
                 $this->profile['by_dozent'] = 0;
             }
+            if (Request::submitted("set_by_dozent") && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($course_id))) {
+                $this->profile['by_dozent'] = 1;
+            }
             if (Request::submitted('unlock') && EvasysPlugin::isRoot()) {
                 $this->profile['locked'] = 0;
             }
@@ -226,6 +229,11 @@ class ProfileController extends PluginController {
                         $profile['mode'] = $profile->getPresetMode() != Request::option("mode")
                             ? Request::option("mode")
                             : null;
+                    }
+                }
+                if (in_array("by_dozent", Request::getArray("change"))) {
+                    if (Request::option("by_dozent") !== "") {
+                        $profile['by_dozent'] = Request::option("by_dozent");
                     }
                 }
                 $profile['user_id'] = $GLOBALS['user']->id;

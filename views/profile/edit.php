@@ -486,8 +486,12 @@
         <? if ($editable) : ?>
 
             <div data-dialog-button>
-                <? if ($profile['by_dozent'] && (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id']))) : ?>
-                    <?= \Studip\Button::create(dgettext("evasys", "In Pflichtevaluation umwandeln"), "unset_by_dozent", array('onclick' => "return window.confirm('".dgettext("evasys", "Wirklich in Pflichtevaluation umwandeln?")."');")) ?>
+                <? if (EvasysPlugin::isRoot() || EvasysPlugin::isAdmin($profile['seminar_id'])) : ?>
+                    <? if ($profile['by_dozent']) : ?>
+                        <?= \Studip\Button::create(dgettext("evasys", "In Pflichtevaluation umwandeln"), "unset_by_dozent", array('onclick' => "return window.confirm('".dgettext("evasys", "Wirklich in Pflichtevaluation umwandeln?")."');")) ?>
+                    <? else : ?>
+                        <?= \Studip\Button::create(sprintf(dgettext("evasys", "In %s umwandeln"), EvasysMatching::wording('freiwillige Evaluation')), "set_by_dozent", array('onclick' => "return window.confirm('".sprintf(dgettext("evasys", "Wirklich in %s umwandeln?"), EvasysMatching::wording('freiwillige Evaluation'))."'));")) ?>
+                    <? endif ?>
                 <? endif ?>
 
                 <? if (EvasysPlugin::isRoot() && $profile['locked']) : ?>

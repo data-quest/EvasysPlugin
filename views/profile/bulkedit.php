@@ -199,7 +199,7 @@
             </tr>
         <? endforeach ?>
 
-        <? if ($values['by_dozent'] == 1) : ?>
+        <? if (EvasysPlugin::isRoot()) : ?>
         <tr>
             <td>
                 <label>
@@ -208,10 +208,20 @@
                 </label>
             </td>
             <td>
-                <input type="checkbox"
-                       name="by_dozent"
-                       value="1"
-                       onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                <select name="by_dozent"
+                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                    <option value="">
+                        <? if ($values['by_dozent'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
+                            <?= dgettext("evasys", "Unterschiedliche Werte") ?>
+                        <? endif ?>
+                    </option>
+                    <option value="0"<?= !$values['by_dozent'] ? " selected" : "" ?>>
+                        <?= dgettext("evasys", "Nein") ?>
+                    </option>
+                    <option value="1"<?= $values['by_dozent'] == 1 ? " selected" : "" ?>>
+                        <?= dgettext("evasys", "Ja") ?>
+                    </option>
+                </select>
             </td>
         </tr>
         <? endif ?>
