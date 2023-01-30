@@ -404,7 +404,7 @@
             <?= Icon::create('mail', Icon::ROLE_INFO)->asImg(20, ['class' => "text-bottom"])  ?>
             <?= dgettext('evasys', 'Nachricht an Lehrende')?>
         </h2>
-        <?= dgettext('evasys', 'Diese Nachricht wird beim Verändern der Befragungsdaten an die anderen Lehrenden verschickt.')?>
+        <?= sprintf(dgettext('evasys', 'Diese Nachricht wird beim Verändern von %s der Befragungsdaten an die anderen Lehrenden verschickt.'), EvasysMatching::wording('freiwillige Evaluationen')) ?>
         <label>
             <?= dgettext('evasys', 'Betreff')?>
             <?= I18N::input('mail_changed_subject', $profile['mail_changed_subject']) ?>
