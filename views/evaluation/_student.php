@@ -1,5 +1,15 @@
-<? $min_user_permissions = EvasysPlugin::useLowerPermissionLevels() ? "user" : "autor" ?>
-<? if ($GLOBALS['perm']->have_studip_perm($min_user_permissions, Context::get()->id)
+<?
+$user_permissions = Config::get()->EVASYS_PLUGIN_PARTICIPANT_ROLES;
+$user_permissions = preg_split("/\s/", $user_permissions, -1, PREG_SPLIT_NO_EMPTY);
+$user_can_see = false;
+foreach ($user_permissions as $perm) {
+    if ($GLOBALS['perm']->have_studip_perm($perm, Context::get()->id)) {
+        $user_can_see = true;
+        break;
+    }
+}
+?>
+<? if ($user_can_see
     && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id) && count($profile->getTANs($dozent_id)) > 0) : ?>
 
     <? foreach ($profile->getTANs($dozent_id) as $tan) : ?>

@@ -163,10 +163,8 @@ class EvasysSendMessagesJob extends CronJob
             'last_execution' => $last_execution
         ]);
 
-        $user_permissions = ['autor', 'tutor'];
-        if (EvasysPlugin::useLowerPermissionLevels()) {
-            $user_permissions[] = 'user';
-        }
+        $user_permissions = Config::get()->EVASYS_PLUGIN_PARTICIPANT_ROLES;
+        $user_permissions = preg_split("/\s/", $user_permissions, -1, PREG_SPLIT_NO_EMPTY);
 
 
         while ($course_data = $fetch_profiles->fetch(PDO::FETCH_ASSOC)) {

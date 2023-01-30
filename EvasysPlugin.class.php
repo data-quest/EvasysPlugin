@@ -24,11 +24,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     static protected $ruecklauf = null;
 
-    public static function useLowerPermissionLevels()
-    {
-        return (bool) Config::get()->EVASYS_PLUGIN_USE_LOWER_PERMISSION_LEVELS;
-    }
-
     public function __construct()
     {
         bindtextdomain("evasys", __DIR__."/locale");
