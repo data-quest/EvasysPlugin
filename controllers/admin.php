@@ -253,7 +253,9 @@ class AdminController extends PluginController
 
         if (in_array('contents', $params['view_filter'])) {
             $sem_types = SemType::getTypes();
-            $modules = new Modules();
+            if (class_exists('Modules')) {
+                $modules = new Modules();
+            }
         }
 
         $seminars = array_map('reset', $courses);
@@ -267,7 +269,7 @@ class AdminController extends PluginController
 
                 if (in_array('contents', $params['view_filter'])) {
                     $seminars[$seminar_id]['sem_class'] = $sem_types[$seminar['status']]->getClass();
-                    $seminars[$seminar_id]['modules'] = $modules->getLocalModules($seminar_id, 'sem', $seminar['modules'], $seminar['status']);
+                    $seminars[$seminar_id]['modules'] = $modules ? $modules->getLocalModules($seminar_id, 'sem', $seminar['modules'], $seminar['status']) : null;
                     $seminars[$seminar_id]['navigation'] = MyRealmModel::getAdditionalNavigations($seminar_id, $seminars[$seminar_id], $seminars[$seminar_id]['sem_class'], $GLOBALS['user']->id);
                 }
                 //add last activity column:
