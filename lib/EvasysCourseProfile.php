@@ -780,4 +780,17 @@ class EvasysCourseProfile extends SimpleORMap {
             return ($semester && $semester->getId() === $profile['semester_id']);
         });
     }
+
+    public function teachersNotInCourse()
+    {
+        $teachers = [];
+        if ($this->teachers) {
+            foreach ($this->teachers as $dozent_id) {
+                if (!$GLOBALS['perm']->have_studip_perm('dozent', $this['seminar_id'], $dozent_id)) {
+                    $teachers[] = $dozent_id;
+                }
+            }
+        }
+        return $teachers;
+    }
 }

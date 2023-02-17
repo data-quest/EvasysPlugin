@@ -28,6 +28,12 @@ if ($profile === null) {
             <?= Icon::create($plugin->getPluginURL()."/assets/f-circle_grey.svg")->asImg(20, array('title' => sprintf(dgettext("evasys", "Dies ist eine %s"), EvasysMatching::wording("freiwillige Evaluation")))) ?>
         <? endif ?>
 
+        <? $teachers_not_in_course = $profile->teachersNotInCourse() ?>
+        <? if (count($teachers_not_in_course) > 0) : ?>
+            <? $teachers_not_in_course = array_map(function ($user_id) { $u = User::find($user_id); return $u ? $u->getFullName() : _('unbekannt'); }, $teachers_not_in_course) ?>
+            <?= Icon::create($plugin->getPluginURL().'/assets/warn.svg', 'status-red')->asImg(20, ['class' => "text-bottom", 'title' => sprintf(dgettext('evasys', 'Lehrende %s sind beantragt aber nicht mehr in der Veranstaltung.'), implode(", ", $teachers_not_in_course))]) ?>
+        <? endif ?>
+
         <? if (!$profile->hasDatesInEvalTimespan()) : ?>
             <?= Icon::create("exclaim-circle", "status-red")->asImg(20, array('title' => dgettext("evasys", "Es gibt keinen Termin dieser Veranstaltung im gewünschten Evaluationszeitraum"))) ?>
         <? endif ?>
