@@ -178,6 +178,9 @@ class ProfileController extends PluginController {
                             }
                             $profile['teachers'] = $teacher_ids;
                         }
+                        if (!$profile['applied']) {
+                            $profile['teachers'] = null;
+                        }
                     }
                 }
                 if (in_array("split", Request::getArray("change"))) {
