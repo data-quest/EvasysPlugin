@@ -85,7 +85,11 @@
                                     }
                                     break;
                                 case 4:
-                                    echo dgettext("evasys", "Lehrveranstaltungsevaluation offen / Rücklauf für Bericht zu gering");
+                                    if ($profile->getFinalEnd() > time()) {
+                                        echo dgettext("evasys", "Lehrveranstaltungsevaluation offen / Rücklauf für Bericht zu gering");
+                                    } else {
+                                        echo dgettext("evasys", "Lehrveranstaltungsevaluation geschlossen / Rücklauf für Bericht zu gering");
+                                    }
                                     break;
                                 case 5:
                                     echo dgettext("evasys", "Validierung / Datenerfassungskraft");
