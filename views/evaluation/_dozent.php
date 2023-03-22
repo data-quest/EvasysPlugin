@@ -26,7 +26,7 @@
         </table>
     <? else : ?>
         <? $surveys = $profile->getSurveyInformation($dozent_id) ?>
-        <? foreach ($surveys as $survey) : ?>
+        <? foreach ((array) $surveys as $survey) : ?>
             <table class="default">
                 <tbody>
                     <tr>

@@ -126,7 +126,7 @@ class FormsController extends PluginController
             } else {
                 $translations = [];
                 foreach ($evasys_forminfo->FormTranslation as $formtranslation) {
-                    $system_language = $formtranslation->SystemLanguage;
+                    $system_language = $formtranslation->FormTranslationId;
                     $language = trim($languages[$formtranslation->Name]); //the language in Stud.IP is the index
                     $translations[$language] = $system_language;
                 }
