@@ -580,7 +580,15 @@ class EvasysCourseProfile extends SimpleORMap {
             if ($this['locked'] && $this->lockAfterTransferForRole() === "admin") {
                 return false;
             }
-            $global_profile = EvasysGlobalProfile::find($this['semester_id']) ?: EvasysGlobalProfile::findCurrent();
+            $global_profile = EvasysGlobalProfile::find($this['semester_id']);
+            if (!$global_profile) {
+                if ($this->course->start_semester) {
+                    $global_profile = EvasysGlobalProfile::find($this->course->start_semester['semester_id']);
+                }
+                if (!$global_profile) {
+                    $global_profile = EvasysGlobalProfile::findCurrent();
+                }
+            }
             return (
                 $global_profile['adminedit_begin']
                 && ($global_profile['adminedit_begin'] <= time())
