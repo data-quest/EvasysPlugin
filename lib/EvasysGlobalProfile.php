@@ -48,7 +48,16 @@ class EvasysGlobalProfile extends SimpleORMap
         if (self::$singleton) {
             return self::$singleton;
         }
-        $semester = Semester::findCurrent(); //findNext ?
+
+        if (method_exists('Semester', 'findDefault')) {
+            $semester = Semester::findDefault();
+        } else {
+            $semester = Semester::findCurrent();
+            if (time() > $semester['ende'] - 86400 * 7 * Config()->SEMESTER_TIME_SWITCH) {
+                $semester = Semester::findNext();
+            }
+        }
+
         if (!$semester) {
             trigger_error("Kein aktuelles Semester, kann kein globales EvaSysProfil erstellen.", E_USER_WARNING);
             return false;

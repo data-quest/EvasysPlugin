@@ -111,7 +111,7 @@ class FormsController extends PluginController
             $soap = EvasysSoap::get();
 
 
-            $evasys_forminfo = $soap->__soapCall("GetFormTranslations", [
+            $evasys_forminfo = $soap->soapCall("GetFormTranslations", [
                 'FormId' => $form->getId()
             ]);
             if (is_a($evasys_forminfo, "SoapFault")) {
