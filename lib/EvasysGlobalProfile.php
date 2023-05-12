@@ -53,7 +53,7 @@ class EvasysGlobalProfile extends SimpleORMap
             $semester = Semester::findDefault();
         } else {
             $semester = Semester::findCurrent();
-            if (time() > $semester['ende'] - 86400 * 7 * Config()->SEMESTER_TIME_SWITCH) {
+            if (time() > $semester['ende'] - 86400 * 7 * Config::get()->SEMESTER_TIME_SWITCH) {
                 $semester = Semester::findNext();
             }
         }

@@ -65,7 +65,7 @@
         <? if ($GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id)) : ?>
             <?= $this->render_partial("evaluation/_dozent.php", [
                 'profile' => $profile,
-                'dozent_ids' => $profile['teachers']->getArrayCopy()
+                'dozent_ids' => $profile['teachers'] ? $profile['teachers']->getArrayCopy() : []
             ]) ?>
         <? else : ?>
             <?= $this->render_partial("evaluation/_student.php", [

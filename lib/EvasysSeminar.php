@@ -408,8 +408,12 @@ class EvasysSeminar extends SimpleORMap
             if (!$profile['split']) {
                 $seminar_ids = [$this['Seminar_id']];
             } else {
-                $seminar_ids = $profile['surveys']->getArrayCopy();
-                $seminar_ids = array_keys($seminar_ids);
+                if ($profile['surveys']) {
+                    $seminar_ids = $profile['surveys']->getArrayCopy();
+                    $seminar_ids = array_keys($seminar_ids);
+                } else {
+                    $seminar_ids = [];
+                }
             }
 
             $eval_begin = $profile->getFinalBegin();
@@ -495,7 +499,7 @@ class EvasysSeminar extends SimpleORMap
             $parts = [];
 
             foreach ($dozenten as $dozent_id) {
-                if (!$profile['teachers'] || in_array($dozent_id, $profile['teachers']->getArrayCopy())) {
+                if (!$profile['teachers'] || in_array($dozent_id, $profile['teachers'] ? $profile['teachers']->getArrayCopy() : [])) {
                     $instructorlist = [];
 
                     $instructorlist[] = $this->getInstructorPart($dozent_id);
@@ -640,7 +644,7 @@ class EvasysSeminar extends SimpleORMap
             'survey_id' => '%'.$survey_id.'%'
         ]);
         foreach ($profiles as $p) {
-            if (in_array($survey_id, array_values($p['surveys']->getArrayCopy()))) {
+            if (p['surveys'] && in_array($survey_id, array_values($p['surveys']->getArrayCopy()))) {
                 $profile = $p;
             }
         }

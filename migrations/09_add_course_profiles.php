@@ -186,12 +186,12 @@ class AddCourseProfiles extends Migration
         DBManager::get()->exec("
             INSERT INTO roles
             SET rolename = 'Evasys-Admin',
-            system = 'n'
+            `system` = 'n'
         ");
         DBManager::get()->exec("
             INSERT INTO roles
             SET rolename = 'Evasys-Dozent-Admin',
-            system = 'n'
+            `system` = 'n'
         ");
         Config::get()->create("EVASYS_TRANSFER_PERMISSION", array(
             'value' => "root",

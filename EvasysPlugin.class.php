@@ -995,7 +995,11 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         foreach ($profiles as $profile) {
             if ($profile['transferred']) {
                 if ($profile['split']) {
-                    $seminar_ids = array_unique(array_merge($seminar_ids, array_keys($profile['surveys']->getArrayCopy())));
+                    if ($profile['surveys']) {
+                        $seminar_ids = array_unique(array_merge($seminar_ids, array_keys($profile['surveys']->getArrayCopy())));
+                    } else {
+                        $seminar_ids = [];
+                    }
                 } else {
                     if (!in_array($course->getId(), $seminar_ids)) {
                         $seminar_ids[] = $course->getId();
