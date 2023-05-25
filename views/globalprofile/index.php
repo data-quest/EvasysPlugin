@@ -49,6 +49,7 @@
                 <input type="text"
                        name="data[adminedit_begin]"
                        value="<?= $profile['adminedit_begin'] ? date("d.m.Y H:i", $profile['adminedit_begin']) : "" ?>"
+                       data-datetime-picker
                        id="evasys_admin_begin">
             </label>
 
