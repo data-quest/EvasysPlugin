@@ -106,6 +106,7 @@ class ProfileController extends PluginController {
             }
 
             $this->profile->store();
+            $this->profile->restore();
 
             foreach (Request::getArray("field") as $field_id => $value) {
                 $field = new EvasysAdditionalField($field_id);
@@ -127,6 +128,7 @@ class ProfileController extends PluginController {
             'course_id' => $course_id,
             'action_ids' => $log_action_ids
         ]);
+
     }
 
 

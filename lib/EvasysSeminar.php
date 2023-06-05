@@ -644,7 +644,7 @@ class EvasysSeminar extends SimpleORMap
             'survey_id' => '%'.$survey_id.'%'
         ]);
         foreach ($profiles as $p) {
-            if (p['surveys'] && in_array($survey_id, array_values($p['surveys']->getArrayCopy()))) {
+            if ($p['surveys'] && in_array($survey_id, array_values($p['surveys']->getArrayCopy()))) {
                 $profile = $p;
             }
         }
