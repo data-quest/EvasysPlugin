@@ -379,8 +379,17 @@ class EvasysCourseProfile extends SimpleORMap {
                 'profile_id' => $global_profile->getId()
             ]);
             $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            if (count($available_form_ids) === 0) {
+                $statement = DBManager::get()->prepare("
+                    SELECT form_id
+                    FROM evasys_forms
+                    WHERE `active` = '1'
+                ");
+                $statement->execute();
+                $available_form_ids = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+            }
 
-            if (!empty($available_form_ids)) {
+            if (count($available_form_ids) > 0) {
                 if ($form_id && in_array($form_id, $available_form_ids)) {
                     return $form_id;
                 } else {
