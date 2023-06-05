@@ -275,7 +275,10 @@
                                     <tr>
                                         <td>
                                             <label>
-                                                <input type="radio" name="data[form_id]" value="<?= htmlReady($form->getId()) ?>"<?= (!$profile['form_id'] || ($profile['form_id'] === $form->getId())) ? " checked" : "" ?>>
+                                                <input type="radio"
+                                                       name="data[form_id]"
+                                                       value="<?= htmlReady($form->getId()) ?>"
+                                                       <?= (!$profile['form_id'] || ($profile['form_id'] === $form->getId())) ? " checked" : "" ?>>
                                                 <?= htmlReady($form['name'].": ".$form['description']) ?>
                                             </label>
                                         </td>

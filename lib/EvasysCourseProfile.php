@@ -393,6 +393,8 @@ class EvasysCourseProfile extends SimpleORMap {
                 if (!$form_id) {
                     $form_id = $global_profile['form_id'];
                 }
+            } else {
+                $form_id = $global_profile['form_id'];
             }
         }
         return $form_id;
