@@ -653,6 +653,8 @@ class EvasysSeminar extends SimpleORMap
             if ($form && $form['translations']) {
                 $user_language = getUserLanguage($GLOBALS['user']->id);
                 if ($form['translations'][$user_language]) {
+                    $params['nUserId'] = 0;
+                    $params['nCustomPDFId'] = '';
                     $params['nLanguageID'] = $form['translations'][$user_language]; //$user_language === "en_GB" ? 2 : 1 //SystemLanguage 1= 2=
                 }
             }

@@ -93,7 +93,7 @@ class EvasysSendMessagesJob extends CronJob
             $body = $profile->getPresetAttribute('mail_begin_body');
             $next_courses_count++;
             if ($subject && $body) {
-                $teachers = $profile->teachers->getArrayCopy();
+                $teachers = $profile->teachers ? $profile->teachers->getArrayCopy() : [];
                 $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
                 $url = URLHelper::getURL("plugins.php/evasysplugin/evaluation/show", [
                     'cid' => $profile['seminar_id']
