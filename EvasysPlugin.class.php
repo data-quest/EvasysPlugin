@@ -60,12 +60,14 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (((stripos($_SERVER['REQUEST_URI'], "dispatch.php/admin/courses") !== false)
                 || (stripos($_SERVER['REQUEST_URI'], "plugins.php/evasysplugin/profile/bulkedit") !== false))) {
             $this->addStylesheet("assets/evasys.less");
-            if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin") {
+            if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin" && StudipVersion::olderThan('5.4.0')) {
                 if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")) {
                     PageLayout::addScript($this->getPluginURL() . "/assets/insert_button.js");
                 }
             }
-            PageLayout::addScript($this->getPluginURL() . "/assets/admin_area.js");
+            if (StudipVersion::olderThan('5.4.0')) {
+                PageLayout::addScript($this->getPluginURL() . "/assets/admin_area.js");
+            }
             NotificationCenter::addObserver($this, "addTransferredFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addTransferdateFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");
@@ -691,9 +693,16 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function useMultimode()
     {
-        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
-            ? dgettext("evasys", "Übertragen")
-            : dgettext("evasys", "Bearbeiten");
+        if (StudipVersion::newerThan('5.3.99')) {
+            $factory = new Flexi_TemplateFactory(__DIR__."/views");
+            $template = $factory->open("admin/bottom_buttons.php");
+            $template->plugin = $this;
+            return $template;
+        } else {
+            return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
+                ? dgettext("evasys", "Übertragen")
+                : dgettext("evasys", "Bearbeiten");
+        }
     }
 
     public function getAdminCourseActionTemplate($course_id, $values = null, $semester = null)
