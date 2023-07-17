@@ -652,11 +652,19 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 if ($profile['applied']
                     && $profile['transferred']
                     && ($profile->getFinalBegin() <= time())) {
-                    $activated = true;
-                    break;
+                    if ($profile->getFinalAttribute('mode') === 'online' || $profile->evasys_seminar['publishing_allowed']) {
+                        $activated = true;
+                        break;
+                    } elseif($profile['split']) {
+                        foreach ($profile->course->members->findBy('status','dozent') as $dozent) {
+                            if ($profile->evasys_seminar['publishing_allowed_by_dozent'] == $dozent['user_id']) {
+                                $activated = true;
+                                break 2;
+                            }
+                        }
+                    }
                 }
             }
-
         }
         if ($activated) {
             $tab = new Navigation(dgettext("evasys", "Lehrveranst.-Evaluation"), PluginEngine::getLink($this, [], "evaluation/show"));
