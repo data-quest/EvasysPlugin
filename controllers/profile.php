@@ -68,20 +68,31 @@ class ProfileController extends PluginController {
             $this->profile['results_email'] = $data['results_email'] ?: null;
             $this->profile['split'] = $data['split'] ? 1 : 0;
             $this->profile['form_id'] = $data['form_id'] !== $this->profile->getPresetFormId() ? $data['form_id'] : null;
+            $preset_begin = $this->profile->getPresetBegin();
+            $begin = $data['begin'] ? strtotime($data['begin']) : $preset_begin;
             if ($data['begin']) {
                 $this->profile['begin'] = strtotime($data['begin']);
-                if ($this->profile['begin'] == $this->profile->getPresetBegin()) {
-                    $this->profile['begin'] = null;
-                }
             } else {
                 $this->profile['begin'] = null;
             }
+            if (!EvasysPlugin::isRoot() && !EvasysPlugin::isAdmin($course_id) && ($begin < time() + Config::get()->EVASYS_INDIVIDUAL_TIME_OFFSETS * 60)) {
+                $this->profile['begin'] = time() + Config::get()->EVASYS_INDIVIDUAL_TIME_OFFSETS * 60;
+            }
+            if ($this->profile['begin'] == $preset_begin) {
+                $this->profile['begin'] = null;
+            }
+
+            $preset_end = $this->profile->getPresetEnd();
+            $end = $data['end'] ? strtotime($data['end']) : $preset_end;
             if ($data['end']) {
                 $this->profile['end'] = strtotime($data['end']);
-                if ($this->profile['end'] == $this->profile->getPresetEnd()) {
-                    $this->profile['end'] = null;
-                }
             } else {
+                $this->profile['end'] = null;
+            }
+            if ($end < $begin) {
+                $this->profile['end'] = $begin + 60 * 2;
+            }
+            if ($this->profile['end'] == $preset_end) {
                 $this->profile['end'] = null;
             }
             if ($data['mode']) {
@@ -116,7 +127,7 @@ class ProfileController extends PluginController {
             }
 
             PageLayout::postSuccess(dgettext("evasys", "Daten wurden gespeichert."));
-            if (StudipVersion::newerThan('5.3.99')) {
+            if (Request::isDialog() && StudipVersion::newerThan('5.3.99')) {
                 $this->response->add_header('X-Dialog-Close', 1);
                 $this->response->add_header('X-Dialog-Execute', 'STUDIP.AdminCourses.App.loadCourse');
                 $this->render_text($course_id);
