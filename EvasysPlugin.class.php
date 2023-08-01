@@ -65,9 +65,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     PageLayout::addScript($this->getPluginURL() . "/assets/insert_button.js");
                 }
             }
-            if (StudipVersion::olderThan('5.4.0')) {
-                PageLayout::addScript($this->getPluginURL() . "/assets/admin_area.js");
-            }
             NotificationCenter::addObserver($this, "addTransferredFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addTransferdateFilterToSidebar", "SidebarWillRender");
             NotificationCenter::addObserver($this, "addNonfittingDatesFilterToSidebar", "SidebarWillRender");

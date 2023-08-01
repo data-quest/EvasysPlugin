@@ -131,11 +131,6 @@ class ProfileController extends PluginController {
                 $this->response->add_header('X-Dialog-Close', 1);
                 $this->response->add_header('X-Dialog-Execute', 'STUDIP.AdminCourses.App.loadCourse');
                 $this->render_text($course_id);
-            } else {
-                $this->response->add_header("X-Dialog-Execute", json_encode([
-                    'func' => "STUDIP.Evasys.refreshCourseInOverview",
-                    'payload' => $course_id
-                ]));
             }
         }
         $log_actions = LogAction::findBySQL("`name` LIKE 'EVASYS_%'");
