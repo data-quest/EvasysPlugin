@@ -148,7 +148,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 dgettext("evasys", "Nach Übertragung verändert"),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "changedtransferred"
             ));
-            $widget->setOnSubmitHandler("STUDIP.AdminCourses.App.changeFilter({transferstatus: $(this).find('select').val()}); return false;");
 
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferred");
         }
@@ -200,8 +199,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 PluginEngine::getURL($this, ['transferdate' => 1], "change_transferdate_filter"),
                 PluginEngine::getURL($this, ['transferdate' => 0], "change_transferdate_filter")
             );
-            //Todo:
-            //$widget->setOnSubmitHandler("STUDIP.AdminCourses.App.changeFilter({transferdate: $(this).find('input').val()}); return false;");
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_transferdate");
         }
     }
@@ -250,8 +247,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES"),
                 PluginEngine::getURL($this, [], "toggle_nonfittingdates_filter")
             );
-            //Todo:
-            //$widget->setOnSubmitHandler("STUDIP.AdminCourses.App.changeFilter({nonfittingdates: $(this).find('input').val()}); return false;");
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_nonfittingdates");
         }
     }
@@ -324,8 +319,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES"),
                 PluginEngine::getURL($this, [], "toggle_recentevalcourses_filter")
             );
-            //Todo:
-            //$widget->setOnSubmitHandler("STUDIP.AdminCourses.App.changeFilter({recentevalcourses: $(this).find('input').val()}); return false;");
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_recentevalcourses");
         }
     }
@@ -372,7 +365,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     $form['description']
                 ));
             }
-            $widget->setOnSubmitHandler("STUDIP.AdminCourses.App.changeFilter({form_id: $(this).find('select').val()}); return false;");
 
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_form");
         }
@@ -463,7 +455,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 (dgettext("evasys","Papier-Evaluationen")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE") === "paper"
             ));
-            $widget->setOnSubmitHandler("STUDIP.AdminCourses.App.changeFilter({paperonline: $(this).find('select').val()}); return false;");
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_paperonline");
         }
     }
@@ -528,7 +519,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 (dgettext("evasys","Veranstaltungen außerhalb der Hauptphase")),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "nonmainphase"
             ));
-            $widget->setOnSubmitHandler("STUDIP.AdminCourses.App.changeFilter({mainphase: $(this).find('select').val()}); return false;");
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_mainphase");
         }
     }
@@ -578,7 +568,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 (sprintf(dgettext("evasys","Keine %s"), EvasysMatching::wording('freiwillige Evaluation'))),
                 $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_INDIVIDUAL") === "nonindividual"
             ));
-            $widget->setOnSubmitHandler("STUDIP.AdminCourses.App.changeFilter({individual: $(this).find('select').val()}); return false;");
             Sidebar::Get()->insertWidget($widget, "editmode", "filter_individual");
         }
     }
