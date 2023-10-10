@@ -19,7 +19,7 @@ class EvasysSendMessagesJob extends CronJob
     }
 
     /**
-     * Setup method. Loads neccessary classes and checks environment. Will
+     * Setup method. Loads neccessary lib and checks environment. Will
      * bail out with an exception if environment does not match requirements.
      */
     public function setUp()
