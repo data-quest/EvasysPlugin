@@ -126,11 +126,13 @@ class ProfileController extends PluginController {
                 }
             }
 
-            PageLayout::postSuccess(dgettext("evasys", "Daten wurden gespeichert."));
+
             if (Request::isDialog() && StudipVersion::newerThan('5.3.99')) {
                 $this->response->add_header('X-Dialog-Close', 1);
                 $this->response->add_header('X-Dialog-Execute', 'STUDIP.AdminCourses.App.loadCourse');
                 $this->render_text($course_id);
+            } else {
+                PageLayout::postSuccess(dgettext("evasys", "Daten wurden gespeichert."));
             }
         }
         $log_actions = LogAction::findBySQL("`name` LIKE 'EVASYS_%'");
