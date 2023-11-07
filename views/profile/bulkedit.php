@@ -151,30 +151,32 @@
                 <? endif ?>
             </td>
         </tr>
-        <tr>
-            <td>
-                <label>
-                    <input type="checkbox" name="change[]" value="mode" onChange="jQuery(this).closest('tr').toggleClass('active');">
-                    <?= dgettext("evasys", "Modus der Evaluation") ?>
-                </label>
-            </td>
-            <td>
-                <select name="mode"
-                        onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
-                    <option value="">
-                        <? if ($values['mode'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
-                            <?= dgettext("evasys", "Unterschiedliche Werte") ?>
-                        <? endif ?>
-                    </option>
-                    <option value="online"<?= $values['mode'] == "online" ? " selected" : "" ?>>
-                        <?= dgettext("evasys", "Online-Evaluation") ?>
-                    </option>
-                    <option value="paper"<?= $values['mode'] == "paper" ? " selected" : "" ?>>
-                        <?= dgettext("evasys", "Papier-Evaluation") ?>
-                    </option>
-                </select>
-            </td>
-        </tr>
+        <? if (!Config::get()->EVASYS_FORCE_ONLINE) : ?>
+            <tr>
+                <td>
+                    <label>
+                        <input type="checkbox" name="change[]" value="mode" onChange="jQuery(this).closest('tr').toggleClass('active');">
+                        <?= dgettext("evasys", "Modus der Evaluation") ?>
+                    </label>
+                </td>
+                <td>
+                    <select name="mode"
+                            onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
+                        <option value="">
+                            <? if ($values['mode'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
+                                <?= dgettext("evasys", "Unterschiedliche Werte") ?>
+                            <? endif ?>
+                        </option>
+                        <option value="online"<?= $values['mode'] == "online" ? " selected" : "" ?>>
+                            <?= dgettext("evasys", "Online-Evaluation") ?>
+                        </option>
+                        <option value="paper"<?= $values['mode'] == "paper" ? " selected" : "" ?>>
+                            <?= dgettext("evasys", "Papier-Evaluation") ?>
+                        </option>
+                    </select>
+                </td>
+            </tr>
+        <? endif ?>
 
         <? foreach (EvasysAdditionalField::findBySQL("1=1 ORDER BY position ASC, name ASC") as $field) : ?>
             <tr>

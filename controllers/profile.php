@@ -243,7 +243,7 @@ class ProfileController extends PluginController {
                             : null;
                     }
                 }
-                if (in_array("mode", Request::getArray("change"))) {
+                if (!Config::get()->EVASYS_FORCE_ONLINE && in_array("mode", Request::getArray("change"))) {
                     if (Request::option("mode") !== "") {
                         $profile['mode'] = $profile->getPresetMode() != Request::option("mode")
                             ? Request::option("mode")
