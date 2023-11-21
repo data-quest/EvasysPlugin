@@ -1,7 +1,7 @@
 <?php
 
-class ProfileController extends PluginController {
-
+class ProfileController extends PluginController
+{
     public function edit_action($course_id)
     {
         if (Navigation::hasItem("/course/admin/evasys")) {
@@ -18,8 +18,7 @@ class ProfileController extends PluginController {
 
             if (Navigation::hasItem("/course/admin/evasys")) {
                 $sem = Semester::find($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
-                if (($course['start_time'] > $sem['beginn'])
-                    || (($course['duration_time'] != -1) && ($course['start_time'] + $course['duration_time'] < $sem['beginn']))) {
+                if (!$course->isInSemester($sem)) {
                     //we are in the course and the course semester doesn't fit to our selected admin-semester:
                     $this->semester_id = $course->start_semester->getId();
                 }
@@ -32,8 +31,7 @@ class ProfileController extends PluginController {
             );
         } else {
             $current_semester = Semester::findCurrent();
-            if (($course['start_time'] <= $current_semester['beginn'])
-                && (($course['duration_time'] == -1) || ($course['start_time'] + $course['duration_time'] >= $current_semester['beginn']))) {
+            if ($course->isInSemester($current_semester)) {
                 $this->profile = EvasysCourseProfile::findBySemester($course_id);
             } else {
                 $this->profile = EvasysCourseProfile::findBySemester(
@@ -58,7 +56,10 @@ class ProfileController extends PluginController {
                 $this->profile->store();
             }
         }
-        if (Request::isPost() && $this->profile->isEditable() && Request::getArray("data") && count(Request::getArray("data"))) {
+        if (Request::isPost()
+                && $this->profile->isEditable()
+                && Request::getArray("data")
+                && count(Request::getArray("data"))) {
             $data = Request::getArray("data");
             $this->profile['applied'] = $data['applied'] ?: 0;
             if ($this->profile['applied'] && !EvasysPlugin::isAdmin($course_id) && !EvasysPlugin::isRoot()) {

@@ -733,23 +733,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 return $a->semester->beginn > $a->semester->beginn ? -1 : 1;
             });
         }
-        $get_semesters = DBManager::get()->prepare("
-            SELECT semester_data.*
-            FROM semester_data
-            INNER JOIN seminare ON (semester_data.beginn >= seminare.start_time AND (
-                              seminare.duration_time = -1
-                              OR (seminare.duration_time = 0 AND semester_data.beginn = seminare.start_time)
-                              OR (seminare.start_time + seminare.duration_time >= semester_data.beginn)
-                  ))
-            WHERE seminare.Seminar_id = :seminar_id
-            ORDER BY semester_data.beginn ASC
-        ");
-        $get_semesters->execute(['seminar_id' => $course_id]);
-        $semesters = [];
-        foreach ($get_semesters->fetchAll(PDO::FETCH_ASSOC) as $semester_data) {
-            $semesters[] = Semester::buildExisting($semester_data);
-        }
-        $template->set_attribute("semesters", $semesters);
+        $template->set_attribute("semesters", Course::find($course_id)->semesters);
         $template->set_attribute("profiles", $profiles);
         $template->set_attribute("course_id", $course_id);
         $template->set_attribute("plugin", $this);

@@ -524,7 +524,7 @@ class EvasysSeminar extends SimpleORMap
                         'CourseProgramOfStudy' => implode(' | ', $studienbereiche),
                         'CourseEnrollment' => 0, // ?
                         'CustomFieldsJSON' => json_encode($custom_fields),
-                        'CoursePeriodId' => date("Y-m-d", $course['start_time']),
+                        'CoursePeriodId' => date("Y-m-d", $course->start_semester['beginn']),
                         'CoursePeriodIdType' => "PERIODDATE",
                         'InstructorList' => $instructorlist,
                         'RoomName' => (string) $course->ort,
@@ -577,7 +577,7 @@ class EvasysSeminar extends SimpleORMap
                 'CourseProgramOfStudy' => implode(' | ', $studienbereiche),
                 'CourseEnrollment' => 0, // ?
                 'CustomFieldsJSON' => json_encode($custom_fields),
-                'CoursePeriodId' => date("Y-m-d", $course['start_time']),
+                'CoursePeriodId' => date("Y-m-d", $course->start_semester['beginn']),
                 'CoursePeriodIdType' => "PERIODDATE",
                 'InstructorList' => $instructorlist,
                 'RoomName' => (string) $course->ort,
