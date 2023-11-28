@@ -166,6 +166,23 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
             //old usage:
+            if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->settings['query']['joins']['evasys_course_profiles'] = [
+                    'join' => "LEFT JOIN",
+                    'on' => "
+                        seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                    "
+                ];
+            } else {
+                $filter->settings['query']['joins']['evasys_course_profiles'] = [
+                    'join' => "LEFT JOIN",
+                    'on' => "
+                        seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                            AND evasys_course_profiles.semester_id = :evasys_semester_id
+                    "
+                ];
+                $filter->settings['parameter']['evasys_semester_id'] = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
+            }
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred") {
                 $filter->settings['query']['where']['evasys_transferred']
                     = "evasys_course_profiles.transferred = '1' ";
