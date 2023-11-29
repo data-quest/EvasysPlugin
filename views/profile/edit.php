@@ -367,6 +367,7 @@
                 <? endif ?>
 
                 <? foreach (EvasysAdditionalField::findBySQL("`paper` = '0' ORDER BY position ASC, name ASC") as $field) : ?>
+                    <? if (!$field['paper'] || !Config::get()->EVASYS_FORCE_ONLINE) /* display paper fields only if not EVASYS_FORCE_ONLINE */ : ?>
                     <label>
                         <? $value = $field->valueFor("course", $profile->getId()) ?>
                         <?= htmlReady($field['name']) ?>
@@ -376,6 +377,7 @@
                             <textarea name="field[<?= $field->getId() ?>]"<?= !$editable ? " readonly" : "" ?>><?= htmlReady($value) ?></textarea>
                         <? endif ?>
                     </label>
+                    <? endif ?>
                 <? endforeach ?>
             </div>
 

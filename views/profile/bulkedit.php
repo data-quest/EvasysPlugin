@@ -179,6 +179,7 @@
         <? endif ?>
 
         <? foreach (EvasysAdditionalField::findBySQL("1=1 ORDER BY position ASC, name ASC") as $field) : ?>
+            <? if (!$field['paper'] || !Config::get()->EVASYS_FORCE_ONLINE) /* display paper fields only if not EVASYS_FORCE_ONLINE */ : ?>
             <tr>
                 <td>
                     <label>
@@ -199,6 +200,7 @@
                     <? endif ?>
                 </td>
             </tr>
+            <? endif ?>
         <? endforeach ?>
 
         <? if (EvasysPlugin::isRoot()) : ?>
