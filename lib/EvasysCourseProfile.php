@@ -152,17 +152,20 @@ class EvasysCourseProfile extends SimpleORMap {
             URLHelper::setBaseURL($oldbase);
         }
 
+
         $new_values = $this->toArray(array_keys($old_values));
         $is_dirty = false;
         foreach ($old_values as $key => $value) {
-            if ($value == $new_values) {
-                unset($old_values[$key]);
-                unset($new_values[$key]);
-            } else {
-                $old_values[$key] = (string) $old_values[$key];
-                $new_values[$key] = (string) $new_values[$key];
-                if (!in_array($key, ['chdate', 'transferred', 'transferdate', 'teachers']) && ($new_values[$key] !== $old_values[$key])) {
-                    $is_dirty = true;
+            if (!in_array($key, ['course_profile_id', 'id'])) {
+                if ($value == $new_values) {
+                    unset($old_values[$key]);
+                    unset($new_values[$key]);
+                } else {
+                    $old_values[$key] = (string)$old_values[$key];
+                    $new_values[$key] = (string)$new_values[$key];
+                    if (!in_array($key, ['chdate', 'transferred', 'transferdate', 'teachers']) && ($new_values[$key] !== $old_values[$key])) {
+                        $is_dirty = true;
+                    }
                 }
             }
         }

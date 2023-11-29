@@ -43,18 +43,24 @@ class ProfileController extends PluginController
         }
 
 
+
+
         if (!$this->profile) {
             $this->profile = new EvasysCourseProfile();
             $this->profile['seminar_id'] = $course_id;
             $this->profile['semester_id'] = Semester::findCurrent()->id;
         }
+
         if (Request::isPost()) {
             if ($this->profile->mayObjectToPublication()) {
+
                 $data = Request::getArray("data");
                 $this->profile['objection_to_publication'] = $data['objection_to_publication'] ? 1 : 0;
                 $this->profile['objection_reason'] = $data['objection_reason'];
+                //echo "peng \n";
                 $this->profile->store();
             }
+
         }
         if (Request::isPost()
                 && $this->profile->isEditable()
