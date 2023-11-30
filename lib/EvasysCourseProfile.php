@@ -538,6 +538,9 @@ class EvasysCourseProfile extends SimpleORMap {
      */
     public function getFinalAttribute($attribute)
     {
+        if ($attribute === 'mode' && Config::get()->EVASYS_FORCE_ONLINE) {
+            return 'online';
+        }
         if ($this[$attribute] && (!$this->isI18nField($attribute) || (string) $this[$attribute])) {
             return $this[$attribute];
         } else {
@@ -547,6 +550,9 @@ class EvasysCourseProfile extends SimpleORMap {
 
     public function getPresetAttribute($attribute)
     {
+        if ($attribute === 'mode' && Config::get()->EVASYS_FORCE_ONLINE) {
+            return 'online';
+        }
         $institut_id = $this->course['institut_id'];
         $inst_profile = EvasysInstituteProfile::findByInstitute($institut_id, $this['semester_id']);
         if ($inst_profile[$attribute] && (!$inst_profile->isI18nField($attribute) || (string) $inst_profile[$attribute])) {

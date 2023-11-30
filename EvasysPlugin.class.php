@@ -750,7 +750,8 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 return $a->semester->beginn > $a->semester->beginn ? -1 : 1;
             });
         }
-        $template->set_attribute("semesters", Course::find($course_id)->semesters);
+        $course = Course::find($course_id);
+        $template->set_attribute("semesters", $course->isOpenEnded() ? Semester::getAll() : $course->semesters);
         $template->set_attribute("profiles", $profiles);
         $template->set_attribute("course_id", $course_id);
         $template->set_attribute("plugin", $this);
