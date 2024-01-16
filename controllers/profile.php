@@ -68,6 +68,9 @@ class ProfileController extends PluginController
                 && count(Request::getArray("data"))) {
             $data = Request::getArray("data");
             $this->profile['applied'] = $data['applied'] ?: 0;
+            if (!$this->profile['applied']) {
+                $this->profile['locked'] = 0;
+            }
             if ($this->profile['applied'] && !EvasysPlugin::isAdmin($course_id) && !EvasysPlugin::isRoot()) {
                 $this->profile['by_dozent'] = 1;
             }
