@@ -22,6 +22,10 @@ class EvaluationController extends PluginController
 
     public function show_action()
     {
+        if ($GLOBALS['perm']->have_studip_perm('tutor', Context::getId())) {
+            unset($_SESSION['EVASYS_SEMINARS_STATUS']);
+            unset($_SESSION['EVASYS_SURVEY_INFO']);
+        }
         $this->profiles = EvasysCourseProfile::findBySQL("INNER JOIN semester_data USING (semester_id) WHERE seminar_id = ? ORDER BY semester_data.beginn DESC ", [Context::get()->id]);
         $this->evasys_seminar = new EvasysSeminar(Context::get()->id);
     }
