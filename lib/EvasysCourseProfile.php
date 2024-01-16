@@ -708,7 +708,7 @@ class EvasysCourseProfile extends SimpleORMap {
 
     public function isChangedAfterTransfer()
     {
-        return $this['applied'] && $this['transferred'] && ($this['transferdate'] < $this['chdate']);
+        return $this['transferred'] && ($this['transferdate'] < $this['chdate']);
     }
 
     /**

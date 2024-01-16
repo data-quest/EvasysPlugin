@@ -56,7 +56,11 @@ if ($profile === null) {
                         <?= Icon::create("check-circle", "clickable")->asImg(20) ?>
                     <? endif ?>
                 <? else : ?>
-                    <?= Icon::create("radiobutton-unchecked", "clickable")->asImg(20) ?>
+                    <? if ($profile->isChangedAfterTransfer()) : ?>
+                        <?= Icon::create("radiobutton-unchecked+new", "clickable")->asImg(20) ?>
+                    <? else : ?>
+                        <?= Icon::create("radiobutton-unchecked", "clickable")->asImg(20) ?>
+                    <? endif ?>
                 <? endif ?>
             </a>
         <? else : ?>
