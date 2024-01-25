@@ -33,10 +33,12 @@ class GlobalprofileController extends PluginController
     public function index_action()
     {
         PageLayout::setTitle($this->plugin->getDisplayName());
-        if (Request::option("semester_id")) {
+        if (Request::option("semester_id") && Request::option("semester_id") !== 'all') {
             $GLOBALS['user']->cfg->store('MY_COURSES_SELECTED_CYCLE', Request::option('semester_id'));
+        } else {
+            $GLOBALS['user']->cfg->delete('MY_COURSES_SELECTED_CYCLE');
         }
-        $this->semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
+        $this->semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
             ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
             : Semester::findCurrent()->id;
         if ($this->profile_type === "global") {
@@ -91,7 +93,7 @@ class GlobalprofileController extends PluginController
 
     public function edit_action()
     {
-        $this->semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
+        $this->semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
             ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
             : Semester::findCurrent()->id;
         if ($this->profile_type === "global") {

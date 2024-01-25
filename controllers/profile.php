@@ -172,7 +172,7 @@ class ProfileController extends PluginController
             if (!$semester_id) {
                 $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
                 if (!$semester_id || $semester_id === "all") {
-                    Course::find($seminar_id)->start_semester->getId();
+                    $semester_id = Course::find($seminar_id)->start_semester->getId();
                 }
             }
             $this->profiles[] = EvasysCourseProfile::findBySemester(

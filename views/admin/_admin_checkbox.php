@@ -1,6 +1,6 @@
 <? foreach ($semesters as $i => $semester) : ?>
 <?
-if (($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") && (count($semesters) > 1) && ($semester->getId() !== $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE)) {
+if (($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") && (count($semesters) > 1) && ($semester->getId() !== $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE)) {
     continue;
 }
 $profile = null;
@@ -18,7 +18,7 @@ if ($profile === null) {
 }
 ?>
 <div class="evasys_profile_checkbox" style="<?= $i > 0 ? ' margin-top: 12px;' : "" ?>">
-    <? if (count($semesters) > 1 && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === "all") : ?>
+    <? if (count($semesters) > 1 && (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === "all")) : ?>
         <div class="semester">
             <?= htmlReady($semester['name']) ?>
         </div>

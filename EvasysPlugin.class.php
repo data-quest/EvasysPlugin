@@ -64,7 +64,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 || (stripos($_SERVER['REQUEST_URI'], "plugins.php/evasysplugin/profile/bulkedit") !== false))) {
             $this->addStylesheet("assets/evasys.less");
             if ($GLOBALS['user']->cfg->MY_COURSES_ACTION_AREA === "EvasysPlugin" && StudipVersion::olderThan('5.4.0')) {
-                if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")) {
+                if ($GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")) {
                     PageLayout::addScript($this->getPluginURL() . "/assets/insert_button.js");
                 }
             }
@@ -166,18 +166,18 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         }
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
             //old usage:
-            if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+            if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
                 $filter->settings['query']['joins']['evasys_course_profiles'] = [
                     'join' => "LEFT JOIN",
                     'on' => "
-                        seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                        seminare.Seminar_id = evasys_course_profiles.seminar_id
                     "
                 ];
             } else {
                 $filter->settings['query']['joins']['evasys_course_profiles'] = [
                     'join' => "LEFT JOIN",
                     'on' => "
-                        seminare.Seminar_id = evasys_course_profiles.seminar_id AND evasys_course_profiles.applied = '1'
+                        seminare.Seminar_id = evasys_course_profiles.seminar_id
                             AND evasys_course_profiles.semester_id = :evasys_semester_id
                     "
                 ];
@@ -229,7 +229,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     public function addTransferdateFilter($event, $filter)
     {
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERDATE")) {
-            if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+            if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
                 $filter->settings['query']['joins']['evasys_course_profiles'] = [
                     'join' => "LEFT JOIN",
                     'on' => "
@@ -283,7 +283,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if (StudipVersion::newerThan('5.3.99')) {
             $GLOBALS['user']->cfg->store("EVASYS_FILTER_NONFITTING_DATES", Request::get('nonfittingdates'));
         }
-        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all'
+            ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+            : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
@@ -349,7 +351,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function addRecentEvalCoursesFilter($event, $filter)
     {
-        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all'
+            ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+            : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
@@ -395,7 +399,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function addFormFilter($event, $filter)
     {
-        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all'
+            ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+            : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
@@ -484,7 +490,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function addPaperOnlineFilter($event, $filter)
     {
-        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all'
+            ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+            : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
@@ -548,7 +556,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function addMainphaseFilter($event, $filter)
     {
-        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all'
+            ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+            : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
@@ -597,7 +607,9 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function addIndividualFilter($event, $filter)
     {
-        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all' ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE : Semester::findCurrent()->id;
+        $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all'
+            ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
+            : Semester::findCurrent()->id;
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_INDIVIDUAL")) {
             $filter->settings['query']['joins']['evasys_course_profiles'] = [
                 'join' => "LEFT JOIN",
@@ -708,7 +720,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
     public function getAdminActionURL()
     {
-        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
+        return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
             ? PluginEngine::getURL($this, [], "admin/upload_courses")
             : PluginEngine::getURL($this, [], "profile/bulkedit");
     }
@@ -721,7 +733,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
             $template->plugin = $this;
             return $template;
         } else {
-            return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
+            return $GLOBALS['perm']->have_perm(Config::get()->EVASYS_TRANSFER_PERMISSION) && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all")
                 ? dgettext("evasys", "Übertragen")
                 : dgettext("evasys", "Bearbeiten");
         }

@@ -307,7 +307,7 @@ class EvasysSeminar extends SimpleORMap
         $id = $this->getExportedId();
         $profile = EvasysCourseProfile::findBySemester(
             $this['Seminar_id'],
-            ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
+            ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
                 ? $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE
                 : Semester::findCurrent()->id)
         );

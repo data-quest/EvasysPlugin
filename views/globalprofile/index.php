@@ -487,9 +487,9 @@ if ($this->controller->profile_type === "institute") {
     $list->class = 'institute-list';
     if ($GLOBALS['perm']->have_perm('root') || (count($insts) > 1)) {
         $list->addElement(new SelectElement(
-            'all',
+            StudipVersion::newerThan('5.3.99') ? '' : 'all',
             $GLOBALS['perm']->have_perm('root') ? dgettext("evasys", 'Alle') : dgettext("evasys", 'Alle meine Einrichtungen'),
-            $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === 'all'),
+            !$GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT || $GLOBALS['user']->cfg->MY_INSTITUTES_DEFAULT === 'all'),
             'select-all'
         );
     }
