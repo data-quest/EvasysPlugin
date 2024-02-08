@@ -98,6 +98,8 @@ class FormsController extends PluginController
         $forms = EvasysForm::findBySQL("`active` = '1'");
         $language_matching = Config::get()->EVASYS_LANGUAGE_MATCHING;
         if (!trim($language_matching)) {
+            PageLayout::postInfo(dgettext('evasys', 'Setzen Sie erst die Konfiguration EVASYS_LANGUAGE_MATCHING, um die Daten abrufen zu können.'));
+            $this->redirect("forms/index");
             return;
         } else {
             $language_matching = preg_split("/\n/", $language_matching, -1, PREG_SPLIT_NO_EMPTY);
