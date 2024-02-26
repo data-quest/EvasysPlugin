@@ -780,7 +780,25 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         if ($GLOBALS['perm']->have_perm("root")) {
             return false;
         } elseif ($seminar_id && $GLOBALS['perm']->have_studip_perm("admin", $seminar_id) && Config::get()->EVASYS_ENABLE_PROFILES_FOR_ADMINS) {
-            $global_profile = EvasysGlobalProfile::findCurrent();
+            $global_profile = EvasysGlobalProfile::find($seminar_id);
+            if (!$global_profile) {
+                $course = Course::find($seminar_id);
+                if ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && ($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== 'all')) {
+                    $s = Semester::find($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
+                    if ($course->isInSemester($s)) {
+                        $semester = $s;
+                    }
+                }
+                if (!isset($semester)) {
+                    $semester = $course->start_semester;
+                }
+                if ($semester) {
+                    $global_profile = EvasysGlobalProfile::find($semester['semester_id']);
+                }
+                if (!$global_profile) {
+                    $global_profile = EvasysGlobalProfile::findCurrent();
+                }
+            }
             if ($global_profile['adminedit_begin']) {
                 return (time() >= $global_profile['adminedit_begin']) && (!$global_profile['adminedit_end'] || time() <= $global_profile['adminedit_end']);
             }
