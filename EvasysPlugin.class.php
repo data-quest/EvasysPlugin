@@ -1202,22 +1202,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED")) {
             if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->query->join('semester_courses', 'semester_courses.course_id = seminare.Seminar_id', 'LEFT JOIN');
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
             } else {
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id
-                        AND evasys_course_profiles.semester_id = :evasys_semester_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
-                $filter->query->parameter('evasys_semester_id', $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
             }
+
+            $filter->query->join(
+                'evasys_course_profiles',
+                'evasys_course_profiles',
+                "seminare.Seminar_id = evasys_course_profiles.seminar_id
+                    AND evasys_course_profiles.semester_id = evasys_global_profiles.semester_id",
+                'LEFT JOIN'
+            );
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "transferred") {
                 $filter->query->where('evasys_transferred', "evasys_course_profiles.transferred = '1'");
             } elseif ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERRED") === "applied") {
@@ -1233,22 +1240,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_TRANSFERDATE")) {
             if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->query->join('semester_courses', 'semester_courses.course_id = seminare.Seminar_id', 'LEFT JOIN');
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
             } else {
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id
-                        AND evasys_course_profiles.semester_id = :evasys_semester_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
-                $filter->query->parameter('evasys_semester_id', $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
             }
+
+            $filter->query->join(
+                'evasys_course_profiles',
+                'evasys_course_profiles',
+                "seminare.Seminar_id = evasys_course_profiles.seminar_id
+                    AND evasys_course_profiles.semester_id = evasys_global_profiles.semester_id",
+                'LEFT JOIN'
+            );
             $filter->query->where(
                 'evasys_transferdate',
                 "evasys_course_profiles.transferdate < evasys_course_profiles.chdate "
@@ -1258,22 +1272,30 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_NONFITTING_DATES")) {
             if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->query->join('semester_courses', 'semester_courses.course_id = seminare.Seminar_id', 'LEFT JOIN');
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
             } else {
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id
-                        AND evasys_course_profiles.semester_id = :evasys_semester_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
-                $filter->query->parameter('evasys_semester_id', $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
             }
+
+            $filter->query->join(
+                'evasys_course_profiles',
+                'evasys_course_profiles',
+                "seminare.Seminar_id = evasys_course_profiles.seminar_id
+                    AND evasys_course_profiles.semester_id = evasys_global_profiles.semester_id",
+                'LEFT JOIN'
+            );
+
             $filter->query->join(
                 'evasys_institute_profiles',
                 'evasys_institute_profiles',
@@ -1294,19 +1316,13 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 'LEFT JOIN'
             );
             $filter->query->join(
-                'evasys_global_profiles',
-                'evasys_global_profiles',
-                "evasys_global_profiles.semester_id = evasys_course_profiles.semester_id",
-                'LEFT JOIN'
-            );
-            $filter->query->join(
                 'termine',
                 'termine',
                 "seminare.Seminar_id = termine.range_id
                 AND (
-                    (termine.date >= IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.date < IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
+                    (termine.date >=       IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.date      < IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
                     OR (termine.end_time > IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.end_time <= IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
-                    OR (termine.date < IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.end_time > IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
+                    OR (termine.date <     IFNULL(evasys_course_profiles.begin, IFNULL(evasys_institute_profiles.begin, IFNULL(evasys_fakultaet_profiles.begin, evasys_global_profiles.begin))) AND termine.end_time  > IFNULL(evasys_course_profiles.end, IFNULL(evasys_institute_profiles.end, IFNULL(evasys_fakultaet_profiles.end, evasys_global_profiles.end))))
                 )",
                 'LEFT JOIN'
             );
@@ -1318,22 +1334,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_RECENT_EVAL_COURSES")) {
             if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->query->join('semester_courses', 'semester_courses.course_id = seminare.Seminar_id', 'LEFT JOIN');
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
             } else {
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id
-                        AND evasys_course_profiles.semester_id = :evasys_semester_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
-                $filter->query->parameter('evasys_semester_id', $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
             }
+
+            $filter->query->join(
+                'evasys_course_profiles',
+                'evasys_course_profiles',
+                "seminare.Seminar_id = evasys_course_profiles.seminar_id
+                    AND evasys_course_profiles.semester_id = evasys_global_profiles.semester_id",
+                'LEFT JOIN'
+            );
             $filter->query->where(
                 'eval_starts_next_days',
                 "evasys_course_profiles.applied = '1' AND evasys_course_profiles.begin IS NOT NULL AND evasys_course_profiles.begin > UNIX_TIMESTAMP() AND evasys_course_profiles.begin < UNIX_TIMESTAMP() + 86400 * 7 "
@@ -1343,22 +1366,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_FORM_ID")) {
             if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->query->join('semester_courses', 'semester_courses.course_id = seminare.Seminar_id', 'LEFT JOIN');
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
             } else {
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id
-                        AND evasys_course_profiles.semester_id = :evasys_semester_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
-                $filter->query->parameter('evasys_semester_id', $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
             }
+
+            $filter->query->join(
+                'evasys_course_profiles',
+                'evasys_course_profiles',
+                "seminare.Seminar_id = evasys_course_profiles.seminar_id
+                    AND evasys_course_profiles.semester_id = evasys_global_profiles.semester_id",
+                'LEFT JOIN'
+            );
             $filter->query->join(
                 'evasys_institute_profiles',
                 'evasys_institute_profiles',
@@ -1376,12 +1406,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                 'evasys_institute_profiles',
                 "evasys_fakultaet_profiles.institut_id = inst_evasys.fakultaets_id
                     AND evasys_fakultaet_profiles.semester_id = evasys_course_profiles.semester_id",
-                'LEFT JOIN'
-            );
-            $filter->query->join(
-                'evasys_global_profiles',
-                'evasys_global_profiles',
-                "evasys_global_profiles.semester_id = evasys_course_profiles.semester_id",
                 'LEFT JOIN'
             );
 
@@ -1419,22 +1443,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE")) {
             if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->query->join('semester_courses', 'semester_courses.course_id = seminare.Seminar_id', 'LEFT JOIN');
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
             } else {
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id
-                        AND evasys_course_profiles.semester_id = :evasys_semester_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
-                $filter->query->parameter('evasys_semester_id', $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
             }
+
+            $filter->query->join(
+                'evasys_course_profiles',
+                'evasys_course_profiles',
+                "seminare.Seminar_id = evasys_course_profiles.seminar_id
+                    AND evasys_course_profiles.semester_id = evasys_global_profiles.semester_id",
+                'LEFT JOIN'
+            );
             $filter->query->join(
                 'evasys_institute_profiles',
                 'evasys_institute_profiles',
@@ -1454,12 +1485,6 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
                     AND evasys_fakultaet_profiles.semester_id = evasys_course_profiles.semester_id",
                 'LEFT JOIN'
             );
-            $filter->query->join(
-                'evasys_global_profiles',
-                'evasys_global_profiles',
-                "evasys_global_profiles.semester_id = evasys_course_profiles.semester_id",
-                'LEFT JOIN'
-            );
             $filter->query->where('evasys_paperonline_filter', "IFNULL(evasys_course_profiles.mode, IFNULL(evasys_institute_profiles.mode, IFNULL(evasys_fakultaet_profiles.mode, evasys_global_profiles.mode))) = :evasys_mode");
             $filter->query->parameter('evasys_mode', $GLOBALS['user']->cfg->getValue("EVASYS_FILTER_PAPER_ONLINE"));
         }
@@ -1467,22 +1492,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE")) {
             if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->query->join('semester_courses', 'semester_courses.course_id = seminare.Seminar_id', 'LEFT JOIN');
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
             } else {
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id
-                        AND evasys_course_profiles.semester_id = :evasys_semester_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
-                $filter->query->parameter('evasys_semester_id', $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
             }
+
+            $filter->query->join(
+                'evasys_course_profiles',
+                'evasys_course_profiles',
+                "seminare.Seminar_id = evasys_course_profiles.seminar_id
+                    AND evasys_course_profiles.semester_id = evasys_global_profiles.semester_id",
+                'LEFT JOIN'
+            );
             if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "nonmainphase") {
                 $filter->query->where('evasys_mainphase_filter', "evasys_course_profiles.`begin` IS NOT NULL");
             } elseif($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_MAINPHASE") === "mainphase") {
@@ -1493,22 +1525,29 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
 
         if ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_INDIVIDUAL")) {
             if (!$GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE || $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE === 'all') {
+                $filter->query->join('semester_courses', 'semester_courses.course_id = seminare.Seminar_id', 'LEFT JOIN');
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
             } else {
                 $filter->query->join(
-                    'evasys_course_profiles',
-                    'evasys_course_profiles',
-                    "seminare.Seminar_id = evasys_course_profiles.seminar_id
-                        AND evasys_course_profiles.semester_id = :evasys_semester_id",
-                    'LEFT JOIN'
+                    'evasys_global_profiles',
+                    'evasys_global_profiles',
+                    "evasys_global_profiles.semester_id = semester_courses.semester_id",
+                    'INNER JOIN'
                 );
-                $filter->query->parameter('evasys_semester_id', $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE);
             }
+
+            $filter->query->join(
+                'evasys_course_profiles',
+                'evasys_course_profiles',
+                "seminare.Seminar_id = evasys_course_profiles.seminar_id
+                    AND evasys_course_profiles.semester_id = evasys_global_profiles.semester_id",
+                'LEFT JOIN'
+            );
             $filter->query->where('evasys_individual_filter', "evasys_course_profiles.by_dozent = :evasys_individual");
             $filter->query->parameter('evasys_individual', ($GLOBALS['user']->cfg->getValue("EVASYS_FILTER_INDIVIDUAL") === 'individual') ? 1 : 0);
         }
