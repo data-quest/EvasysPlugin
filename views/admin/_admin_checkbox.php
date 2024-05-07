@@ -51,7 +51,7 @@ if ($profile === null) {
                title="<?= dgettext("evasys", "Evaluation beantragen oder bearbeiten").($profile->isChangedAfterTransfer() ? '. '.dgettext("evasys", "Evaluationsdaten wurden nach Transfer noch einmal verändert.") : '') ?>">
                 <? if ($profile['applied']) : ?>
                     <? if ($profile->isChangedAfterTransfer()) : ?>
-                        <?= Icon::create("check-circle+new", "clickable")->asImg(20) ?>
+                        <?= Icon::create($plugin->getPluginURL()."/assets/check-circle-new.svg" /*"check-circle+new"*/, "clickable")->asImg(20) ?>
                     <? else : ?>
                         <?= Icon::create("check-circle", "clickable")->asImg(20) ?>
                     <? endif ?>

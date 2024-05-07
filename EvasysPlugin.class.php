@@ -748,7 +748,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
         } elseif($GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all") {
             $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
         }
-        if ($semester_id) {
+        if (isset($semester_id) && $semester_id) {
             $profiles = [EvasysCourseProfile::findBySemester(
                 $course_id,
                 $semester_id
