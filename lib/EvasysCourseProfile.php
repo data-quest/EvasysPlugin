@@ -483,15 +483,7 @@ class EvasysCourseProfile extends SimpleORMap {
                 return $form_ids;
             }
         }
-
-        $statement = DBManager::get()->prepare("
-            SELECT form_id
-            FROM evasys_forms
-            WHERE active = '1'
-            ORDER BY name ASC
-        ");
-        $statement->execute();
-        return $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+        return [];
     }
 
     public function getFinalBegin()
