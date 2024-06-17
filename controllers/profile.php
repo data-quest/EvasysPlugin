@@ -76,7 +76,7 @@ class ProfileController extends PluginController
             }
             $this->profile['teachers'] = $data['teachers'] ?: null;
             $this->profile['results_email'] = $data['results_email'] ?: null;
-            $this->profile['split'] = $data['split'] ? 1 : 0;
+            $this->profile['split'] = isset($data['split']) && $data['split'] ? 1 : 0;
             $this->profile['form_id'] = $data['form_id'] !== $this->profile->getPresetFormId() ? $data['form_id'] : null;
             $preset_begin = $this->profile->getPresetBegin();
             $begin = $data['begin'] ? strtotime($data['begin']) : $preset_begin;
@@ -105,7 +105,7 @@ class ProfileController extends PluginController
             if ($this->profile['end'] == $preset_end) {
                 $this->profile['end'] = null;
             }
-            if ($data['mode']) {
+            if (isset($data['mode']) && $data['mode']) {
                 $this->profile['mode'] = $data['mode'];
                 if ($this->profile['mode'] == $this->profile->getPresetMode()) {
                     $this->profile['mode'] = null;

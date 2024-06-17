@@ -162,7 +162,12 @@ class EvasysCourseProfile extends SimpleORMap {
                     unset($new_values[$key]);
                 } else {
                     $old_values[$key] = (string)$old_values[$key];
-                    $new_values[$key] = (string)$new_values[$key];
+                    if (is_array($new_values[$key])) {
+                        $new_values[$key] = json_encode($new_values[$key]);
+                    } else {
+                        $new_values[$key] = (string)$new_values[$key];
+                    }
+
                     if (!in_array($key, ['chdate', 'transferred', 'transferdate', 'teachers']) && ($new_values[$key] !== $old_values[$key])) {
                         $is_dirty = true;
                     }

@@ -169,79 +169,82 @@ class EvasysSendMessagesJob extends CronJob
 
         while ($course_data = $fetch_profiles->fetch(PDO::FETCH_ASSOC)) {
             $profile = EvasysCourseProfile::buildExisting($course_data);
-
-            $courses_count++;
-
-            $fetch_members = DBManager::get()->prepare("
-                SELECT seminar_user.user_id
-                FROM seminar_user
-                WHERE seminar_user.Seminar_id = :course_id
-                    AND seminar_user.status IN (:perms)
-                    AND seminar_user.mkdate <= :lastchance
-            ");
-            $fetch_members->execute([
-                'perms' => $user_permissions,
-                'course_id' => $profile['seminar_id'],
-                'lastchance' => $profile['chdate']
+            $message = (string) $profile->getPresetAttribute('mail_reminder_body');
+            $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
+            $url = URLHelper::getURL("plugins.php/evasysplugin/evaluation/show", [
+                'cid' => $profile['seminar_id']
             ]);
+            URLHelper::setBaseURL($oldbase);
 
-            $user_ids = $fetch_members->fetchAll(PDO::FETCH_COLUMN, 0);
+            $templates = [
+                '{{course}}',
+                '{{coursename}}',
+                '{{url}}',
+                '{{evaluationsende}}',
+                '{{evaluationsbeginn}}'
+            ];
+            $replacement = [
+                $profile->course->getFullName(),
+                $profile->course['name'],
+                $url,
+                date("d.m.Y H:i", $profile->getFinalEnd()),
+                date("d.m.Y H:i", $profile->getFinalBegin())
+            ];
+            $message = str_ireplace(
+                $templates,
+                $replacement,
+                $message
+            );
 
-            foreach ($user_ids as $user_id) {
-                $user = User::find($user_id);
-                if ($user) {
-                    setTempLanguage($user['user_id']);
+            $subject = $profile->getPresetAttribute('mail_reminder_subject');
+            $subject = str_ireplace(
+                $templates,
+                $replacement,
+                $subject
+            );
 
-                    $oldbase = URLHelper::setBaseURL($GLOBALS['ABSOLUTE_URI_STUDIP']);
-                    $url = URLHelper::getURL("plugins.php/evasysplugin/evaluation/show", [
-                        'cid' => $profile['seminar_id']
-                    ]);
+            if (trim($message) && trim($subject)) {
 
-                    $message = (string) $profile->getPresetAttribute('mail_reminder_body');
-                    $templates = [
-                        '{{course}}',
-                        '{{coursename}}',
-                        '{{url}}',
-                        '{{evaluationsende}}',
-                        '{{evaluationsbeginn}}'
-                    ];
-                    $replacement = [
-                        $profile->course->getFullName(),
-                        $profile->course['name'],
-                        $url,
-                        date("d.m.Y H:i", $profile->getFinalEnd()),
-                        date("d.m.Y H:i", $profile->getFinalBegin())
-                    ];
-                    $message = str_ireplace(
-                        $templates,
-                        $replacement,
-                        $message
-                    );
+                $courses_count++;
 
-                    $subject = $profile->getPresetAttribute('mail_reminder_subject');
-                    $subject = str_ireplace(
-                        $templates,
-                        $replacement,
-                        $subject
-                    );
+                $fetch_members = DBManager::get()->prepare("
+                    SELECT seminar_user.user_id
+                    FROM seminar_user
+                    WHERE seminar_user.Seminar_id = :course_id
+                        AND seminar_user.status IN (:perms)
+                        AND seminar_user.mkdate <= :lastchance
+                ");
+                $fetch_members->execute([
+                    'perms' => $user_permissions,
+                    'course_id' => $profile['seminar_id'],
+                    'lastchance' => $profile['chdate']
+                ]);
 
-                    $messaging->insert_message(
-                        $message,
-                        $user['username'],
-                        '____%system%____',
-                        '',
-                        '',
-                        '',
-                        '',
-                        $subject,
-                        true,
-                        'normal',
-                        ["Evaluation"],
-                        false
-                    );
-                    restoreLanguage();
-                    URLHelper::setBaseURL($oldbase);
-                    $sent_messages++;
+                $user_ids = $fetch_members->fetchAll(PDO::FETCH_COLUMN, 0);
+
+                foreach ($user_ids as $user_id) {
+                    $user = User::find($user_id);
+                    if ($user) {
+                        setTempLanguage($user['user_id']);
+
+                        $messaging->insert_message(
+                            $message,
+                            $user['username'],
+                            '____%system%____',
+                            '',
+                            '',
+                            '',
+                            '',
+                            $subject,
+                            true,
+                            'normal',
+                            ["Evaluation"],
+                            false
+                        );
+                        restoreLanguage();
+                        $sent_messages++;
+
+                    }
                 }
             }
         }
