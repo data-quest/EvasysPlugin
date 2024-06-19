@@ -187,7 +187,7 @@ class EvasysCourseProfile extends SimpleORMap {
                 ])
             );
         }
-        if ($this['by_dozent'] || $old_values['by_dozent']) {
+        if (($this['by_dozent'] || $old_values['by_dozent']) && $is_dirty) {
             //Nachricht an Dozenten, wenn ihre Evaluation verändert wird vom Admin:
             if (EvasysPlugin::isRoot()
                 || EvasysPlugin::isAdmin($this['seminar_id'])
