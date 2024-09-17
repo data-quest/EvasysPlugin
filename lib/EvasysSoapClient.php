@@ -26,7 +26,7 @@ class EvasysSoapClient extends SoapClient
         $soaplog = new EvasysSoapLog();
         $soaplog['function'] = $function_name;
         $soaplog['arguments'] = (array) $arguments;
-        $soaplog['result'] = $result2 ?: (array) $result;
+        $soaplog['result'] = $result2 ?? (array) $result;
         $soaplog['time'] = $soapcalltime;
         $soaplog['user_id'] = $GLOBALS['user']->id;
         $soaplog->store();

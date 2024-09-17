@@ -10,9 +10,9 @@ foreach ($user_permissions as $perm) {
 }
 ?>
 <? if ($user_can_see
-    && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id) && count($profile->getTANs($dozent_id)) > 0) : ?>
+    && !$GLOBALS['perm']->have_studip_perm("dozent", Context::get()->id) && count($profile->getTANs($dozent_id ?? null)) > 0) : ?>
 
-    <? foreach ($profile->getTANs($dozent_id) as $tan) : ?>
+    <? foreach ($profile->getTANs($dozent_id ?? null) as $tan) : ?>
         <? $_SESSION['EVASYS_SURVEY_TAN_EXISTED_'.Context::get()->id] = true ?>
         <?= MessageBox::info(dgettext("evasys", "Falls die Evaluation länger braucht zum Laden, drücken Sie bitte nicht auf Neuladen der ganzen Seite.")) ?>
 
@@ -36,12 +36,12 @@ foreach ($user_permissions as $perm) {
         <? endif ?>
     <? endforeach ?>
 <? else : ?>
-    <? if ($_SESSION['EVASYS_SURVEY_TAN_EXISTED_'.Context::get()->id]) : ?>
+    <? if (!empty($_SESSION['EVASYS_SURVEY_TAN_EXISTED_'.Context::get()->id])) : ?>
         <?= MessageBox::success(dgettext("evasys", "Sie haben schon an der aktuellen Evaluation teilgenommen. Besten Dank!")) ?>
     <? else : ?>
         <?= MessageBox::info(dgettext("evasys", "Sie können nicht (mehr) an dieser Befragung teilnehmen.")) ?>
     <? endif ?>
-    <? if ($profile->evasys_seminar->publishingAllowed($dozent_id) && $profile->evasys_seminar->reportsAllowed()) : ?>
+    <? if ($profile->evasys_seminar->publishingAllowed($dozent_id ?? null) && $profile->evasys_seminar->reportsAllowed()) : ?>
         <?= $this->render_partial("evaluation/_dozent.php", [
             'profile' => $profile,
             'dozent_ids' => array($dozent_id)
