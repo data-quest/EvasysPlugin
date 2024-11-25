@@ -31,6 +31,7 @@ class EvasysPlugin extends StudIPPlugin implements SystemPlugin, StandardPlugin,
     {
         bindtextdomain("evasys", __DIR__."/locale");
         parent::__construct();
+        $this->initializeTranslation('reporting');
 
         //The user must be root
         if (self::isRoot()) {

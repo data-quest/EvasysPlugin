@@ -35,7 +35,7 @@ class GlobalprofileController extends PluginController
         PageLayout::setTitle($this->plugin->getDisplayName());
         if (Request::option("semester_id") && Request::option("semester_id") !== 'all') {
             $GLOBALS['user']->cfg->store('MY_COURSES_SELECTED_CYCLE', Request::option('semester_id'));
-        } else {
+        } elseif(Request::submitted("semester_id")) {
             $GLOBALS['user']->cfg->delete('MY_COURSES_SELECTED_CYCLE');
         }
         $this->semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE && $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE !== "all"
