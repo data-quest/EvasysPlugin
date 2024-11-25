@@ -787,10 +787,11 @@ class EvasysCourseProfile extends SimpleORMap {
         if (isset($_SESSION['EVASYS_SURVEY_INFO'][$seminar_id])
             && (time() - $_SESSION['EVASYS_SURVEY_INFO_EXPIRE'][$seminar_id] < 60 * Config::get()->EVASYS_CACHE)) {
             $profile = $this;
-            return array_filter($_SESSION['EVASYS_SURVEY_INFO'][$seminar_id], function ($a) use ($profile) {
+            return $_SESSION['EVASYS_SURVEY_INFO'][$seminar_id];
+            /* return array_filter($_SESSION['EVASYS_SURVEY_INFO'][$seminar_id], function ($a) use ($profile) {
                 $semester = Semester::findByTimestamp(strtotime($a->m_oPeriod->m_sStartDate));
                 return ($semester && $semester->getId() === $profile['semester_id']);
-            });
+            });*/
         }
 
         $soap = EvasysSoap::get();
@@ -811,10 +812,11 @@ class EvasysCourseProfile extends SimpleORMap {
         $_SESSION['EVASYS_SURVEY_INFO'][$seminar_id] = $surveys;
 
         $profile = $this;
-        return array_filter($_SESSION['EVASYS_SURVEY_INFO'][$seminar_id], function ($a) use ($profile) {
+        return $_SESSION['EVASYS_SURVEY_INFO'][$seminar_id];
+        /*return array_filter($_SESSION['EVASYS_SURVEY_INFO'][$seminar_id], function ($a) use ($profile) {
             $semester = Semester::findByTimestamp(strtotime($a->m_oPeriod->m_sStartDate));
             return ($semester && $semester->getId() === $profile['semester_id']);
-        });
+        });*/
     }
 
     public function teachersNotInCourse()
