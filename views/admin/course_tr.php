@@ -20,7 +20,7 @@
         <? if (in_array('number', $view_filter)) : ?>
             <td>
                 <? if ($GLOBALS['perm']->have_studip_perm('autor', $semid)) : ?>
-                <a href="<?= URLHelper::getLink('seminar_main.php', array('auswahl' => $semid)) ?>">
+                <a href="<?= URLHelper::getLink('seminar_main.php', array('to' => $semid)) ?>">
                     <? endif ?>
                     <?= htmlReady($values["VeranstaltungsNummer"]) ?>
                     <? if ($GLOBALS['perm']->have_studip_perm('autor', $semid)) : ?>
@@ -31,7 +31,7 @@
         <? if (in_array('name', $view_filter)) : ?>
             <td>
                 <? if ($GLOBALS['perm']->have_studip_perm("autor", $semid)) : ?>
-                <a href="<?= URLHelper::getLink('seminar_main.php', array('auswahl' => $semid)) ?>">
+                <a href="<?= URLHelper::getLink('seminar_main.php', array('to' => $semid)) ?>">
                     <? endif ?>
                     <?= htmlReady(trim($values['Name'])) ?>
                     <? if ($GLOBALS['perm']->have_studip_perm("autor", $semid)) : ?>
@@ -115,7 +115,7 @@
                         <? if (isset($nav) && $nav->isVisible(true)) : ?>
                             <a href="<?=
                             UrlHelper::getLink('seminar_main.php',
-                                array('auswahl'     => $semid,
+                                array('to'     => $semid,
                                     'redirect_to' => strtr($nav->getURL(), '?', '&'))) ?>" <?= $nav->hasBadgeNumber() ? 'class="badge" data-badge-number="' . intval($nav->getBadgeNumber()) . '"' : '' ?>>
                                 <?= $nav->getImage()->asImg(20, $nav->getLinkAttributes()) ?>
                             </a>
