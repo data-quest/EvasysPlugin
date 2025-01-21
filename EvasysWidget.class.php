@@ -62,7 +62,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
         if (count($active_seminar_ids)) {
             $soap = EvasysSoap::get();
 
-            if (!$_SESSION['EVASYS_MY_IDS']) {
+            if (empty($_SESSION['EVASYS_MY_IDS'])) {
                 //fetch user_id for dozent GetUser
                 $evasys_user_object = $soap->soapCall("GetUserIdsByParams", [
                     'Params' => ['Email' => $user['email']]
@@ -92,7 +92,7 @@ class EvasysWidget extends StudIPPlugin implements PortalPlugin
             foreach ($evasys_surveys_object->Strings as $json) {
                 $json = json_decode($json, true);
                 if ($active_seminar_ids[$json['CourseCode']]
-                        && (!$courses[$active_seminar_ids[$json['CourseCode']]] || $json['OpenState'])) {
+                        && (empty($courses[$active_seminar_ids[$json['CourseCode']]]) || $json['OpenState'])) {
                     $course = Course::find($active_seminar_ids[$json['CourseCode']]);
                     $courses[$active_seminar_ids[$json['CourseCode']]] = [
                         'Nummer' => $course['veranstaltungsnummer'],

@@ -35,8 +35,7 @@
             <? endif ?>
 
             <div<?= $profile['applied'] ? '' : ' style="display: none;"' ?> id="evasys_evaldata">
-                <? $seminar = new Seminar($profile['seminar_id']) ?>
-                <? $teachers = $seminar->getMembers("dozent") ?>
+                <? $teachers = $profile->course->members->filter(function ($m) { return $m->status === 'dozent'; })->getArrayCopy() ?>
                 <?= dgettext("evasys", "Wer wird evaluiert?") ?>
                 <ul class="clean evasys_teachers<?= $editable ? " editable" : "" ?><?= Config::get()->EVASYS_ENABLE_SPLITTING_COURSES && $profile['split'] ? " split" : "" ?>">
                     <?
@@ -60,7 +59,7 @@
                             <?= Assets::img("anfasser_24.png", array('class' => "anfasser")) ?>
                         <? endif ?>
                             <span class="avatar" style="background-image: url('<?= Avatar::getAvatar($teacher['user_id'])->getURL(Avatar::MEDIUM) ?>');"></span>
-                            <?= htmlReady($teacher['fullname']) ?>
+                            <?= htmlReady($teacher->user->getFullName()) ?>
                             <input type="checkbox"
                                    name="data[teachers][]"
                                    <?= $profile->isEditable() ? "" : "disabled" ?>
@@ -209,7 +208,7 @@
                                         </tr>
                                     <? endif ?>
                                 <? endforeach ?>
-                                <? if (!$found) : ?>
+                                <? if (empty($found)) : ?>
                                 <tr>
                                     <td style="text-align: center;">
                                         <?= dgettext("evasys", "Keine möglichen Termine gefunden.") ?>

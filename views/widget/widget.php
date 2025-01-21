@@ -21,7 +21,7 @@
                     <tr>
                         <td>
                             <a href="<?= URLHelper::getLink("plugins.php/evasysplugin/evaluation/show", array('cid' => $course['Seminar_id']), true) ?>">
-                                <? if (Config::get()->IMPORTANT_SEMNUMBER) : ?>
+                                <? if (Config::get()->IMPORTANT_SEMNUMBER && $course['Nummer']) : ?>
                                     <?= htmlReady($course['Nummer']) ?>:
                                 <? endif ?>
                                 <?= htmlReady($course['Name']) ?>

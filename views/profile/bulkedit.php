@@ -51,14 +51,14 @@
                 <select name="split"
                         onChange="jQuery(this).closest('tr').addClass('active').find('td:first-child :checkbox').prop('checked', 'checked');">
                     <option value="">
-                        <? if ($values['split'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
+                        <? if (!empty($values['split']) && $values['split'] === "EVASYS_UNEINDEUTIGER_WERT") : ?>
                             <?= dgettext("evasys", "Unterschiedliche Werte") ?>
                         <? endif ?>
                     </option>
-                    <option value="0"<?= !$values['split'] ? " selected" : "" ?>>
+                    <option value="0"<?= empty($values['split']) ? " selected" : "" ?>>
                         <?= dgettext("evasys", "Nein") ?>
                     </option>
-                    <option value="1"<?= $values['split'] == 1 ? " selected" : "" ?>>
+                    <option value="1"<?= !empty($values['split']) && ($values['split'] == 1) ? " selected" : "" ?>>
                         <?= dgettext("evasys", "Ja") ?>
                     </option>
                 </select>

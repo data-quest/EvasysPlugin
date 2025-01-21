@@ -168,7 +168,12 @@ class ProfileController extends PluginController
         }
         $this->profiles = [];
         foreach ($this->ids as $id) {
-            list($seminar_id, $semester_id) = explode("_", $id);
+            if (strpos($id, '_') !== false) {
+                list($seminar_id, $semester_id) = explode("_", $id);
+            } else {
+                $seminar_id = $id;
+                $semester_id = false;
+            }
             if (!$semester_id) {
                 $semester_id = $GLOBALS['user']->cfg->MY_COURSES_SELECTED_CYCLE;
                 if (!$semester_id || $semester_id === "all") {
@@ -191,16 +196,11 @@ class ProfileController extends PluginController
                     if (Request::get("applied") !== "") {
                         $profile['applied'] = Request::int("applied");
                         if ($profile['applied'] && $profile['teachers'] === null) {
-                            $seminar = new Seminar($profile['seminar_id']);
-                            $teachers = $seminar->getMembers("dozent");
-
+                            $teacher_ids = $profile->course->members->filter(function ($m) { return $m->status === 'dozent'; })->pluck('user_id');
 
                             if (Config::get()->EVASYS_SELECT_FIRST_TEACHER) {
-                                $teacher_ids = array_values($teachers);
                                 $teacher = array_shift($teacher_ids);
                                 $teacher_ids = array($teacher['user_id']);
-                            } else {
-                                $teacher_ids = array_keys($teachers);
                             }
                             $profile['teachers'] = $teacher_ids;
                         }
@@ -289,7 +289,7 @@ class ProfileController extends PluginController
         $this->available_form_ids = null;
         foreach ($this->profiles as $profile) {
 
-            if ($this->values['applied'] === null) {
+            if (empty($this->values['applied'])) {
                 $this->values['applied'] = $profile['applied'];
             } elseif ($this->values['applied'] !== $profile['applied']) {
                 $this->values['applied'] = "EVASYS_UNEINDEUTIGER_WERT";
@@ -297,20 +297,20 @@ class ProfileController extends PluginController
 
 
             $begin = $profile->getFinalBegin();
-            if ($this->values['begin'] === null) {
+            if (empty($this->values['begin'])) {
                 $this->values['begin'] = $begin;
             } elseif ($this->values['begin'] !== $begin) {
                 $this->values['begin'] = "EVASYS_UNEINDEUTIGER_WERT";
             }
             $end = $profile->getFinalEnd();
-            if ($this->values['end'] === null) {
+            if (empty($this->values['end'])) {
                 $this->values['end'] = $end;
             } elseif ($this->values['end'] !== $end) {
                 $this->values['end'] = "EVASYS_UNEINDEUTIGER_WERT";
             }
 
             $form_id = $profile->getFinalFormId();
-            if ($this->values['form_id'] === null) {
+            if (empty($this->values['form_id'])) {
                 $this->values['form_id'] = $form_id;
             } elseif ($this->values['form_id'] !== $form_id) {
                 $this->values['form_id'] = "EVASYS_UNEINDEUTIGER_WERT";
@@ -330,7 +330,7 @@ class ProfileController extends PluginController
             }
 
             $mode = $profile->getFinalMode();
-            if ($this->values['mode'] === null) {
+            if (empty($this->values['mode'])) {
                 $this->values['mode'] = $mode;
             } elseif ($this->values['mode'] !== $mode) {
                 $this->values['mode'] = "EVASYS_UNEINDEUTIGER_WERT";
@@ -347,7 +347,7 @@ class ProfileController extends PluginController
 
 
             $by_dozent = $profile['by_dozent'];
-            if ($this->values['by_dozent'] === null) {
+            if (empty($this->values['by_dozent'])) {
                 $this->values['by_dozent'] = $by_dozent;
             } elseif ($this->values['by_dozent'] !== $by_dozent) {
                 $this->values['by_dozent'] = "EVASYS_UNEINDEUTIGER_WERT";

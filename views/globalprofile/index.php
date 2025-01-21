@@ -465,7 +465,7 @@
 
     <div style="text-align: center;">
         <?= \Studip\Button::create(dgettext("evasys", "Speichern")) ?>
-        <? if ($profile->semester['beginn'] > Semester::findCurrent()->beginn) : ?>
+        <? if (!empty($profile->semester) && $profile->semester['beginn'] > Semester::findCurrent()->beginn) : ?>
             <?= \Studip\Button::create(dgettext("evasys", "Löschen"), "delete", array('onClick' => "return window.confirm('".dgettext("evasys", "Sollen die Einstellungen des gesamten Semesters wirklich gelöscht werden?")."');")) ?>
         <? endif ?>
     </div>
