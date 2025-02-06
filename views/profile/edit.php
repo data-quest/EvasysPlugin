@@ -133,7 +133,7 @@
                     $end = $profile->getFinalEnd();
                     if ($profile->isNew() && ($end <= time()) && Config::get()->EVASYS_INDIVIDUAL_TIME_OFFSETS) {
                         $offsets = preg_split("/\n/", Config::get()->EVASYS_INDIVIDUAL_TIME_OFFSETS, -1, PREG_SPLIT_NO_EMPTY);
-                        $end = time() + $offsets[1] * 60;
+                        $end = time() + (isset($offsets[1]) ? $offsets[1] : 0)* 60;
                     }
                     ?>
                     <? if ($editable) : ?>
@@ -293,21 +293,23 @@
                                 <? foreach ($profile->getAvailableFormIds() as $form_id) : ?>
                                     <? if ($form_id != $standard_form_id) : ?>
                                         <? $form = EvasysForm::find($form_id) ?>
-                                        <tr>
-                                            <td>
-                                                <label>
-                                                    <input type="radio" name="data[form_id]" value="<?= htmlReady($form->getId()) ?>"<?= $profile['form_id'] === $form->getId() ? " checked" : "" ?>>
-                                                    <?= htmlReady($form['name'].": ".$form['description']) ?>
-                                                </label>
-                                            </td>
-                                            <td class="actions">
-                                                <? if ($form['link']) : ?>
-                                                    <a href="<?= htmlReady($form['link']) ?>" target="_blank">
-                                                        <?= Icon::create("info-circle", "clickable")->asImg(20) ?>
-                                                    </a>
-                                                <? endif ?>
-                                            </td>
-                                        </tr>
+                                        <? if (!empty($form)) : ?>
+                                            <tr>
+                                                <td>
+                                                    <label>
+                                                        <input type="radio" name="data[form_id]" value="<?= htmlReady($form->getId()) ?>"<?= $profile['form_id'] === $form->getId() ? " checked" : "" ?>>
+                                                        <?= htmlReady($form['name'].": ".$form['description']) ?>
+                                                    </label>
+                                                </td>
+                                                <td class="actions">
+                                                    <? if ($form['link']) : ?>
+                                                        <a href="<?= htmlReady($form['link']) ?>" target="_blank">
+                                                            <?= Icon::create("info-circle", "clickable")->asImg(20) ?>
+                                                        </a>
+                                                    <? endif ?>
+                                                </td>
+                                            </tr>
+                                        <? endif ?>
                                     <? endif ?>
                                 <? endforeach ?>
                             <? else : ?>

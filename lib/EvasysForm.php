@@ -23,7 +23,7 @@ class EvasysForm extends SimpleORMap
 
     static public function GetAllForms()
     {
-        if (Config::get()->EVASYS_CACHE && ((time() - $_SESSION['EVASYS_ALL_FORMS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE)) {
+        if (Config::get()->EVASYS_CACHE && ((time() - ($_SESSION['EVASYS_ALL_FORMS_EXPIRE'] ?? 0)) < 60 * Config::get()->EVASYS_CACHE)) {
             return true;
         }
         if (!class_exists("SoapClient")) {

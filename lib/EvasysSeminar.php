@@ -56,7 +56,7 @@ class EvasysSeminar extends SimpleORMap
                 && (time() - $_SESSION['EVASYS_STATUS_EXPIRE']) < 60 * Config::get()->EVASYS_CACHE) {
             $new = 0;
             foreach ($seminar_ids as $seminar_id) {
-                $new += $_SESSION['EVASYS_SEMINARS_STATUS'][$seminar_id];
+                $new += $_SESSION['EVASYS_SEMINARS_STATUS'][$seminar_id] ?? 0;
             }
             return $new;
         }
@@ -119,14 +119,18 @@ class EvasysSeminar extends SimpleORMap
         } else {
             foreach ((array) $evasys_sem_object->SurveySummary as $survey) {
                 if (!$survey->Participated && $survey->SurveyOpenState) {
-                    $_SESSION['EVASYS_SEMINARS_STATUS'][$survey->SurveyCourseCode] += 1;
+                    if (isset($_SESSION['EVASYS_SEMINARS_STATUS'][$survey->SurveyCourseCode])) {
+                        $_SESSION['EVASYS_SEMINARS_STATUS'][$survey->SurveyCourseCode] += 1;
+                    } else {
+                        $_SESSION['EVASYS_SEMINARS_STATUS'][$survey->SurveyCourseCode] = 1;
+                    }
                 }
             }
         }
         $_SESSION['EVASYS_STATUS_EXPIRE'] = time();
         $new = 0;
         foreach ($seminar_ids as $seminar_id) {
-            $new += $_SESSION['EVASYS_SEMINARS_STATUS'][$seminar_id];
+            $new += $_SESSION['EVASYS_SEMINARS_STATUS'][$seminar_id] ?? 0;
         }
         return $new;
     }

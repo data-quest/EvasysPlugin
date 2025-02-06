@@ -22,7 +22,7 @@
                     <? $value = $item['matching']
                         ? ($item['matching']['name'] !== null ? $item['matching']['name'] : new I18NString($item['name'], null, array('table' => "evasys_matchings", 'field' => "name")))
                         : new I18NString($item['name'], null, array('table' => "evasys_matchings", 'field' => "name")) ?>
-                    <? if (!$i18n) : ?>
+                    <? if (!isset($i18n)) : ?>
                         <input type="text"
                                name="matching[<?= htmlReady($item['id']) ?>]"
                                value="<?= htmlReady($value) ?>">
