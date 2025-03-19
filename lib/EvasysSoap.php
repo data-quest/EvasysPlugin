@@ -14,6 +14,7 @@ class EvasysSoap
             $evasys_password = Config::get()->EVASYS_PASSWORD;
 
             if (!$evasys_wsdl || !$evasys_user || !$evasys_password) {
+                error_log("Evasys-error: EVASYS_* Konfiguration unvollständig!", 0);
                 throw new Exception("EVASYS_* Konfiguration unvollständig!");
             }
             self::$instance = new EvasysSoapClient($evasys_wsdl, [
@@ -36,6 +37,7 @@ class EvasysSoap
             ]);
             self::$instance->__setSoapHeaders($soapHeaders);
             if (is_soap_fault(self::$instance)) {
+                error_log("Evasys SOAP-Error: " . self::$instance, 0);
                 throw new Exception("SOAP-Error: " . self::$instance);
             }
         }
