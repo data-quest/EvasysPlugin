@@ -460,7 +460,7 @@ class EvasysSeminar extends SimpleORMap
                 ? $profile['surveys'][$this['Seminar_id']]
                 : "", //experimental
             'PeriodId' => date("Y-m-d", $profile->getFinalBegin()),
-            'PeriodIdType' => "PERIODDATE",
+            'PeriodIdType' => Config::get()->EVASYS_MATCH_INNER_PERIOD ? "INNER_ACTIVE_PERIOD_ON_DATE" : "PERIODDATE", //ab v91 INNER_ACTIVE_PERIOD_ON_DATE
             'SurveyType' => [
                 'm_chSurveyType' => ($profile['mode'] === "paper" && !Config::get()->EVASYS_FORCE_ONLINE)
                     ? $profile->getPresetAttribute("paper_mode") // d = Deckblatt, s = Selbstdruck
@@ -529,7 +529,7 @@ class EvasysSeminar extends SimpleORMap
                         'CourseEnrollment' => 0, // ?
                         'CustomFieldsJSON' => json_encode($custom_fields),
                         'CoursePeriodId' => date("Y-m-d", $course->start_semester['beginn']),
-                        'CoursePeriodIdType' => "PERIODDATE",
+                        'CoursePeriodIdType' => Config::get()->EVASYS_MATCH_INNER_PERIOD ? "INNER_ACTIVE_PERIOD_ON_DATE" : "PERIODDATE", //ab v91 INNER_ACTIVE_PERIOD_ON_DATE
                         'InstructorList' => $instructorlist,
                         'RoomName' => (string) $course->ort,
                         'SubunitName' => $profile['objection_to_publication'] && ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') && $profile->getPresetAttribute('objection_teilbereich')
@@ -582,7 +582,7 @@ class EvasysSeminar extends SimpleORMap
                 'CourseEnrollment' => 0, // ?
                 'CustomFieldsJSON' => json_encode($custom_fields),
                 'CoursePeriodId' => date("Y-m-d", $course->start_semester['beginn']),
-                'CoursePeriodIdType' => "PERIODDATE",
+                'CoursePeriodIdType' => Config::get()->EVASYS_MATCH_INNER_PERIOD ? "INNER_ACTIVE_PERIOD_ON_DATE" : "PERIODDATE", //ab v91 INNER_ACTIVE_PERIOD_ON_DATE
                 'InstructorList' => $instructorlist,
                 'RoomName' => (string) $course->ort,
                 'SubunitName' => $profile['objection_to_publication'] && ($profile->getPresetAttribute('enable_objection_to_publication') === 'yes') && $profile->getPresetAttribute('objection_teilbereich')
