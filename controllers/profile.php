@@ -196,11 +196,11 @@ class ProfileController extends PluginController
                     if (Request::get("applied") !== "") {
                         $profile['applied'] = Request::int("applied");
                         if ($profile['applied'] && $profile['teachers'] === null) {
-                            $teacher_ids = $profile->course->members->filter(function ($m) { return $m->status === 'dozent'; })->pluck('user_id');
+                            $teacher_ids = $profile->course->members->filter(function ($m) { return $m->status === 'dozent'; })->orderBy('position ASC')->pluck('user_id');
 
                             if (Config::get()->EVASYS_SELECT_FIRST_TEACHER) {
                                 $teacher = array_shift($teacher_ids);
-                                $teacher_ids = array($teacher['user_id']);
+                                $teacher_ids = array($teacher);
                             }
                             $profile['teachers'] = $teacher_ids;
                         }
